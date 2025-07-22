@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Subir Imagen</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f0f0f0;
+    }
+    .contenedor {
+      background-color: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      width: 300px;
+      margin: 50px auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #resultado {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+    #vistaPrevia {
+      margin-top: 10px;
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <h2>Subir Imagen</h2>
+    <form id="formImagen" enctype="multipart/form-data">
+      <input type="file" name="imagen" accept="image/*" required />
+      <button type="submit">Subir</button>
+    </form>
+    <div id="resultado"></div>
+    <img id="vistaPrevia" style="display:none;" />
+  </div>
+
+  <script>
+    document.getElementById("formImagen").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+
+      try {
+        const res = await fetch("http://localhost:8080/ApiRestaurente/api/subirimagen", {
+          method: "POST",
+          body: formData
+        });
+
+        const json = await res.json();
+        console.log(json);
+        if (res.ok) {
+          document.getElementById("resultado").textContent =
+            "✅ Imagen subida. Ruta: " + json.url;
+          document.getElementById("vistaPrevia").src = json.url;
+          document.getElementById("vistaPrevia").style.display = "block";
+          console.log("Ruta guardada:", json.url);
+        } else {
+          throw new Error(json.error || "Error al subir imagen");
+        }
+      } catch (err) {
+        document.getElementById("resultado").textContent = "❌ Error: " + err.message;
+        document.getElementById("vistaPrevia").style.display = "none";
+        console.error("❌ Error al subir imagen:", err);
+      }
+    });
+  </script>
+</body>
+</html>

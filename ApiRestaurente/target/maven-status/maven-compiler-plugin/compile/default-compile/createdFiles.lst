@@ -1,0 +1,14 @@
+CONTROLADOR\OficioControlador.class
+CONTROLADOR\ImagenControladorViejo.class
+CONTROLADOR\TrabajadorControlador.class
+MODELO\TrabajadorDAO.class
+BD\DBConnectionTest.class
+BD\CORSFilter.class
+CONTROLADOR\MiddlewareTrabajador.class
+MODELO\Oficio.class
+BD\DBConnection.class
+BD\Configuracion.class
+CONTROLADOR\MiddlewareOficio.class
+MODELO\Trabajador.class
+CONTROLADOR\ImagenControlador.class
+MODELO\OficioDAO.class
