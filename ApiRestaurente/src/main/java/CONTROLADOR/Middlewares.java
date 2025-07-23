@@ -50,7 +50,7 @@ public class Middlewares {
                 return "Error: " + campo + " debe ser mayor a 0";
             }
         } catch (NumberFormatException e) {
-            return "Error: " + campo + " debe ser un número entero válido" + valor;
+            return "Error: " + campo + " debe ser un número entero válido";
         }
         return "ok";
     }
@@ -78,7 +78,43 @@ public class Middlewares {
         if (!val.equals("0") && !val.equals("1")) {
             return "Error: " + campo + " debe ser '0' o '1'";
         }
-        
+
+        return "ok";
+    }
+
+    public static String validarCantidad9o10(String valor, String campo) {
+        if (Vacio(valor)) {
+            return "ok";
+        }
+        // Validar solo enteros positivos (sin punto)
+        if (!valor.matches("^-?\\d+$")) {
+            return "Error: " + campo + " debe ser un numero entero valido";
+        }
+        int numero = Integer.parseInt(valor);
+        if (numero <= 0) {
+            return "Error: " + campo + " debe ser mayor a 0";
+        }
+        try {
+            int longitud = valor.length();
+            if (longitud != 9 && longitud != 10) {
+                return "Error: " + campo + " debe tener 9 o 10 caracteres";
+            }
+        } catch (NumberFormatException e) {
+            return "Error: " + campo + " debe ser un número entero válido";
+        }
+        return "ok";
+    }
+
+    public static String validarCorreo(String valor, String campo) {
+        if (Vacio(valor)) {
+            return "ok";
+        }
+
+        // Expresión regular básica para validar correos
+        if (!valor.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
+            return "Error: " + campo + " debe ser un correo electrónico válido";
+        }
+
         return "ok";
     }
 

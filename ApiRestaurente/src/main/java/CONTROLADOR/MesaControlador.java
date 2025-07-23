@@ -5,9 +5,6 @@ package CONTROLADOR;
 import MODELO.Mesa;
 // Importa la clase DAO que gestiona la base de datos para Oficio
 import MODELO.MesaDAO;
-import MODELO.Oficio;
-import MODELO.OficioDAO;
-import MODELO.Trabajador;
 // Importa el middleware de validación para Oficio
 import CONTROLADOR.Middlewares;
 

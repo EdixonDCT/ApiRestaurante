@@ -5,7 +5,9 @@ MODELO\TrabajadorDAO.class
 BD\DBConnectionTest.class
 BD\CORSFilter.class
 CONTROLADOR\MesaControlador.class
+CONTROLADOR\ClienteControlador.class
 MODELO\Oficio.class
+MODELO\ClienteDAO.class
 BD\DBConnection.class
 BD\Configuracion.class
 CONTROLADOR\Middlewares.class
@@ -13,4 +15,5 @@ MODELO\Mesa.class
 MODELO\Trabajador.class
 MODELO\MesaDAO.class
 CONTROLADOR\ImagenControlador.class
+MODELO\Cliente.class
 MODELO\OficioDAO.class

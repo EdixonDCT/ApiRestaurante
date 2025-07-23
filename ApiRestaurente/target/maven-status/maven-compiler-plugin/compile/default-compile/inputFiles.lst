@@ -1,12 +1,15 @@
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\CONTROLADOR\TrabajadorControlador.java
+C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\MODELO\Cliente.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\MODELO\MesaDAO.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\MODELO\Mesa.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\MODELO\Oficio.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\MODELO\OficioDAO.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\BD\CORSFilter.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\CONTROLADOR\OficioControlador.java
+C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\CONTROLADOR\ClienteControlador.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\MODELO\TrabajadorDAO.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\BD\DBConnection.java
+C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\MODELO\ClienteDAO.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\CONTROLADOR\ImagenControlador.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\BD\DBConnectionTest.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\CONTROLADOR\Middlewares.java
