@@ -1,4 +1,6 @@
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\CONTROLADOR\TrabajadorControlador.java
+C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\MODELO\MesaDAO.java
+C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\MODELO\Mesa.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\MODELO\Oficio.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\MODELO\OficioDAO.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\BD\CORSFilter.java
@@ -8,6 +10,7 @@ C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\BD\DBConnection.ja
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\CONTROLADOR\ImagenControlador.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\BD\DBConnectionTest.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\CONTROLADOR\Middlewares.java
+C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\CONTROLADOR\MesaControlador.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\BD\Configuracion.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\CONTROLADOR\ImagenControladorViejo.java
 C:\Users\Edixon\Desktop\Proyecto\ApiRestaurente\src\main\java\MODELO\Trabajador.java

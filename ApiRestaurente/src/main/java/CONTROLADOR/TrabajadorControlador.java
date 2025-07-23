@@ -16,7 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 // Define la ruta base para acceder a los métodos del controlador
-@Path("trabajador")
+@Path("trabajadores")
 // Indica que las respuestas serán en formato JSON
 @Produces(MediaType.APPLICATION_JSON)
 // Indica que las peticiones deben ser en formato JSON

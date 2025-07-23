@@ -88,7 +88,7 @@ public class OficioControlador {
                         .build(); // Retorna código 201
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("Error: no se pudo crear OFICIO." + oficio.getTipo() + oficio.getSalario())
+                        .entity("Error: no se pudo crear OFICIO " + oficio.getTipo()+".")
                         .build(); // Retorna error 500
             }
         } catch (Exception e) {
@@ -114,7 +114,7 @@ public class OficioControlador {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaTipo).build();
             }
 
-            String validaSalario = Middlewares.validarDouble(String.valueOf(oficio.getSalario()), "salario");
+            String validaSalario = Middlewares.validarDouble(oficio.getSalario(), "salario");
             if (!validaSalario.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaSalario).build();
             }

@@ -1,7 +1,7 @@
 package CONTROLADOR;
 
 public class Middlewares {
-    
+
     public static Boolean Vacio(String valor) {
         return valor == null || valor.trim().isEmpty();
     }
@@ -10,7 +10,8 @@ public class Middlewares {
         if (Vacio(valor)) {
             return "Error: " + campo + " no puede estar vacio"; // Si está vacío, retorna mensaje de error
         }
-        // Expresión regular para permitir letras (mayúsculas/minúsculas), espacios y caracteres con tilde
+        // Expresión regular para permitir letras (mayúsculas/minúsculas), espacios y
+        // caracteres con tilde
         if (!valor.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")) {
             return "Error: " + campo + " debe contener solo letras"; // Si no cumple, mensaje de error
         }
@@ -49,21 +50,36 @@ public class Middlewares {
                 return "Error: " + campo + " debe ser mayor a 0";
             }
         } catch (NumberFormatException e) {
-            return "Error: " + campo + " debe ser un número entero válido"+valor;
+            return "Error: " + campo + " debe ser un número entero válido" + valor;
         }
         return "ok";
     }
-    
+
     public static String validarFecha(String valor, String campo) {
-    if (valor == null || valor.trim().isEmpty()) {
-        return campo + " no puede estar vacío";
+        if (Vacio(valor)) {
+            return "Error: " + campo + " no puede estar vacio"; // Si está vacío, retorna mensaje de error
+        }
+
+        // Expresión regular para formato de fecha: YYYY-MM-DD (con validación básica de
+        // formato)
+        if (!valor.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
+            return "Error: " + campo + " debe tener el formato YYYY-MM-DD";
+        }
+
+        return "ok";
     }
 
-    // Expresión regular para formato de fecha: YYYY-MM-DD (con validación básica de formato)
-    if (!valor.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
-        return campo + " debe tener el formato YYYY-MM-DD";
+    public static String validarBooleano(String valor, String campo) {
+
+        if (Vacio(valor)) {
+            return "Error: " + campo + " no puede estar vacio"; // Si está vacío, retorna mensaje de error
+        }
+        String val = valor.trim();
+        if (!val.equals("0") && !val.equals("1")) {
+            return "Error: " + campo + " debe ser '0' o '1'";
+        }
+        
+        return "ok";
     }
 
-    return "ok";
-}
 }
