@@ -3,15 +3,15 @@ package MODELO;
 //Archivo Java dedicado para los getters y setters de los valores de la tabla,sirve como objeto
 public class Oficio {
     //valores de la tabla
-    private int codigo;
+    private String codigo;
     private String tipo;
-    private double salario;
+    private String salario;
 
-    public int getCodigo() {//obtener el Codigo
+    public String getCodigo() {//obtener el Codigo
         return codigo;
     }
 
-    public void setCodigo(int codigo) {//asignar el Codigo
+    public void setCodigo(String codigo) {//asignar el Codigo
         this.codigo = codigo;
     }
 
@@ -23,11 +23,11 @@ public class Oficio {
         this.tipo = tipo;
     }
 
-    public double getSalario() {//obtener el salario
+    public String getSalario() {//obtener el salario
         return salario;
     }
 
-    public void setSalario(double salario) {//asignar el salario
+    public void setSalario(String salario) {//asignar el salario
         this.salario = salario;
     }
 }

@@ -3,7 +3,7 @@ package MODELO;
 import java.time.LocalDate;
 
 public class Trabajador {
-    private int cedula;//es int porque es un numero entero
+    private String cedula;//es int porque es un numero entero
     private String nombre;
     private String apellido;
     private String nacimiento;//Es String para que sea mas sencillo subirlo ala base de datos y hacer validaciones con regex
@@ -11,14 +11,14 @@ public class Trabajador {
     private String foto;//la foto es string porque almacena su URL
     private String contrasena;//es string porque puede tener texto,numero y signos
     //es contraseña con n por el manejo de Ñ
-    private int idOficio;//es int porque son numeros enteros
+    private String idOficio;//es int porque son numeros enteros
     private String nombreOficio;//es para el Inner Join cuando se consulta el nombre con el id de Oficio
 
-    public int getCedula() {//obtener la Cedula
+    public String getCedula() {//obtener la Cedula
         return cedula;
     }
 
-    public void setCedula(int cedula) {//asginar la Cedula
+    public void setCedula(String cedula) {//asginar la Cedula
         this.cedula = cedula;
     }
 
@@ -62,11 +62,11 @@ public class Trabajador {
         this.contrasena = contrasena;
     }
     
-    public int getIdOficio() {//obtener el ID del Codigo Oficio
+    public String getIdOficio() {//obtener el ID del Codigo Oficio
         return idOficio;
     }
 
-    public void setIdOficio(int idOficio) {//asginar el ID del Codigo Oficio
+    public void setIdOficio(String idOficio) {//asginar el ID del Codigo Oficio
         this.idOficio = idOficio;
     }
     

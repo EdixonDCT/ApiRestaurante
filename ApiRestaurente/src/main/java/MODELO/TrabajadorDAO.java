@@ -27,13 +27,13 @@ public class TrabajadorDAO {
             // Recorrer resultados y agregarlos a la lista
             while (rs.next()) {
                 Trabajador trabajador = new Trabajador();
-                trabajador.setCedula(rs.getInt("cedula"));
+                trabajador.setCedula(rs.getString("cedula"));
                 trabajador.setNombre(rs.getString("nombre"));
                 trabajador.setApellido(rs.getString("apellido"));
                 trabajador.setNacimiento(rs.getString("nacimiento"));
                 trabajador.setFoto(rs.getString("foto"));
                 trabajador.setContrasena(rs.getString("contrasena"));
-                trabajador.setIdOficio(rs.getInt("codigo"));
+                trabajador.setIdOficio(rs.getString("codigo"));
                 trabajador.setNombreOficio(rs.getString("tipo"));
                 lista.add(trabajador);
             }
@@ -59,25 +59,25 @@ public class TrabajadorDAO {
     }
 
     // MÉTODO: Buscar un Trabajador por su ID
-    public Trabajador obtenerPorCedula(int cedula) {
+    public Trabajador obtenerPorCedula(String cedula) {
         Trabajador trabajador = null;
 
         try {
             conn = DBConnection.getConnection();
             String sql = "SELECT t.cedula,t.nombre,t.apellido,t.nacimiento,t.foto,t.contrasena,o.codigo,o.tipo FROM trabajadores AS t JOIN oficios AS o ON t.id_oficio = o.codigo WHERE t.cedula = ?";
             prepStmt = conn.prepareStatement(sql);
-            prepStmt.setInt(1, cedula);
+            prepStmt.setInt(1, Integer.parseInt(cedula));
             rs = prepStmt.executeQuery();
 
             if (rs.next()) {
                 trabajador = new Trabajador();
-                trabajador.setCedula(rs.getInt("cedula"));
+                trabajador.setCedula(rs.getString("cedula"));
                 trabajador.setNombre(rs.getString("nombre"));
                 trabajador.setApellido(rs.getString("apellido"));
                 trabajador.setNacimiento(rs.getString("nacimiento"));
                 trabajador.setFoto(rs.getString("foto"));
                 trabajador.setContrasena(rs.getString("contrasena"));
-                trabajador.setIdOficio(rs.getInt("codigo"));
+                trabajador.setIdOficio(rs.getString("codigo"));
                 trabajador.setNombreOficio(rs.getString("tipo"));
             }
 
@@ -107,12 +107,12 @@ public class TrabajadorDAO {
             conn = DBConnection.getConnection();
             String sql = "INSERT INTO trabajadores(cedula, nombre, apellido, nacimiento, contrasena, id_oficio) values (?,?,?,?,?,?)";
             prepStmt = conn.prepareStatement(sql);
-            prepStmt.setInt(1, trabajador.getCedula());
+            prepStmt.setInt(1,Integer.parseInt(trabajador.getCedula()));
             prepStmt.setString(2, trabajador.getNombre());
             prepStmt.setString(3, trabajador.getApellido());
             prepStmt.setString(4, trabajador.getNacimiento());
             prepStmt.setString(5, trabajador.getContrasena());
-            prepStmt.setInt(6, trabajador.getIdOficio());
+            prepStmt.setInt(6,Integer.parseInt(trabajador.getIdOficio()));
 
             // Ejecutar inserción y verificar si se insertó al menos una fila
             int filas = prepStmt.executeUpdate();
@@ -146,8 +146,8 @@ public class TrabajadorDAO {
             prepStmt.setString(2, trabajador.getApellido());
             prepStmt.setString(3, trabajador.getNacimiento());
             prepStmt.setString(4, trabajador.getContrasena());
-            prepStmt.setInt(5, trabajador.getIdOficio());
-            prepStmt.setInt(6, trabajador.getCedula());
+            prepStmt.setInt(5, Integer.parseInt(trabajador.getIdOficio()));
+            prepStmt.setInt(6, Integer.parseInt(trabajador.getCedula()));
 
             int filas = prepStmt.executeUpdate();
             actualizado = filas > 0;
@@ -170,14 +170,14 @@ public class TrabajadorDAO {
     }
 
     // MÉTODO: Eliminar un oficio por su código
-    public boolean eliminar(int cedula) {
+    public boolean eliminar(String cedula) {
         boolean eliminado = false;
 
         try {
             conn = DBConnection.getConnection();
             String sql = "DELETE FROM trabajadores WHERE cedula = ?";
             prepStmt = conn.prepareStatement(sql);
-            prepStmt.setInt(1, cedula);
+            prepStmt.setInt(1, Integer.parseInt(cedula));
 
             int filas = prepStmt.executeUpdate();
             eliminado = filas > 0;
@@ -208,7 +208,7 @@ public class TrabajadorDAO {
             String sql = "UPDATE trabajadores SET foto = ? WHERE cedula = ?";
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setString(1, trabajador.getFoto());
-            prepStmt.setInt(2, trabajador.getCedula());
+            prepStmt.setInt(2, Integer.parseInt(trabajador.getCedula()));
 
             int filas = prepStmt.executeUpdate();
             actualizarFoto = filas > 0;

@@ -28,9 +28,9 @@ public class OficioDAO {
             // Recorrer resultados y agregarlos a la lista
             while (rs.next()) {
                 Oficio oficio = new Oficio();
-                oficio.setCodigo(rs.getInt("codigo"));
+                oficio.setCodigo(rs.getString("codigo"));
                 oficio.setTipo(rs.getString("tipo"));
-                oficio.setSalario(rs.getDouble("salario"));
+                oficio.setSalario(rs.getString("salario"));
                 lista.add(oficio);
             }
 
@@ -52,21 +52,21 @@ public class OficioDAO {
     }
 
     // MÉTODO: Buscar un oficio por su ID
-    public Oficio obtenerPorId(int id) {
+    public Oficio obtenerPorId(String id) {
         Oficio oficio = null;
 
         try {
             conn = DBConnection.getConnection();
             String sql = "SELECT * FROM oficios WHERE codigo = ?";
             prepStmt = conn.prepareStatement(sql);
-            prepStmt.setInt(1, id);
+            prepStmt.setInt(1, Integer.parseInt(id));
             rs = prepStmt.executeQuery();
 
             if (rs.next()) {
                 oficio = new Oficio();
-                oficio.setCodigo(rs.getInt("codigo"));
+                oficio.setCodigo(rs.getString("codigo"));
                 oficio.setTipo(rs.getString("tipo"));
-                oficio.setSalario(rs.getDouble("salario"));
+                oficio.setSalario(rs.getString("salario"));
             }
 
         } catch (Exception e) {
@@ -91,11 +91,10 @@ public class OficioDAO {
 
         try {
             conn = DBConnection.getConnection();
-            String sql = "INSERT INTO oficios (codigo, tipo, salario) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO oficios (tipo, salario) VALUES (?, ?)";
             prepStmt = conn.prepareStatement(sql);
-            prepStmt.setInt(1, oficio.getCodigo());
-            prepStmt.setString(2, oficio.getTipo());
-            prepStmt.setDouble(3, oficio.getSalario());
+            prepStmt.setString(1, oficio.getTipo());
+            prepStmt.setDouble(2, Double.parseDouble(oficio.getSalario()));
 
             // Ejecutar inserción y verificar si se insertó al menos una fila
             int filas = prepStmt.executeUpdate();
@@ -125,9 +124,8 @@ public class OficioDAO {
             String sql = "UPDATE oficios SET tipo = ?, salario = ? WHERE codigo = ?";
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setString(1, oficio.getTipo());
-            prepStmt.setDouble(2, oficio.getSalario());
-            prepStmt.setInt(3, oficio.getCodigo());
-
+            prepStmt.setDouble(2, Double.parseDouble(oficio.getSalario()));
+            prepStmt.setInt(3, Integer.parseInt(oficio.getCodigo()));
             int filas = prepStmt.executeUpdate();
             actualizado = filas > 0;
 
@@ -147,14 +145,14 @@ public class OficioDAO {
     }
 
     // MÉTODO: Eliminar un oficio por su código
-    public boolean eliminar(int codOficio) {
+    public boolean eliminar(String codOficio) {
         boolean eliminado = false;
 
         try {
             conn = DBConnection.getConnection();
             String sql = "DELETE FROM oficios WHERE codigo = ?";
             prepStmt = conn.prepareStatement(sql);
-            prepStmt.setInt(1, codOficio);
+            prepStmt.setInt(1, Integer.parseInt(codOficio));
 
             int filas = prepStmt.executeUpdate();
             eliminado = filas > 0;

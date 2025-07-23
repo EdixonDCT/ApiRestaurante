@@ -14,7 +14,7 @@ create table trabajadores (
     nombre varchar(50) not null,
     apellido varchar(50) not null,
     nacimiento date not null,
-    foto varchar(255) not null,
+    foto varchar(255),
     contrasena varchar(100) not null,
     id_oficio int not null,
     primary key (cedula),
@@ -24,7 +24,7 @@ create table trabajadores (
 create table mesas (
     numero int not null,
     capacidad int not null,
-    disponible boolean not null,
+    disponible boolean default false,
     primary key (numero)
 );
 
@@ -37,11 +37,11 @@ create table clientes (
 
 create table comidas (
     id int auto_increment,
-    nombre varchar(100) not null,
+    nombre varchar(100) unique not null,
     precio decimal(10,2) not null,
     tipo varchar(50) not null,
-    imagen varchar(255) not null,
-    disponible boolean not null,
+    imagen varchar(255),
+    disponible boolean default false,
     primary key (id)
 );
 
@@ -51,23 +51,23 @@ create table bebidas (
     precio decimal(10,2) not null,
     unidad varchar(100) not null,
     tipo varchar(50) not null, 
-    imagen varchar(255) not null,
-    disponible boolean not null,
+    imagen varchar(255),
+    disponible boolean default false,
     primary key (id)
 );
 
 create table cocteles (
     id int auto_increment,
-    nombre varchar(100) not null,
+    nombre varchar(100) unique not null,
     precio decimal(10,2) not null,
-	imagen varchar(255) not null,
-    disponible boolean not null,
+	imagen varchar(255),
+    disponible boolean default false,
     primary key (id)
 );
 
 create table ingredientes (
     id int auto_increment,
-    nombre varchar(100) not null,
+    nombre varchar(100) unique not null,
     unidad varchar(50) not null,
     primary key (id)
 );
@@ -115,15 +115,15 @@ create table caja (
 create table pedidos (
     id int auto_increment,
     numero_mesa int not null,
-    fecha date not null,
-    hora time not null, 
-    valor_total decimal(10,2) not null,
-    id_caja int not null,
+    fecha date,
+    hora time, 
+    valor_total decimal(10,2),
+    id_caja int,
     numero_clientes int not null,
-    id_reserva int not null,
+    id_reserva int,
     nota text,
     correo_cliente varchar(100) not null,
-    metodo_pago varchar(50) not null,
+    metodo_pago varchar(50),
     primary key (id),
     foreign key (numero_mesa) references mesas(numero),
     foreign key (id_caja) references caja(id),

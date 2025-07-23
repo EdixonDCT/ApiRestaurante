@@ -6,7 +6,7 @@ import MODELO.Trabajador;
 // Importa la clase DAO que gestiona la base de datos para Oficio
 import MODELO.TrabajadorDAO;
 // Importa el middleware de validación para Oficio
-import CONTROLADOR.MiddlewareTrabajador;
+import CONTROLADOR.Middlewares;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class TrabajadorControlador {
 
     // Método GET para obtener todos los oficios
     @GET
-    public Response listarOficios() {
+    public Response listarTrabajadores() {
         try {
             List<Trabajador> lista = trabajadorDAO.listarTodos(); // Llama al DAO
             return Response.ok(lista).build(); // Retorna lista en JSON
@@ -41,8 +41,13 @@ public class TrabajadorControlador {
     // Método GET para obtener un oficio por su ID
     @GET
     @Path("/{cedula}")
-    public Response getTrabajador(@PathParam("cedula") int cedula){
+    public Response obtenerTrabajador(@PathParam("cedula") String cedula){
         try {
+            String validaCedula = Middlewares.validarEntero(cedula, "cedula");
+            if (!validaCedula.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
+            }
+            
             Trabajador trabajador = trabajadorDAO.obtenerPorCedula(cedula); // Busca por cedula
             if (trabajador != null) {
                 return Response.ok(trabajador).build(); // Retorna trabajador
@@ -61,31 +66,31 @@ public class TrabajadorControlador {
 
     // Método POST para crear un nuevo oficio
     @POST
-    public Response createTrabajador(Trabajador trabajador) {
+    public Response crearTrabajador(Trabajador trabajador) {
         try {
 
             // Valida el campo Cedula
-            String validaCedula = MiddlewareTrabajador.numeroMayorA0(String.valueOf(trabajador.getCedula()), "cedula");
+            String validaCedula = Middlewares.validarEntero(trabajador.getCedula(), "cedula");
             if (!validaCedula.equals("ok"))
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
             
             // Valida el campo Nombre
-            String validarNombre = MiddlewareTrabajador.textoValido(trabajador.getNombre(), "nombre");
+            String validarNombre = Middlewares.validarString(trabajador.getNombre(), "nombre");
             if (!validarNombre.equals("ok"))
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarNombre).build();
 
             // Valida el campo Apellido
-            String validarApellido = MiddlewareTrabajador.textoValido(trabajador.getApellido(), "apellido");
+            String validarApellido = Middlewares.validarString(trabajador.getApellido(), "apellido");
             if (!validarApellido.equals("ok"))
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarApellido).build();
 
             // Valida el campo Nacimiento
-            String validarNacimiento = MiddlewareTrabajador.fechaValida(trabajador.getNacimiento(), "nacimiento");
+            String validarNacimiento = Middlewares.validarFecha(trabajador.getNacimiento(), "nacimiento");
             if (!validarNacimiento.equals("ok"))
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarNacimiento).build();
             
             // Valida el campo Codigo Oficio
-            String validaCodigoOficio = MiddlewareTrabajador.numeroMayorA0(String.valueOf(trabajador.getIdOficio()), "idOficio");
+            String validaCodigoOficio = Middlewares.validarEntero(trabajador.getIdOficio(), "idOficio");
             if (!validaCodigoOficio.equals("ok"))
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCodigoOficio).build();
                         
@@ -108,37 +113,35 @@ public class TrabajadorControlador {
 
     @PUT
     @Path("/{cedula}")
-    public Response actualizarTrabajador(@PathParam("cedula") int cedula, Trabajador trabajador) {
+    public Response actualizarTrabajador(@PathParam("cedula") String cedula, Trabajador trabajador) {
         try {
             trabajador.setCedula(cedula); // Establece el ID al objeto que se va a actualizar
             // Actualiza si todo está bien
             
             // Valida el campo Cedula
-            String validaCedula = MiddlewareTrabajador.numeroMayorA0(String.valueOf(trabajador.getCedula()), "cedula");
+             String validaCedula = Middlewares.validarEntero(trabajador.getCedula(), "cedula");
             if (!validaCedula.equals("ok"))
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
             
             // Valida el campo Nombre
-            String validarNombre = MiddlewareTrabajador.textoValido(trabajador.getNombre(), "nombre");
+            String validarNombre = Middlewares.validarString(trabajador.getNombre(), "nombre");
             if (!validarNombre.equals("ok"))
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarNombre).build();
 
             // Valida el campo Apellido
-            String validarApellido = MiddlewareTrabajador.textoValido(trabajador.getApellido(), "apellido");
+            String validarApellido = Middlewares.validarString(trabajador.getApellido(), "apellido");
             if (!validarApellido.equals("ok"))
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarApellido).build();
 
             // Valida el campo Nacimiento
-            String validarNacimiento = MiddlewareTrabajador.fechaValida(trabajador.getNacimiento(), "nacimiento");
+            String validarNacimiento = Middlewares.validarFecha(trabajador.getNacimiento(), "nacimiento");
             if (!validarNacimiento.equals("ok"))
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarNacimiento).build();
             
             // Valida el campo Codigo Oficio
-            String validaCodigoOficio = MiddlewareTrabajador.numeroMayorA0(String.valueOf(trabajador.getIdOficio()), "idOficio");
+            String validaCodigoOficio = Middlewares.validarEntero(trabajador.getIdOficio(), "idOficio");
             if (!validaCodigoOficio.equals("ok"))
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCodigoOficio).build();
-                        
-            
 
             boolean actualizado = trabajadorDAO.actualizar(trabajador);
             if (actualizado) {
@@ -156,9 +159,13 @@ public class TrabajadorControlador {
 
     @PATCH
     @Path("/{cedula}")
-    public Response actualizarFotoTrabajador(@PathParam("cedula") int cedula, Trabajador trabajador) {
+    public Response actualizarFotoTrabajador(@PathParam("cedula") String cedula, Trabajador trabajador) {
         try {
             trabajador.setCedula(cedula); // Establece el ID al objeto que se va a actualizar
+            String validaCedula = Middlewares.validarEntero(cedula, "cedula");
+            if (!validaCedula.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
+            }
             // Actualiza si todo está bien
             boolean actualizado = trabajadorDAO.actualizarFoto(trabajador);
             if (actualizado) {
@@ -176,8 +183,12 @@ public class TrabajadorControlador {
     // Método DELETE para eliminar un oficio por su ID
     @DELETE
     @Path("/{cedula}")
-    public Response eliminarTrabajador(@PathParam("cedula") int cedula) {
+    public Response eliminarTrabajador(@PathParam("cedula") String cedula) {
         try {
+            String validaCedula = Middlewares.validarEntero(cedula, "cedula");
+            if (!validaCedula.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
+            }
             boolean eliminado = trabajadorDAO.eliminar(cedula);
             if (eliminado) {
                 return Response.ok().entity("Trabajador: Eliminado EXITOSAMENTE.").build();

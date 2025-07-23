@@ -6,7 +6,7 @@ import MODELO.Oficio;
 // Importa la clase DAO que gestiona la base de datos para Oficio
 import MODELO.OficioDAO;
 // Importa el middleware de validación para Oficio
-import CONTROLADOR.MiddlewareOficio;
+import CONTROLADOR.Middlewares;
 
 import java.util.List;
 
@@ -41,48 +41,55 @@ public class OficioControlador {
     // Método GET para obtener un oficio por su ID
     @GET
     @Path("/{id}")
-    public Response getOficio(@PathParam("id") int id) {
+    public Response obtenerOficio(@PathParam("id") String id) {
         try {
+            String validaCodigo = Middlewares.validarEntero(id, "codigo");
+            if (!validaCodigo.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCodigo).build();
+            }
+
             Oficio oficio = oficioDAO.obtenerPorId(id); // Busca por ID
             if (oficio != null) {
                 return Response.ok(oficio).build(); // Retorna oficio
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                               .entity("Error: no se pudo obtener OFICIO.")
-                               .build(); // Retorna error 404
+                        .entity("Error: no se pudo obtener OFICIO.")
+                        .build(); // Retorna error 404
             }
         } catch (Exception e) {
             e.printStackTrace();
             return Response.serverError()
-                           .entity("Error: Error interno en el servidor.")
-                           .build(); // Retorna error 500
+                    .entity("Error: Error interno en el servidor.")
+                    .build(); // Retorna error 500
         }
     }
 
     // Método POST para crear un nuevo oficio
     @POST
-    public Response createOficio(Oficio oficio) {
+    public Response crearOficio(Oficio oficio) {
         try {
             // Valida el campo tipo
-            String validaTipo = MiddlewareOficio.textoValido(oficio.getTipo(), "tipo");
-            if (!validaTipo.equals("ok"))
+            String validaTipo = Middlewares.validarString(oficio.getTipo(), "tipo");
+            if (!validaTipo.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaTipo).build();
+            }
 
             // Valida el campo salario
-            String validaSalario = MiddlewareOficio.numeroMayorA0(String.valueOf(oficio.getSalario()), "salario");
-            if (!validaSalario.equals("ok"))
+            String validaSalario = Middlewares.validarDouble(String.valueOf(oficio.getSalario()), "salario");
+            if (!validaSalario.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaSalario).build();
+            }
 
             // Crea el oficio si pasa las validaciones
             boolean creado = oficioDAO.crear(oficio);
             if (creado) {
                 return Response.status(Response.Status.CREATED)
-                               .entity("Oficio: " + oficio.getTipo() + " creado con EXITO.")
-                               .build(); // Retorna código 201
+                        .entity("Oficio: " + oficio.getTipo() + " creado con EXITO.")
+                        .build(); // Retorna código 201
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                               .entity("Error: no se pudo crear OFICIO.")
-                               .build(); // Retorna error 500
+                        .entity("Error: no se pudo crear OFICIO." + oficio.getTipo() + oficio.getSalario())
+                        .build(); // Retorna error 500
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -93,27 +100,33 @@ public class OficioControlador {
     // Método PUT para actualizar un oficio existente
     @PUT
     @Path("/{id}")
-    public Response actualizarOficio(@PathParam("id") int id, Oficio oficio) {
+    public Response actualizarOficio(@PathParam("id") String id, Oficio oficio) {
         try {
             oficio.setCodigo(id); // Establece el ID al objeto que se va a actualizar
 
-            // Validaciones
-            String validaTipo = MiddlewareOficio.textoValido(oficio.getTipo(), "tipo");
-            if (!validaTipo.equals("ok"))
+            String validaCodigo = Middlewares.validarEntero(oficio.getCodigo(), "codigo");
+            if (!validaCodigo.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCodigo).build();
+            }
+
+            String validaTipo = Middlewares.validarString(oficio.getTipo(), "tipo");
+            if (!validaTipo.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaTipo).build();
+            }
 
-            String validaSalario = MiddlewareOficio.numeroMayorA0(String.valueOf(oficio.getSalario()), "salario");
-            if (!validaSalario.equals("ok"))
+            String validaSalario = Middlewares.validarDouble(String.valueOf(oficio.getSalario()), "salario");
+            if (!validaSalario.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaSalario).build();
+            }
 
-            // Actualiza si todo está bien
+            //si todo es correcto accede actualizar
             boolean actualizado = oficioDAO.actualizar(oficio);
             if (actualizado) {
                 return Response.ok().entity("Oficio: " + oficio.getTipo() + " actualizado con EXITO.").build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                               .entity("Error: oficio NO ENCONTRADO o NO ACTUALIZADO.")
-                               .build(); // Retorna error 404
+                        .entity("Error: oficio NO ENCONTRADO o NO ACTUALIZADO.")
+                        .build(); // Retorna error 404
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -124,14 +137,17 @@ public class OficioControlador {
     // Método DELETE para eliminar un oficio por su ID
     @DELETE
     @Path("/{id}")
-    public Response eliminarOficio(@PathParam("id") int id) {
+    public Response eliminarOficio(@PathParam("id") String id) {
         try {
+            String validaCodigo = Middlewares.validarEntero(id, "codigo");
+            if (!validaCodigo.equals("ok")) {return Response.status(Response.Status.BAD_REQUEST).entity(validaCodigo).build();}
+            
             boolean eliminado = oficioDAO.eliminar(id);
             if (eliminado) {
                 return Response.ok().entity("Oficio: Eliminado EXITOSAMENTE.").build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                               .entity("Error: oficio NO ENCONTRADO.").build();
+                        .entity("Error: oficio NO ENCONTRADO.").build();
             }
         } catch (Exception e) {
             e.printStackTrace();
