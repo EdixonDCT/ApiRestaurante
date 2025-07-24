@@ -118,4 +118,16 @@ public class Middlewares {
         return "ok";
     }
 
+    public static String validarUnidadBebida(String valor, String campo) {
+        if (Vacio(valor)) {
+            return "Error: " + campo + " no puede estar vacio";
+        }
+
+        String unidad = valor.toLowerCase();
+        if (!(unidad.equals("vaso") || unidad.equals("botella") || unidad.equals("lata") || unidad.equals("copa"))) {
+            return "Error: " + campo + " debe ser 'vaso', 'botella', 'lata' o 'copa'";
+        }
+
+        return "ok";
+    }
 }

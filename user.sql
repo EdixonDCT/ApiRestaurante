@@ -27,14 +27,12 @@ create table mesas (
     disponible boolean default false,
     primary key (numero)
 );
-
 create table clientes (
 	correo varchar(100) not null,
     cedula varchar(20),
     telefono varchar(20),
     primary key (correo)
 );
-
 create table comidas (
     id int auto_increment,
     nombre varchar(100) unique not null,
@@ -44,7 +42,7 @@ create table comidas (
     disponible boolean default false,
     primary key (id)
 );
-
+INSERT INTO comidas (nombre, precio, tipo) VALUES ("papitas","100","las favoritas de bruno");
 create table bebidas (
     id int auto_increment,
     nombre varchar(100) not null,
@@ -56,7 +54,7 @@ create table bebidas (
     primary key (id)
 );
 
-create table cocteles (
+create 	table cocteles (
     id int auto_increment,
     nombre varchar(100) unique not null,
     precio decimal(10,2) not null,
@@ -68,7 +66,6 @@ create table cocteles (
 create table ingredientes (
     id int auto_increment,
     nombre varchar(100) unique not null,
-    unidad varchar(50) not null,
     primary key (id)
 );
 
@@ -203,12 +200,12 @@ insert into cocteles (nombre, precio, imagen, disponible) values
 ('Bloody Mary', 15000, 'bloody.jpg', true);
 
 -- Insert para ingredientes
-insert into ingredientes (nombre, unidad) values 
-('Harina', 'g'),
-('Queso', 'g'),
-('Pollo', 'g'),
-('Tomate', 'g'),
-('Lechuga', 'g');
+insert into ingredientes (nombre) values 
+('Harina'),
+('Queso'),
+('Pollo'),
+('Tomate'),
+('Lechuga');
 
 -- Insert para ingredientes_comida
 insert into ingredientes_comida (id_ingrediente, id_comida) values 

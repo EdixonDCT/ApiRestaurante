@@ -75,7 +75,7 @@ public class OficioControlador {
             }
 
             // Valida el campo salario
-            String validaSalario = Middlewares.validarDouble(String.valueOf(oficio.getSalario()), "salario");
+            String validaSalario = Middlewares.validarDouble(oficio.getSalario(), "salario");
             if (!validaSalario.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaSalario).build();
             }
