@@ -101,9 +101,9 @@ create table caja (
     fecha_apertura date not null,
     hora_apertura time not null,
     monto_apertura decimal(10,2) not null,
-    fecha_cierre date not null,
-    hora_cierre time not null,
-    monto_cierre decimal(10,2)not null,
+    fecha_cierre date,
+    hora_cierre time,
+    monto_cierre decimal(10,2),
     cedula_trabajador varchar(20)not null,
     primary key (id),
     foreign key (cedula_trabajador) references trabajadores(cedula)
@@ -130,7 +130,7 @@ create table pedidos (
 
 create table detalle_pedido (
     id int auto_increment,
-    id_pedido int,
+    id_pedido int not null,
     id_comida int,
     cantidad_comida int,
     id_bebida int,

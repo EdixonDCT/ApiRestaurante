@@ -69,6 +69,19 @@ public class Middlewares {
         return "ok";
     }
 
+    public static String validarHora(String valor, String campo) {
+        if (Vacio(valor)) {
+            return "Error: " + campo + " no puede estar vacío";
+        }
+
+        // Expresión regular para hora militar con segundos: HH:mm:ss
+        if (!valor.matches("^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$")) {
+            return "Error: " + campo + " debe tener el formato HH:mm:ss en hora militar (00:00:00 a 23:59:59)";
+        }
+
+        return "ok";
+    }
+
     public static String validarBooleano(String valor, String campo) {
 
         if (Vacio(valor)) {
