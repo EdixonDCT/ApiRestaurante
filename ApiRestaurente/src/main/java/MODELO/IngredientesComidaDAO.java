@@ -17,16 +17,18 @@ public class IngredientesComidaDAO {
 
         try {
             conn = DBConnection.getConnection();
-            String sql = "SELECT * FROM ingredientes_comida";
+            String sql = "SELECT ic.id,ic.id_ingrediente, i.nombre AS nombre_ingrediente,ic.id_comida,c.nombre AS nombre_comida FROM ingredientes_comida AS ic INNER JOIN comidas c ON ic.id_comida = c.id INNER JOIN ingredientes i ON ic.id_ingrediente = i.id";
             prepStmt = conn.prepareStatement(sql);
             rs = prepStmt.executeQuery();
 
             while (rs.next()) {
-                IngredientesComida ic = new IngredientesComida();
-                ic.setId(rs.getString("id"));
-                ic.setIdIngrediente(rs.getString("id_ingrediente"));
-                ic.setIdComida(rs.getString("id_comida"));
-                lista.add(ic);
+                IngredientesComida ingCom = new IngredientesComida();
+                ingCom.setId(rs.getString("id"));
+                ingCom.setIdIngrediente(rs.getString("id_ingrediente"));
+                ingCom.setNombreIngrediente(rs.getString("nombre_ingrediente"));
+                ingCom.setIdComida(rs.getString("id_comida"));
+                ingCom.setNombreComida(rs.getString("nombre_comida"));
+                lista.add(ingCom);
             }
 
         } catch (Exception e) {
@@ -47,20 +49,22 @@ public class IngredientesComidaDAO {
 
     // MÉTODO: Obtener un registro por ID
     public IngredientesComida obtenerPorId(String id) {
-        IngredientesComida ic = null;
+        IngredientesComida ingCom = null;
 
         try {
             conn = DBConnection.getConnection();
-            String sql = "SELECT * FROM ingredientes_comida WHERE id = ?";
+            String sql = "SELECT ic.id, ic.id_ingrediente, i.nombre AS nombre_ingrediente, ic.id_comida, c.nombre AS nombre_comida FROM ingredientes_comida AS ic INNER JOIN comidas c ON ic.id_comida = c.id INNER JOIN ingredientes i ON ic.id_ingrediente = i.id WHERE ic.id = ?";
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setInt(1, Integer.parseInt(id));
             rs = prepStmt.executeQuery();
 
             if (rs.next()) {
-                ic = new IngredientesComida();
-                ic.setId(rs.getString("id"));
-                ic.setIdIngrediente(rs.getString("id_ingrediente"));
-                ic.setIdComida(rs.getString("id_comida"));
+                ingCom = new IngredientesComida();
+                ingCom.setId(rs.getString("id"));
+                ingCom.setIdIngrediente(rs.getString("id_ingrediente"));
+                ingCom.setNombreIngrediente(rs.getString("nombre_ingrediente"));
+                ingCom.setIdComida(rs.getString("id_comida"));
+                ingCom.setNombreComida(rs.getString("nombre_comida"));
             }
 
         } catch (Exception e) {
@@ -76,19 +80,19 @@ public class IngredientesComidaDAO {
             }
         }
 
-        return ic;
+        return ingCom;
     }
 
     // MÉTODO: Crear un nuevo registro
-    public boolean crear(IngredientesComida ic) {
+    public boolean crear(IngredientesComida ingCom) {
         boolean creado = false;
 
         try {
             conn = DBConnection.getConnection();
             String sql = "INSERT INTO ingredientes_comida (id_ingrediente, id_comida) VALUES (?, ?)";
             prepStmt = conn.prepareStatement(sql);
-            prepStmt.setInt(1, Integer.parseInt(ic.getIdIngrediente()));
-            prepStmt.setInt(2, Integer.parseInt(ic.getIdComida()));
+            prepStmt.setInt(1, Integer.parseInt(ingCom.getIdIngrediente()));
+            prepStmt.setInt(2, Integer.parseInt(ingCom.getIdComida()));
 
             int filas = prepStmt.executeUpdate();
             creado = filas > 0;

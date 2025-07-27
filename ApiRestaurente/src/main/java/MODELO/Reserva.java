@@ -2,6 +2,7 @@ package MODELO;
 
 public class Reserva {
     private String id;
+    private String cantidadTentativa;
     private String precio;
     private String fecha;
     private String fechaTentativa;
@@ -14,6 +15,14 @@ public class Reserva {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getCantidadTentativa() {
+        return cantidadTentativa;
+    }
+
+    public void setCantidadTentativa(String cantidadTentativa) {
+        this.cantidadTentativa = cantidadTentativa;
     }
 
     public String getPrecio() {

@@ -16,16 +16,18 @@ public class IngredientesCoctelDAO {
 
         try {
             conn = DBConnection.getConnection();
-            String sql = "SELECT * FROM ingredientes_coctel";
+            String sql = "SELECT ic.id,ic.id_ingrediente, i.nombre AS nombre_ingrediente,ic.id_coctel,c.nombre AS nombre_coctel FROM ingredientes_coctel AS ic INNER JOIN cocteles c ON ic.id_coctel = c.id INNER JOIN ingredientes i ON ic.id_ingrediente = i.id";
             prepStmt = conn.prepareStatement(sql);
             rs = prepStmt.executeQuery();
 
             while (rs.next()) {
-                IngredientesCoctel ic = new IngredientesCoctel();
-                ic.setId(rs.getString("id"));
-                ic.setIdIngrediente(rs.getString("id_ingrediente"));
-                ic.setIdCoctel(rs.getString("id_coctel"));
-                lista.add(ic);
+                IngredientesCoctel ingCoc = new IngredientesCoctel();
+                ingCoc.setId(rs.getString("id"));
+                ingCoc.setIdIngrediente(rs.getString("id_ingrediente"));
+                ingCoc.setNombreIngrediente(rs.getString("nombre_ingrediente"));
+                ingCoc.setIdCoctel(rs.getString("id_coctel"));
+                ingCoc.setNombreCoctel(rs.getString("nombre_coctel"));
+                lista.add(ingCoc);
             }
 
         } catch (Exception e) {
@@ -45,20 +47,22 @@ public class IngredientesCoctelDAO {
     }
 
     public IngredientesCoctel obtenerPorId(String id) {
-        IngredientesCoctel ic = null;
+        IngredientesCoctel ingCoc = null;
 
         try {
             conn = DBConnection.getConnection();
-            String sql = "SELECT * FROM ingredientes_coctel WHERE id = ?";
+            String sql = "SELECT ic.id,ic.id_ingrediente, i.nombre AS nombre_ingrediente,ic.id_coctel,c.nombre AS nombre_coctel FROM ingredientes_coctel AS ic INNER JOIN cocteles c ON ic.id_coctel = c.id INNER JOIN ingredientes i ON ic.id_ingrediente = i.id WHERE ic.id = ?";
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setInt(1, Integer.parseInt(id));
             rs = prepStmt.executeQuery();
 
             if (rs.next()) {
-                ic = new IngredientesCoctel();
-                ic.setId(rs.getString("id"));
-                ic.setIdIngrediente(rs.getString("id_ingrediente"));
-                ic.setIdCoctel(rs.getString("id_coctel"));
+                ingCoc = new IngredientesCoctel();
+                ingCoc.setId(rs.getString("id"));
+                ingCoc.setIdIngrediente(rs.getString("id_ingrediente"));
+                ingCoc.setNombreIngrediente(rs.getString("nombre_ingrediente"));
+                ingCoc.setIdCoctel(rs.getString("id_coctel"));
+                ingCoc.setNombreCoctel(rs.getString("nombre_coctel"));
             }
 
         } catch (Exception e) {
@@ -74,18 +78,18 @@ public class IngredientesCoctelDAO {
             }
         }
 
-        return ic;
+        return ingCoc;
     }
 
-    public boolean crear(IngredientesCoctel ic) {
+    public boolean crear(IngredientesCoctel ingCoc) {
         boolean creado = false;
 
         try {
             conn = DBConnection.getConnection();
             String sql = "INSERT INTO ingredientes_coctel (id_ingrediente, id_coctel) VALUES (?, ?)";
             prepStmt = conn.prepareStatement(sql);
-            prepStmt.setInt(1, Integer.parseInt(ic.getIdIngrediente()));
-            prepStmt.setInt(2, Integer.parseInt(ic.getIdCoctel()));
+            prepStmt.setInt(1, Integer.parseInt(ingCoc.getIdIngrediente()));
+            prepStmt.setInt(2, Integer.parseInt(ingCoc.getIdCoctel()));
 
             int filas = prepStmt.executeUpdate();
             creado = filas > 0;

@@ -21,6 +21,7 @@ public class ReservaDAO {
             while (rs.next()) {
                 Reserva reserva = new Reserva();
                 reserva.setId(rs.getString("id"));
+                reserva.setCantidadTentativa(rs.getString("cantidad_tentativa"));
                 reserva.setPrecio(rs.getString("precio"));
                 reserva.setFecha(rs.getString("fecha"));
                 reserva.setFechaTentativa(rs.getString("fecha_tentativa"));
@@ -52,6 +53,7 @@ public class ReservaDAO {
             if (rs.next()) {
                 reserva = new Reserva();
                 reserva.setId(rs.getString("id"));
+                reserva.setCantidadTentativa(rs.getString("cantidad_tentativa"));
                 reserva.setPrecio(rs.getString("precio"));
                 reserva.setFecha(rs.getString("fecha"));
                 reserva.setFechaTentativa(rs.getString("fecha_tentativa"));
@@ -75,10 +77,10 @@ public class ReservaDAO {
         boolean creado = false;
         try {
             conn = DBConnection.getConnection();
-            String sql = "INSERT INTO reservas (precio, fecha, fecha_tentativa, hora_tentativa) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO reservas (cantidad_tentativa,precio, fecha_tentativa, hora_tentativa) VALUES (?,?, ?, ?)";
             prepStmt = conn.prepareStatement(sql);
-            prepStmt.setBigDecimal(1, new java.math.BigDecimal(reserva.getPrecio()));
-            prepStmt.setString(2, reserva.getFecha());
+            prepStmt.setInt(1, Integer.parseInt(reserva.getCantidadTentativa()));
+            prepStmt.setDouble(2, Double.parseDouble(reserva.getPrecio()));
             prepStmt.setString(3, reserva.getFechaTentativa());
             prepStmt.setString(4, reserva.getHoraTentativa());
             int filas = prepStmt.executeUpdate();
@@ -100,10 +102,10 @@ public class ReservaDAO {
         boolean actualizado = false;
         try {
             conn = DBConnection.getConnection();
-            String sql = "UPDATE reservas SET precio = ?, fecha = ?, fecha_tentativa = ?, hora_tentativa = ? WHERE id = ?";
+            String sql = "UPDATE reservas SET cantidad_tentativa = ?,precio = ?, fecha_tentativa = ?, hora_tentativa = ? WHERE id = ?";
             prepStmt = conn.prepareStatement(sql);
-            prepStmt.setBigDecimal(1, new java.math.BigDecimal(reserva.getPrecio()));
-            prepStmt.setString(2, reserva.getFecha());
+            prepStmt.setInt(1, Integer.parseInt(reserva.getCantidadTentativa()));
+            prepStmt.setDouble(2, Double.parseDouble(reserva.getPrecio()));
             prepStmt.setString(3, reserva.getFechaTentativa());
             prepStmt.setString(4, reserva.getHoraTentativa());
             prepStmt.setInt(5, Integer.parseInt(reserva.getId()));

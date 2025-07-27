@@ -54,6 +54,24 @@ public class Middlewares {
         }
         return "ok";
     }
+        public static String validarEnteroNulo(String valor, String campo) {
+        if (Vacio(valor)) {
+            return "ok"; // Si está vacío, retorna mensaje de ok porque es para los que puedan ser null
+        }
+        // Validar solo enteros positivos (sin punto)
+        if (!valor.matches("^-?\\d+$")) {
+            return "Error: " + campo + " debe ser un numero entero valido";
+        }
+        try {
+            int numero = Integer.parseInt(valor);
+            if (numero <= 0) {
+                return "Error: " + campo + " debe ser mayor a 0";
+            }
+        } catch (NumberFormatException e) {
+            return "Error: " + campo + " debe ser un número entero válido";
+        }
+        return "ok";
+    }
 
     public static String validarFecha(String valor, String campo) {
         if (Vacio(valor)) {

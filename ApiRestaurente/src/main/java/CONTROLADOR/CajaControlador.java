@@ -2,6 +2,7 @@ package CONTROLADOR;
 
 import MODELO.Caja;
 import MODELO.CajaDAO;
+import MODELO.Trabajador;
 import CONTROLADOR.Middlewares;
 
 import javax.ws.rs.*;
@@ -13,16 +14,16 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 public class CajaControlador {
 
-    private CajaDAO dao = new CajaDAO();
+    private CajaDAO cajaDAO = new CajaDAO();
 
     @GET
     public Response listar() {
         try {
-            List<Caja> lista = dao.listarTodos();
+            List<Caja> lista = cajaDAO.listarTodos();
             return Response.ok(lista).build();
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno en el servidor").build();
+            return Response.serverError().build();
         }
     }
 
@@ -35,9 +36,9 @@ public class CajaControlador {
                 return Response.status(400).entity(validacion).build();
             }
 
-            Caja caja = dao.obtenerPorId(id);
+            Caja caja = cajaDAO.obtenerPorId(id);
             if (caja == null) {
-                return Response.status(404).entity("Error: Caja no encontrada.").build();
+                return Response.status(400).entity("Error: no se puede obtener CAJA.").build();
             }
 
             return Response.ok(caja).build();
@@ -50,36 +51,24 @@ public class CajaControlador {
     @POST
     public Response crear(Caja caja) {
         try {
-            String v1 = Middlewares.validarFecha(caja.getFechaApertura(), "fecha_apertura");
-            if (!v1.equals("ok")) return Response.status(400).entity(v1).build();
+            String validaMontoApertura = Middlewares.validarDouble(caja.getMontoApertura(), "monto_apertura");
+            if (!validaMontoApertura.equals("ok"))
+                return Response.status(400).entity(validaMontoApertura).build();
 
-            String v2 = Middlewares.validarHora(caja.getHoraApertura(), "hora_apertura");
-            if (!v2.equals("ok")) return Response.status(400).entity(v2).build();
+            String validaCedulaTrabajador = Middlewares.validarEntero(caja.getCedulaTrabajador(), "cedula_trabajador");
+            if (!validaCedulaTrabajador.equals("ok"))
+                return Response.status(400).entity(validaCedulaTrabajador).build();
 
-            String v3 = Middlewares.validarDouble(caja.getMontoApertura(), "monto_apertura");
-            if (!v3.equals("ok")) return Response.status(400).entity(v3).build();
+            boolean creado = cajaDAO.crear(caja);
+            if (creado)
+                return Response.status(201).entity("Caja: apertura creada con EXITO").build();
 
-            String v4 = Middlewares.validarFecha(caja.getFechaCierre(), "fecha_cierre");
-            if (!v4.equals("ok")) return Response.status(400).entity(v4).build();
-
-            String v5 = Middlewares.validarHora(caja.getHoraCierre(), "hora_cierre");
-            if (!v5.equals("ok")) return Response.status(400).entity(v5).build();
-
-            String v6 = Middlewares.validarDouble(caja.getMontoCierre(), "monto_cierre");
-            if (!v6.equals("ok")) return Response.status(400).entity(v6).build();
-
-            String v7 = Middlewares.validarEntero(caja.getCedulaTrabajador(), "cedula_trabajador");
-            if (!v7.equals("ok")) return Response.status(400).entity(v7).build();
-
-            Integer.parseInt(caja.getCedulaTrabajador()); // Forzamos parseo seguro
-
-            boolean creado = dao.crear(caja);
-            if (creado) return Response.status(201).entity("Caja creada con éxito").build();
-
-            return Response.status(500).entity("Error interno al crear caja").build();
+            return Response.status(400)
+                    .entity("Error: no se pudo crear TRABAJADOR.")
+                    .build();
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno en el servidor").build();
+            return Response.serverError().entity("Error: Error interno en el servidor.").build();
         }
     }
 
@@ -89,39 +78,100 @@ public class CajaControlador {
         try {
             caja.setId(id);
 
-            String v0 = Middlewares.validarEntero(id, "id");
-            if (!v0.equals("ok")) return Response.status(400).entity(v0).build();
+            String validaID = Middlewares.validarEntero(id, "id");
+            if (!validaID.equals("ok"))
+                return Response.status(400).entity(validaID).build();
 
-            String v1 = Middlewares.validarFecha(caja.getFechaApertura(), "fecha_apertura");
-            if (!v1.equals("ok")) return Response.status(400).entity(v1).build();
+            String validaFechaApertura = Middlewares.validarFecha(caja.getFechaApertura(), "fecha_apertura");
+            if (!validaFechaApertura.equals("ok"))
+                return Response.status(400).entity(validaFechaApertura).build();
 
-            String v2 = Middlewares.validarHora(caja.getHoraApertura(), "hora_apertura");
-            if (!v2.equals("ok")) return Response.status(400).entity(v2).build();
+            String validaHoraApertura = Middlewares.validarHora(caja.getHoraApertura(), "hora_apertura");
+            if (!validaHoraApertura.equals("ok"))
+                return Response.status(400).entity(validaHoraApertura).build();
 
-            String v3 = Middlewares.validarDouble(caja.getMontoApertura(), "monto_apertura");
-            if (!v3.equals("ok")) return Response.status(400).entity(v3).build();
+            String validaMontoApertura = Middlewares.validarDouble(caja.getMontoApertura(), "monto_apertura");
+            if (!validaMontoApertura.equals("ok"))
+                return Response.status(400).entity(validaMontoApertura).build();
 
-            String v4 = Middlewares.validarFecha(caja.getFechaCierre(), "fecha_cierre");
-            if (!v4.equals("ok")) return Response.status(400).entity(v4).build();
+            String validaFechaCierre = Middlewares.validarFecha(caja.getFechaCierre(), "fecha_cierre");
+            if (!validaFechaCierre.equals("ok"))
+                return Response.status(400).entity(validaFechaCierre).build();
 
-            String v5 = Middlewares.validarHora(caja.getHoraCierre(), "hora_cierre");
-            if (!v5.equals("ok")) return Response.status(400).entity(v5).build();
+            String validaHoraCierre = Middlewares.validarHora(caja.getHoraCierre(), "hora_cierre");
+            if (!validaHoraCierre.equals("ok"))
+                return Response.status(400).entity(validaHoraCierre).build();
 
-            String v6 = Middlewares.validarDouble(caja.getMontoCierre(), "monto_cierre");
-            if (!v6.equals("ok")) return Response.status(400).entity(v6).build();
+            String validaMontoCierre = Middlewares.validarDouble(caja.getMontoCierre(), "monto_cierre");
+            if (!validaMontoCierre.equals("ok"))
+                return Response.status(400).entity(validaMontoCierre).build();
 
-            String v7 = Middlewares.validarEntero(caja.getCedulaTrabajador(), "cedula_trabajador");
-            if (!v7.equals("ok")) return Response.status(400).entity(v7).build();
+            String validaCedulaTrabajador = Middlewares.validarEntero(caja.getCedulaTrabajador(), "cedula_trabajador");
+            if (!validaCedulaTrabajador.equals("ok"))
+                return Response.status(400).entity(validaCedulaTrabajador).build();
 
-            Integer.parseInt(caja.getCedulaTrabajador());
+            boolean actualizado = cajaDAO.actualizar(caja);
+            if (actualizado)
+                return Response.ok("Caja: actualizada con EXITO.").build();
 
-            boolean actualizado = dao.actualizar(caja);
-            if (actualizado) return Response.ok("Caja actualizada correctamente").build();
-
-            return Response.status(404).entity("Caja no encontrada o no actualizada").build();
+            return Response.status(404).entity("Caja: caja NO ENCONTRADO o NO ACTUALIZADO.").build();
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno en el servidor").build();
+            return Response.serverError().entity("Error: error interno en el servidor.").build();
+        }
+    }
+
+    @PATCH
+    @Path("/{id}")
+    public Response parchearCierre(@PathParam("id") String id, Caja caja){
+        try {
+            caja.setId(id);
+
+            String validaID = Middlewares.validarEntero(id, "id");
+            if (!validaID.equals("ok"))
+                return Response.status(400).entity(validaID).build();
+        
+            String validaMontoCierre = Middlewares.validarDouble(caja.getMontoCierre(), "monto_apertura");
+            if (!validaMontoCierre.equals("ok"))
+                return Response.status(400).entity(validaMontoCierre).build();
+
+            boolean parchear = cajaDAO.actualizarCierre(caja);
+            if (parchear)
+                return Response.status(201).entity("Caja: cierre parcheado con EXITO").build();
+
+            return Response.status(400)
+                    .entity("Error: no se pudo parchear CAJA de CIERRE.")
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+        }
+    }
+
+    @PATCH
+    @Path("/apertura/{id}")
+    public Response parchearApertura(@PathParam("id") String id, Caja caja){
+        try {
+            caja.setId(id);
+
+            String validaID = Middlewares.validarEntero(id, "id");
+            if (!validaID.equals("ok"))
+                return Response.status(400).entity(validaID).build();
+
+            String validaMontoApertura = Middlewares.validarDouble(caja.getMontoApertura(), "monto_apertura");
+            if (!validaMontoApertura.equals("ok"))
+                return Response.status(400).entity(validaMontoApertura).build();
+
+            boolean parchear = cajaDAO.actualizarApertura(caja);
+            if (parchear)
+                return Response.status(201).entity("Caja: cierre parcheado con EXITO").build();
+
+            return Response.status(400)
+                    .entity("Error: no se pudo parchear CAJA de APERTURA.")
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().entity("Error: Error interno en el servidor.").build();
         }
     }
 
@@ -129,18 +179,18 @@ public class CajaControlador {
     @Path("/{id}")
     public Response eliminar(@PathParam("id") String id) {
         try {
-            String validacion = Middlewares.validarEntero(id, "id");
-            if (!validacion.equals("ok")) return Response.status(400).entity(validacion).build();
+            String validaId = Middlewares.validarEntero(id, "id");
+            if (!validaId.equals("ok"))
+                return Response.status(400).entity(validaId).build();
 
-            Integer.parseInt(id);
+            boolean eliminado = cajaDAO.eliminar(id);
+            if (eliminado)
+                return Response.ok("Caja: eliminado EXITOSAMENTE.").build();
 
-            boolean eliminado = dao.eliminar(id);
-            if (eliminado) return Response.ok("Caja eliminada exitosamente").build();
-
-            return Response.status(404).entity("Caja no encontrada").build();
+            return Response.status(404).entity("Error: caja NO ENCONTRADO.").build();
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno en el servidor").build();
+            return Response.serverError().entity("Error: Error interno en el servidor.").build();
         }
     }
 }

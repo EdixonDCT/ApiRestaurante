@@ -17,14 +17,18 @@ public class ImagenControlador {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response subirImagen(@FormDataParam("imagen") InputStream archivoInputStream,
-                                 @FormDataParam("imagen") FormDataContentDisposition fileDetail) {
-        String rutaImagenes = contexto.getRealPath("/IMAGENES"); // Carpeta dentro de Web Pages
+            @FormDataParam("imagen") FormDataContentDisposition fileDetail) {
+        String rutaBase = contexto.getRealPath("/"); // Te da algo como: .../target/ApiRestaurente-1.0-SNAPSHOT/
+        File carpetaProyecto = new File(rutaBase).getParentFile().getParentFile(); // Sube 2 carpetas (fuera del target)
+        String rutaImagenes = new File(carpetaProyecto, "src/main/webapp/IMAGENES").getAbsolutePath();
         String nombreOriginal = fileDetail.getFileName();
         String nombreFinal = UUID.randomUUID().toString() + "_" + nombreOriginal;
 
         try {
             File carpeta = new File(rutaImagenes);
-            if (!carpeta.exists()) carpeta.mkdirs();
+            if (!carpeta.exists()) {
+                carpeta.mkdirs();
+            }
 
             File archivoDestino = new File(carpeta, nombreFinal);
             try (OutputStream out = new FileOutputStream(archivoDestino)) {

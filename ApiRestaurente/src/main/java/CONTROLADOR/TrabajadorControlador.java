@@ -153,7 +153,7 @@ public class TrabajadorControlador {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            return Response.serverError().entity("Error: error interno en el servidor.").build();
         }
     }
 
@@ -191,7 +191,7 @@ public class TrabajadorControlador {
             }
             boolean eliminado = trabajadorDAO.eliminar(cedula);
             if (eliminado) {
-                return Response.ok().entity("Trabajador: Eliminado EXITOSAMENTE.").build();
+                return Response.ok().entity("Trabajador: eliminado EXITOSAMENTE.").build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
                                .entity("Error: trabajador NO ENCONTRADO.").build();

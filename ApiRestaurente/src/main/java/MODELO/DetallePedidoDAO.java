@@ -96,13 +96,50 @@ public class DetallePedidoDAO {
             String sql = "INSERT INTO detalle_pedido (id_pedido, id_comida, cantidad_comida, id_bebida, cantidad_bebida, id_coctel, cantidad_coctel) " +
                          "VALUES (?, ?, ?, ?, ?, ?, ?)";
             prepStmt = conn.prepareStatement(sql);
-            prepStmt.setInt(1, Integer.parseInt(d.getId_pedido()));
-            prepStmt.setInt(2, Integer.parseInt(d.getId_comida()));
-            prepStmt.setInt(3, Integer.parseInt(d.getCantidad_comida()));
-            prepStmt.setInt(4, Integer.parseInt(d.getId_bebida()));
-            prepStmt.setInt(5, Integer.parseInt(d.getCantidad_bebida()));
-            prepStmt.setInt(6, Integer.parseInt(d.getId_coctel()));
-            prepStmt.setInt(7, Integer.parseInt(d.getCantidad_coctel()));
+prepStmt.setInt(1, Integer.parseInt(d.getId_pedido())); // obligatorio
+
+// id_comida
+if (d.getId_comida() != null && !d.getId_comida().isEmpty()) {
+    prepStmt.setInt(2, Integer.parseInt(d.getId_comida()));
+} else {
+    prepStmt.setNull(2, java.sql.Types.INTEGER);
+}
+
+// cantidad_comida
+if (d.getCantidad_comida() != null && !d.getCantidad_comida().isEmpty()) {
+    prepStmt.setInt(3, Integer.parseInt(d.getCantidad_comida()));
+} else {
+    prepStmt.setNull(3, java.sql.Types.INTEGER);
+}
+
+// id_bebida
+if (d.getId_bebida() != null && !d.getId_bebida().isEmpty()) {
+    prepStmt.setInt(4, Integer.parseInt(d.getId_bebida()));
+} else {
+    prepStmt.setNull(4, java.sql.Types.INTEGER);
+}
+
+// cantidad_bebida
+if (d.getCantidad_bebida() != null && !d.getCantidad_bebida().isEmpty()) {
+    prepStmt.setInt(5, Integer.parseInt(d.getCantidad_bebida()));
+} else {
+    prepStmt.setNull(5, java.sql.Types.INTEGER);
+}
+
+// id_coctel
+if (d.getId_coctel() != null && !d.getId_coctel().isEmpty()) {
+    prepStmt.setInt(6, Integer.parseInt(d.getId_coctel()));
+} else {
+    prepStmt.setNull(6, java.sql.Types.INTEGER);
+}
+
+// cantidad_coctel
+if (d.getCantidad_coctel() != null && !d.getCantidad_coctel().isEmpty()) {
+    prepStmt.setInt(7, Integer.parseInt(d.getCantidad_coctel()));
+} else {
+    prepStmt.setNull(7, java.sql.Types.INTEGER);
+}
+
 
             int filas = prepStmt.executeUpdate();
             creado = filas > 0;

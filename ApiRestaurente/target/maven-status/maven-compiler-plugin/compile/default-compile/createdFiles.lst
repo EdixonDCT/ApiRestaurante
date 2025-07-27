@@ -18,6 +18,7 @@ MODELO\Coctel.class
 MODELO\Pedido.class
 CONTROLADOR\ClienteControlador.class
 MODELO\Ingrediente.class
+CONTROLADOR\Servicios.class
 CONTROLADOR\BebidaControlador.class
 CONTROLADOR\ComidaControlador.class
 MODELO\BebidaDAO.class

@@ -13,7 +13,7 @@
       background-color: #fff;
       padding: 25px;
       border-radius: 10px;
-      width: 300px;
+      width: 320px;
       margin: 50px auto;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
@@ -34,10 +34,12 @@
       margin-top: 20px;
       font-weight: bold;
       color: #333;
+      white-space: pre-wrap;
     }
     #vistaPrevia {
       margin-top: 10px;
       max-width: 100%;
+      display: none;
     }
   </style>
 </head>
@@ -49,13 +51,32 @@
       <button type="submit">Subir</button>
     </form>
     <div id="resultado"></div>
-    <img id="vistaPrevia" style="display:none;" />
+    <img id="vistaPrevia" />
   </div>
 
   <script>
+    const esperar = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    async function fetchConReintentos(url, intentos = 30, delay = 1000) {
+      for (let i = 0; i < intentos; i++) {
+        try {
+          const res = await fetch(url, { method: 'HEAD' });
+          if (res.ok) return url;
+        } catch (_) {}
+        await esperar(delay);
+      }
+      throw new Error("La imagen aún no está disponible después de varios intentos.");
+    }
+
     document.getElementById("formImagen").addEventListener("submit", async function (e) {
       e.preventDefault();
+
+      const img = document.getElementById("vistaPrevia");
+      img.style.display = "none";
+      img.src = ""; // limpiar imagen previa
+
       const formData = new FormData(this);
+      document.getElementById("resultado").textContent = "⬆️ Subiendo imagen...";
 
       try {
         const res = await fetch("http://localhost:8080/ApiRestaurente/api/subirimagen", {
@@ -64,20 +85,22 @@
         });
 
         const json = await res.json();
-        console.log(json);
-        if (res.ok) {
-          document.getElementById("resultado").textContent =
-            "✅ Imagen subida. Ruta: " + json.url;
-          document.getElementById("vistaPrevia").src = json.url;
-          document.getElementById("vistaPrevia").style.display = "block";
-          console.log("Ruta guardada:", json.url);
-        } else {
-          throw new Error(json.error || "Error al subir imagen");
+        if (!res.ok || !json.url) {
+          throw new Error(json.error || "Error al subir la imagen.");
         }
+
+        document.getElementById("resultado").textContent = "⌛ Esperando a que la imagen esté disponible...";
+
+        const urlDisponible = await fetchConReintentos(json.url);
+
+        img.src = urlDisponible;
+        img.style.display = "block";
+
+        document.getElementById("resultado").textContent =
+          "✅ Imagen subida correctamente:\nNombre: " + json.nombre + "\nURL: " + json.url;
+
       } catch (err) {
         document.getElementById("resultado").textContent = "❌ Error: " + err.message;
-        document.getElementById("vistaPrevia").style.display = "none";
-        console.error("❌ Error al subir imagen:", err);
       }
     });
   </script>

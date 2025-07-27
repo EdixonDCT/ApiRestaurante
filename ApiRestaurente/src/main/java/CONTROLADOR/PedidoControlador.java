@@ -32,9 +32,9 @@ public class PedidoControlador {
     @Path("/{id}")
     public Response obtenerPedido(@PathParam("id") String id) {
         try {
-            String r = Middlewares.validarEntero(id, "ID");
-            if (!r.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
+            String validaId = Middlewares.validarEntero(id, "ID");
+            if (!validaId.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
             }
 
             Pedido pedido = pedidoDAO.obtenerPorId(id);
@@ -54,41 +54,27 @@ public class PedidoControlador {
     @POST
     public Response crearPedido(Pedido pedido) {
         try {
-            // Validaciones una por una
-            String r;
-
-            r = Middlewares.validarEntero(pedido.getNumeroMesa(), "Número de mesa");
-            if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
-
-            r = Middlewares.validarFecha(pedido.getFecha(), "Fecha");
-            if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
-
-            r = Middlewares.validarHora(pedido.getHora(), "Hora");
-            if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
-
-            r = Middlewares.validarDouble(pedido.getValorTotal(), "Valor total");
-            if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
-
-            if (!pedido.getIdCaja().isEmpty()) {
-                r = Middlewares.validarEntero(pedido.getIdCaja(), "ID caja");
-                if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
+            String validaNumeroMesa = Middlewares.validarEntero(pedido.getNumeroMesa(), "numero mesa");
+            if (!validaNumeroMesa.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroMesa).build();
+            }
+            String validaIdCaja = Middlewares.validarEntero(pedido.getIdCaja(), "id caja");
+            if (!validaIdCaja.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaIdCaja).build();
+            }
+            String validaNumeroClientes = Middlewares.validarEntero(pedido.getNumeroClientes(), "numero de clientes");
+            if (!validaNumeroClientes.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroClientes).build();
+            }
+            String validaCorreoCliente = Middlewares.validarCorreo(pedido.getCorreoCliente(), "correo cliente");
+            if (!validaCorreoCliente.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCorreoCliente).build();
+            }
+            String validaMetodoPago = Middlewares.validarString(pedido.getMetodoPago(), "numero mesa");
+            if (!validaMetodoPago.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaMetodoPago).build();
             }
 
-            r = Middlewares.validarEntero(pedido.getNumeroClientes(), "Número de clientes");
-            if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
-
-            if (!pedido.getIdReserva().isEmpty()) {
-                r = Middlewares.validarEntero(pedido.getIdReserva(), "ID reserva");
-                if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
-            }
-
-            r = Middlewares.validarCorreo(pedido.getCorreoCliente(), "Correo cliente");
-            if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
-
-            r = Middlewares.validarString(pedido.getMetodoPago(), "Método de pago");
-            if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
-
-            // Si pasa las validaciones, crear
             boolean creado = pedidoDAO.crear(pedido);
             if (creado) {
                 return Response.status(Response.Status.CREATED)
@@ -104,53 +90,84 @@ public class PedidoControlador {
         }
     }
 
+    @POST
+    @Path("/reserva")
+    public Response crearPedidoReserva(Pedido pedido) {
+        try {
+            String validaNumeroMesa = Middlewares.validarEntero(pedido.getNumeroMesa(), "numero mesa");
+            if (!validaNumeroMesa.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroMesa).build();
+            }
+            String validaIdReserva = Middlewares.validarEntero(pedido.getIdReserva(), "numero de clientes");
+            if (!validaIdReserva.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaIdReserva).build();
+            }
+            String validaCorreoCliente = Middlewares.validarCorreo(pedido.getCorreoCliente(), "correo cliente");
+            if (!validaCorreoCliente.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCorreoCliente).build();
+            }
+
+            boolean creado = pedidoDAO.crearReserva(pedido);
+            if (creado) {
+                return Response.status(Response.Status.CREATED)
+                        .entity("Pedido: reserva creada EXITOSAMENTE.").build();
+            } else {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("Error: no se pudo crear el pedido reserva.").build();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().entity("Error interno en el servidor.").build();
+        }
+    }
+
     @PUT
     @Path("/{id}")
     public Response actualizarPedido(@PathParam("id") String id, Pedido pedido) {
         try {
             pedido.setId(id); // Asegurar que el ID venga desde la URL
 
-            // Validaciones una por una
-            String r;
-
-            r = Middlewares.validarEntero(pedido.getId(), "ID");
-            if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
-
-            r = Middlewares.validarEntero(pedido.getNumeroMesa(), "Número de mesa");
-            if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
-
-            r = Middlewares.validarFecha(pedido.getFecha(), "Fecha");
-            if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
-
-            r = Middlewares.validarHora(pedido.getHora(), "Hora");
-            if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
-
-            r = Middlewares.validarDouble(pedido.getValorTotal(), "Valor total");
-            if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
-
-            if (!pedido.getIdCaja().isEmpty()) {
-                r = Middlewares.validarEntero(pedido.getIdCaja(), "ID caja");
-                if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
+            String validaNumeroMesa = Middlewares.validarEntero(pedido.getNumeroMesa(), "numero mesa");
+            if (!validaNumeroMesa.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroMesa).build();
+            }
+            String validaFecha = Middlewares.validarFecha(pedido.getFecha(), "fecha");
+            if (!validaFecha.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaFecha).build();
+            }
+            String validaHora = Middlewares.validarHora(pedido.getHora(), "hora");
+            if (!validaHora.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaHora).build();
+            }
+            String validaIdCaja = Middlewares.validarEntero(pedido.getIdCaja(), "id caja");
+            if (!validaIdCaja.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaIdCaja).build();
+            }
+            String validaNumeroClientes = Middlewares.validarEntero(pedido.getNumeroClientes(), "numero de clientes");
+            if (!validaNumeroClientes.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroClientes).build();
+            }
+            String validaIdReserva = Middlewares.validarEntero(pedido.getIdReserva(), "id cliente");
+            if (!validaIdReserva.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaIdReserva).build();
+            }
+            String validaCorreoCliente = Middlewares.validarCorreo(pedido.getCorreoCliente(), "correo cliente");
+            if (!validaCorreoCliente.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCorreoCliente).build();
+            }
+            String validaMetodoPago = Middlewares.validarString(pedido.getMetodoPago(), "numero mesa");
+            if (!validaMetodoPago.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaMetodoPago).build();
+            }
+            String validaId = Middlewares.validarEntero(pedido.getId(), "id");
+            if (!validaId.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
             }
 
-            r = Middlewares.validarEntero(pedido.getNumeroClientes(), "Número de clientes");
-            if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
-
-            if (!pedido.getIdReserva().isEmpty()) {
-                r = Middlewares.validarEntero(pedido.getIdReserva(), "ID reserva");
-                if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
-            }
-
-            r = Middlewares.validarCorreo(pedido.getCorreoCliente(), "Correo cliente");
-            if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
-
-            r = Middlewares.validarString(pedido.getMetodoPago(), "Método de pago");
-            if (!r.equals("ok")) return Response.status(Response.Status.BAD_REQUEST).entity(r).build();
-
-            // Actualizar
             boolean actualizado = pedidoDAO.actualizar(pedido);
             if (actualizado) {
-                return Response.ok().entity("Pedido actualizado exitosamente.").build();
+                return Response.ok().entity("Pedido: actualizado EXITOSAMENTE.").build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("Error: pedido no encontrado o no actualizado.").build();
@@ -162,6 +179,72 @@ public class PedidoControlador {
         }
     }
 
+    @PUT
+    @Path("/reserva/{id}")
+    public Response actualizarPedidoReserva(@PathParam("id") String id, Pedido pedido) {
+        try {
+            pedido.setId(id); // Asegurar que el ID venga desde la URL
+
+            String validaNumeroMesa = Middlewares.validarEntero(pedido.getNumeroMesa(), "numero mesa");
+            if (!validaNumeroMesa.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroMesa).build();
+            }
+            String validaIdCaja = Middlewares.validarEntero(pedido.getIdCaja(), "id caja");
+            if (!validaIdCaja.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaIdCaja).build();
+            }
+            String validaNumeroClientes = Middlewares.validarEntero(pedido.getNumeroClientes(), "numero de clientes");
+            if (!validaNumeroClientes.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroClientes).build();
+            }
+            String validaIdReserva = Middlewares.validarEntero(pedido.getIdReserva(), "id reserva");
+            if (!validaIdReserva.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaIdReserva).build();
+            }
+            String validaMetodoPago = Middlewares.validarString(pedido.getMetodoPago(), "numero mesa");
+            if (!validaMetodoPago.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaMetodoPago).build();
+            }
+            String validaId = Middlewares.validarEntero(pedido.getId(), "id");
+            if (!validaId.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
+            }
+
+            boolean actualizado = pedidoDAO.actualizarReserva(pedido);
+            if (actualizado) {
+                return Response.ok().entity("Pedido: reserva actualizada EXITOSAMENTE.").build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("Error: pedido reserva no encontrado o no actualizada.").build();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().entity("Error interno en el servidor.").build();
+        }
+    }
+    @PATCH
+    @Path("/{id}")
+    public Response PatchTotal(@PathParam("id") String id) {
+        try {
+
+            String validaId = Middlewares.validarEntero(id, "id");
+            if (!validaId.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
+            }
+
+            boolean actualizado = pedidoDAO.PatchTotal(id);
+            if (actualizado) {
+                return Response.ok().entity("Pedido: total del pedido ACTUALIZADO EXITOSAMENTE.").build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("Error: pedido reserva no encontrado o no actualizado.").build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().entity("Error interno en el servidor.").build();
+        }
+    }
     @DELETE
     @Path("/{id}")
     public Response eliminarPedido(@PathParam("id") String id) {
