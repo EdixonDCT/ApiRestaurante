@@ -93,7 +93,7 @@ public class ClienteControlador {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            return Response.serverError().entity("Error: Error interno en el servidor,"+e).build();
         }
     }
     // Método PUT para actualizar un oficio existente

@@ -41,6 +41,9 @@
       max-width: 100%;
       display: none;
     }
+    #formBorrar button {
+      background-color: #dc3545;
+    }
   </style>
 </head>
 <body>
@@ -52,6 +55,15 @@
     </form>
     <div id="resultado"></div>
     <img id="vistaPrevia" />
+
+    <hr>
+
+    <h2>Borrar Imagen</h2>
+    <form id="formBorrar">
+      <input type="text" id="nombreImagen" placeholder="Nombre de la imagen" required />
+      <button type="submit">Borrar Imagen</button>
+    </form>
+    <div id="resultadoBorrar"></div>
   </div>
 
   <script>
@@ -73,13 +85,13 @@
 
       const img = document.getElementById("vistaPrevia");
       img.style.display = "none";
-      img.src = ""; // limpiar imagen previa
+      img.src = "";
 
       const formData = new FormData(this);
       document.getElementById("resultado").textContent = "⬆️ Subiendo imagen...";
 
       try {
-        const res = await fetch("http://localhost:8080/ApiRestaurente/api/subirimagen", {
+        const res = await fetch("http://localhost:8080/ApiRestaurente/api/imagen", {
           method: "POST",
           body: formData
         });
@@ -101,6 +113,26 @@
 
       } catch (err) {
         document.getElementById("resultado").textContent = "❌ Error: " + err.message;
+      }
+    });
+
+    document.getElementById("formBorrar").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const nombre = document.getElementById("nombreImagen").value;
+      document.getElementById("resultadoBorrar").textContent = "⏳ Borrando imagen...";
+
+      try {
+        const res = await fetch("http://localhost:8080/ApiRestaurente/api/imagen/" + nombre, {
+          method: "DELETE"
+        });
+
+        const mensaje = await res.text();
+        if (!res.ok) throw new Error(mensaje);
+
+        document.getElementById("resultadoBorrar").textContent = "🗑️ Imagen borrada correctamente.";
+      } catch (err) {
+        document.getElementById("resultadoBorrar").textContent = "❌ Error al borrar: " + err.message;
       }
     });
   </script>

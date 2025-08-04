@@ -33,17 +33,17 @@ public class DetallePedidoControlador {
     @Path("/{id}")
     public Response obtenerPorId(@PathParam("id") String id) {
         try {
-            String validacion = Middlewares.validarEntero(id, "id");
+            String validacion = Middlewares.validarEntero(id, "id pedido");
             if (!validacion.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validacion).build();
             }
 
-            DetallePedido detallePedido = DetllPedDAO.obtenerPorId(id);
+            List<DetallePedido> detallePedido = DetllPedDAO.obtenerPorId(id);
             if (detallePedido != null) {
                 return Response.ok(detallePedido).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("DetallePedido: id #" + id + " no encontrada.")
+                        .entity("DetallePedido: pedido id #" + id + " no encontrada.")
                         .build();
             }
         } catch (Exception e) {

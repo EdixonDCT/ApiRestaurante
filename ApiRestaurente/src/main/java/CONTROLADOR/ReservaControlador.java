@@ -62,19 +62,20 @@ public class ReservaControlador {
             String validarHora = Middlewares.validarHora(reserva.getHoraTentativa(), "hora_tentativa");
             if (!validarHora.equals("ok"))
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarHora).build();
+            
+            String[] resultado = reservaDAO.crear(reserva);
 
-            boolean creado = reservaDAO.crear(reserva);
-            if (creado) {
-                return Response.status(Response.Status.CREATED)
-                        .entity("Reserva: creada con EXITO.").build();
+            if (!resultado[1].equals("-1")) {
+                String json = String.format("{\"mensaje\": \"%s\", \"id\": \"%s\"}", resultado[0], resultado[1]);
+                return Response.status(Response.Status.CREATED).entity(json).build();
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("Error: no se pudo crear RESERVA.")
-                        .build();
+                        .entity("Error: no se pudo crear el reserva.").build();
             }
+
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            return Response.serverError().entity("Error interno en el servidor.").build();
         }
     }
 

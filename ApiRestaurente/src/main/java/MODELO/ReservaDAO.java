@@ -73,29 +73,54 @@ public class ReservaDAO {
         return reserva;
     }
 
-    public boolean crear(Reserva reserva) {
-        boolean creado = false;
+    public String[] crear(Reserva reserva) {
+        String[] resultado = new String[2];
+        resultado[0] = "Reserva: no se pudo crear."; // Mensaje por defecto
+        resultado[1] = "-1"; // ID por defecto si falla
+        
+                Connection conn = null;
+        PreparedStatement prepStmt = null;
+        ResultSet rs = null;
         try {
             conn = DBConnection.getConnection();
             String sql = "INSERT INTO reservas (cantidad_tentativa,precio, fecha_tentativa, hora_tentativa) VALUES (?,?, ?, ?)";
-            prepStmt = conn.prepareStatement(sql);
+            prepStmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             prepStmt.setInt(1, Integer.parseInt(reserva.getCantidadTentativa()));
             prepStmt.setDouble(2, Double.parseDouble(reserva.getPrecio()));
             prepStmt.setString(3, reserva.getFechaTentativa());
             prepStmt.setString(4, reserva.getHoraTentativa());
+            
             int filas = prepStmt.executeUpdate();
-            creado = filas > 0;
+                        
+            if (filas > 0) {
+                rs = prepStmt.getGeneratedKeys();
+                if (rs.next()) {
+                    int idGenerado = rs.getInt(1);
+                    reserva.setId(String.valueOf(idGenerado)); // si lo manejas como String
+                    resultado[0] = "Reserva: creado EXITOSAMENTE";
+                    resultado[1] = String.valueOf(idGenerado);
+                }
+            }
         } catch (Exception e) {
             System.err.println("ERROR AL CREAR RESERVA: " + e.getMessage());
+            e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
         }
-        return creado;
+
+        return resultado;
     }
 
     public boolean actualizar(Reserva reserva) {

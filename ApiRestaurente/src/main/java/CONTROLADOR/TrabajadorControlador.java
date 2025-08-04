@@ -37,30 +37,30 @@ public class TrabajadorControlador {
             return Response.serverError().build(); // Retorna error 500 
         }
     }
-    
+
     // Método GET para obtener un oficio por su ID
     @GET
     @Path("/{cedula}")
-    public Response obtenerTrabajador(@PathParam("cedula") String cedula){
+    public Response obtenerTrabajador(@PathParam("cedula") String cedula) {
         try {
             String validaCedula = Middlewares.validarEntero(cedula, "cedula");
             if (!validaCedula.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
             }
-            
+
             Trabajador trabajador = trabajadorDAO.obtenerPorCedula(cedula); // Busca por cedula
             if (trabajador != null) {
                 return Response.ok(trabajador).build(); // Retorna trabajador
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                               .entity("Error: no se pudo obtener TRABAJADOR.")
-                               .build(); // Retorna error 404
+                        .entity("Error: no se pudo obtener TRABAJADOR.")
+                        .build(); // Retorna error 404
             }
         } catch (Exception e) {
             e.printStackTrace();
             return Response.serverError()
-                           .entity("Error: Error interno en el servidor.")
-                           .build(); // Retorna error 500
+                    .entity("Error: Error interno en el servidor.")
+                    .build(); // Retorna error 500
         }
     }
 
@@ -71,39 +71,49 @@ public class TrabajadorControlador {
 
             // Valida el campo Cedula
             String validaCedula = Middlewares.validarEntero(trabajador.getCedula(), "cedula");
-            if (!validaCedula.equals("ok"))
+            if (!validaCedula.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
-            
+            }
+
             // Valida el campo Nombre
             String validarNombre = Middlewares.validarString(trabajador.getNombre(), "nombre");
-            if (!validarNombre.equals("ok"))
+            if (!validarNombre.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarNombre).build();
+            }
 
             // Valida el campo Apellido
             String validarApellido = Middlewares.validarString(trabajador.getApellido(), "apellido");
-            if (!validarApellido.equals("ok"))
+            if (!validarApellido.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarApellido).build();
+            }
 
             // Valida el campo Nacimiento
             String validarNacimiento = Middlewares.validarFecha(trabajador.getNacimiento(), "nacimiento");
-            if (!validarNacimiento.equals("ok"))
+            if (!validarNacimiento.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarNacimiento).build();
+            }
             
+            String validarContrasena = Middlewares.ContraseñaVacia(trabajador.getContrasena(), "contraseña");
+            if (!validarContrasena.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validarContrasena).build();
+            }
+
             // Valida el campo Codigo Oficio
             String validaCodigoOficio = Middlewares.validarEntero(trabajador.getIdOficio(), "idOficio");
-            if (!validaCodigoOficio.equals("ok"))
+            if (!validaCodigoOficio.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCodigoOficio).build();
-                        
+            }
+
             // Crea el oficio si pasa las validaciones
             boolean creado = trabajadorDAO.crear(trabajador);
             if (creado) {
                 return Response.status(Response.Status.CREATED)
-                               .entity("Trabajador: " + trabajador.getNombre()+" "+trabajador.getApellido()+" creado con EXITO.")
-                               .build(); // Retorna código 201
+                        .entity("Trabajador: " + trabajador.getNombre() + " " + trabajador.getApellido() + " creado con EXITO.")
+                        .build(); // Retorna código 201
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                               .entity("Error: no se pudo crear TRABAJADOR.")
-                               .build(); // Retorna error 500
+                        .entity("Error: no se pudo crear TRABAJADOR.")
+                        .build(); // Retorna error 500
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -117,39 +127,44 @@ public class TrabajadorControlador {
         try {
             trabajador.setCedula(cedula); // Establece el ID al objeto que se va a actualizar
             // Actualiza si todo está bien
-            
+
             // Valida el campo Cedula
-             String validaCedula = Middlewares.validarEntero(trabajador.getCedula(), "cedula");
-            if (!validaCedula.equals("ok"))
+            String validaCedula = Middlewares.validarEntero(trabajador.getCedula(), "cedula");
+            if (!validaCedula.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
-            
+            }
+
             // Valida el campo Nombre
             String validarNombre = Middlewares.validarString(trabajador.getNombre(), "nombre");
-            if (!validarNombre.equals("ok"))
+            if (!validarNombre.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarNombre).build();
+            }
 
             // Valida el campo Apellido
             String validarApellido = Middlewares.validarString(trabajador.getApellido(), "apellido");
-            if (!validarApellido.equals("ok"))
+            if (!validarApellido.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarApellido).build();
+            }
 
             // Valida el campo Nacimiento
             String validarNacimiento = Middlewares.validarFecha(trabajador.getNacimiento(), "nacimiento");
-            if (!validarNacimiento.equals("ok"))
+            if (!validarNacimiento.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarNacimiento).build();
-            
+            }
+
             // Valida el campo Codigo Oficio
             String validaCodigoOficio = Middlewares.validarEntero(trabajador.getIdOficio(), "idOficio");
-            if (!validaCodigoOficio.equals("ok"))
+            if (!validaCodigoOficio.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCodigoOficio).build();
+            }
 
             boolean actualizado = trabajadorDAO.actualizar(trabajador);
             if (actualizado) {
-                return Response.ok().entity("Trabajador: " + trabajador.getNombre()+" "+trabajador.getApellido()+" actualizado con EXITO.").build();
+                return Response.ok().entity("Trabajador: " + trabajador.getNombre() + " " + trabajador.getApellido() + " actualizado con EXITO.").build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                               .entity("Error: trabajador NO ENCONTRADO o NO ACTUALIZADO.")
-                               .build(); // Retorna error 404
+                        .entity("Error: trabajador NO ENCONTRADO o NO ACTUALIZADO.")
+                        .build(); // Retorna error 404
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -172,14 +187,15 @@ public class TrabajadorControlador {
                 return Response.ok().entity("Trabajador: actualizacion de foto con EXITO.").build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                               .entity("Error: trabajador NO ENCONTRADO o NO ACTUALIZADO.")
-                               .build(); // Retorna error 404
+                        .entity("Error: trabajador NO ENCONTRADO o NO ACTUALIZADO.")
+                        .build(); // Retorna error 404
             }
         } catch (Exception e) {
             e.printStackTrace();
             return Response.serverError().entity("Error: Error interno en el servidor.").build();
         }
     }
+
     // Método DELETE para eliminar un oficio por su ID
     @DELETE
     @Path("/{cedula}")
@@ -194,7 +210,7 @@ public class TrabajadorControlador {
                 return Response.ok().entity("Trabajador: eliminado EXITOSAMENTE.").build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                               .entity("Error: trabajador NO ENCONTRADO.").build();
+                        .entity("Error: trabajador NO ENCONTRADO.").build();
             }
         } catch (Exception e) {
             e.printStackTrace();

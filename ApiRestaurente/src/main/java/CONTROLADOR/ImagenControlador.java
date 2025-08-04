@@ -7,7 +7,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import org.glassfish.jersey.media.multipart.*;
 
-@Path("subirimagen")
+@Path("imagen")
 public class ImagenControlador {
 
     @Context
@@ -55,4 +55,31 @@ public class ImagenControlador {
                     .build();
         }
     }
+
+    @DELETE
+    @Path("/{nombre}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response eliminarImagen(@PathParam("nombre") String nombreArchivo) {
+        String rutaBase = contexto.getRealPath("/");
+        File carpetaProyecto = new File(rutaBase).getParentFile().getParentFile();
+        String rutaImagenes = new File(carpetaProyecto, "src/main/webapp/IMAGENES").getAbsolutePath();
+
+        File archivo = new File(rutaImagenes, nombreArchivo);
+
+        if (!archivo.exists()) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("La imagen no existe.")
+                    .build();
+        }
+
+        if (archivo.delete()) {
+            System.out.println("🗑️ Imagen eliminada: " + archivo.getAbsolutePath());
+            return Response.ok("Imagen eliminada exitosamente.").build();
+        } else {
+            return Response.status(500)
+                    .entity("No se pudo eliminar la imagen.")
+                    .build();
+        }
+    }
+
 }

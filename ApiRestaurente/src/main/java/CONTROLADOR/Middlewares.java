@@ -6,6 +6,13 @@ public class Middlewares {
         return valor == null || valor.trim().isEmpty();
     }
 
+    public static String ContraseñaVacia(String valor, String campo) {
+        if (Vacio(valor)) {
+            return "Error: " + campo + " no puede estar vacio"; // Si está vacío, retorna mensaje de error
+        }
+        return "ok"; // Si pasa todas las validaciones, retorna "ok"
+    }
+
     public static String validarString(String valor, String campo) {
         if (Vacio(valor)) {
             return "Error: " + campo + " no puede estar vacio"; // Si está vacío, retorna mensaje de error
@@ -45,7 +52,7 @@ public class Middlewares {
             return "Error: " + campo + " debe ser un numero entero valido";
         }
         try {
-            int numero = Integer.parseInt(valor);
+            long numero = Long.parseLong(valor);
             if (numero <= 0) {
                 return "Error: " + campo + " debe ser mayor a 0";
             }
@@ -54,7 +61,8 @@ public class Middlewares {
         }
         return "ok";
     }
-        public static String validarEnteroNulo(String valor, String campo) {
+
+    public static String validarEnteroNulo(String valor, String campo) {
         if (Vacio(valor)) {
             return "ok"; // Si está vacío, retorna mensaje de ok porque es para los que puedan ser null
         }
@@ -121,7 +129,7 @@ public class Middlewares {
         if (!valor.matches("^-?\\d+$")) {
             return "Error: " + campo + " debe ser un numero entero valido";
         }
-        int numero = Integer.parseInt(valor);
+        long numero = Long.parseLong(valor);
         if (numero <= 0) {
             return "Error: " + campo + " debe ser mayor a 0";
         }
@@ -138,7 +146,7 @@ public class Middlewares {
 
     public static String validarCorreo(String valor, String campo) {
         if (Vacio(valor)) {
-            return "ok";
+            return "Error: " + campo + " no puede estar vacio";
         }
 
         // Expresión regular básica para validar correos

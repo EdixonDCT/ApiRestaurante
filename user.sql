@@ -42,7 +42,6 @@ create table comidas (
     disponible boolean default false,
     primary key (id)
 );
-INSERT INTO comidas (nombre, precio, tipo) VALUES ("papitas","100","las favoritas de bruno");
 create table bebidas (
     id int auto_increment,
     nombre varchar(100) not null,
@@ -86,37 +85,35 @@ create table ingredientes_coctel (
     foreign key (id_ingrediente) references ingredientes(id),
     foreign key (id_coctel) references cocteles(id)
 );
-
 create table reservas (
     id int auto_increment,
+    cantidad_tentativa int not null,
     precio decimal(10,2) not null,
-    fecha date not null,
+    fecha date not null default(current_date()),
     fecha_tentativa date not null,
     hora_tentativa time not null,
     primary key (id)
 );
-
 create table caja (
     id int auto_increment,
-    fecha_apertura date not null,
-    hora_apertura time not null,
+    fecha_apertura date not null default(current_date()),
+    hora_apertura time not null default(current_time()),
     monto_apertura decimal(10,2) not null,
     fecha_cierre date,
     hora_cierre time,
     monto_cierre decimal(10,2),
-    cedula_trabajador varchar(20)not null,
+    cedula_trabajador varchar(20) not null,
     primary key (id),
     foreign key (cedula_trabajador) references trabajadores(cedula)
 );
-
 create table pedidos (
     id int auto_increment,
     numero_mesa int not null,
     fecha date,
     hora time, 
-    valor_total decimal(10,2),
+    valor_total decimal(10,2) default(0),
     id_caja int,
-    numero_clientes int not null,
+    numero_clientes int,
     id_reserva int,
     nota text,
     correo_cliente varchar(100) not null,
@@ -127,7 +124,6 @@ create table pedidos (
     foreign key (id_reserva) references reservas(id),
     foreign key (correo_cliente) references clientes(correo)
 );
-
 create table detalle_pedido (
     id int auto_increment,
     id_pedido int not null,
@@ -145,19 +141,16 @@ create table detalle_pedido (
 );
 -- Insert para oficios
 insert into oficios (tipo, salario) values 
-('Cocinero', 2000.00),
-('Mesero', 1500.00),
-('Administrador', 3000.00),
-('Cajero', 1800.00),
-('Bartender', 1700.00);
-
+('Administrador', 99999.99),
+('Cajero', 65000.50),
+('Mesero', 40000.00);
 -- Insert para trabajadores
 insert into trabajadores (cedula, nombre, apellido, nacimiento, foto, contrasena, id_oficio) values 
-('1001', 'Ana', 'Rojas', '1990-01-01', 'ana.jpg', '1234', 1),
-('1002', 'Luis', 'Gomez', '1988-05-12', 'luis.jpg', 'abcd', 2),
-('1003', 'Sara', 'Lopez', '1995-03-22', 'sara.jpg', 'pass1', 3),
-('1004', 'Pedro', 'Perez', '2000-08-10', 'pedro.jpg', '123abc', 4),
-('1005', 'Elena', 'Torres', '1992-11-15', 'elena.jpg', 'clave', 5);
+('1001', 'Ana', 'Rojas', '1990-01-01', '3e90db74-9cf7-4b49-926e-f6cda1f76438_foto1.png', '1234', 3),
+('1002', 'Luis', 'Gomez', '1988-05-12', '16f4d046-bf96-48d5-b1f4-59bc7aa2d02d_foto2.png', '1234', 3),
+('1003', 'Sara', 'Lopez', '1995-03-22', 'c0f973a7-326a-4800-9ad1-63c98a4ebead_foto3.png', '1234', 2),
+('1004', 'Pedro', 'Perez', '2000-08-10', '73553a2e-2533-4488-bf19-08a583187e0a_foto4.png', '1234', 2),
+('1005', 'Edixon', 'Castillo', '1992-11-15', '58cbed78-b6c9-4d6f-99cb-9183fc115037_foto5.png', '1904', 1);
 
 -- Insert para mesas
 insert into mesas (numero, capacidad, disponible) values 
@@ -224,12 +217,12 @@ insert into ingredientes_coctel (id_ingrediente, id_coctel) values
 (5, 5);
 
 -- Insert para reservas
-insert into reservas (precio, fecha, fecha_tentativa, hora_tentativa) values 
-(50000, '2025-07-10', '2025-07-11', '18:00:00'),
-(60000, '2025-07-10', '2025-07-12', '19:00:00'),
-(55000, '2025-07-10', '2025-07-13', '20:00:00'),
-(70000, '2025-07-10', '2025-07-14', '21:00:00'),
-(45000, '2025-07-10', '2025-07-15', '17:00:00');
+insert into reservas (cantidad_tentativa,precio, fecha, fecha_tentativa, hora_tentativa) values 
+(1,50000, '2025-07-10', '2025-07-11', '18:00:00'),
+(2,60000, '2025-07-10', '2025-07-12', '19:00:00'),
+(3,55000, '2025-07-10', '2025-07-13', '20:00:00'),
+(4,70000, '2025-07-10', '2025-07-14', '21:00:00'),
+(5,45000, '2025-07-10', '2025-07-15', '17:00:00');
 
 -- Insert para caja
 insert into caja (fecha_apertura, hora_apertura, monto_apertura, fecha_cierre, hora_cierre, monto_cierre, cedula_trabajador) values 

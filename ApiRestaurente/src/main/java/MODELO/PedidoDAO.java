@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class PedidoDAO {
+
     private Connection conn = null;
     private PreparedStatement prepStmt = null;
     private ResultSet rs = null;
@@ -42,12 +43,15 @@ public class PedidoDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (prepStmt != null)
+                }
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -87,12 +91,15 @@ public class PedidoDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (prepStmt != null)
+                }
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -101,14 +108,21 @@ public class PedidoDAO {
         return pedido;
     }
 
-    public boolean crear(Pedido pedido) {
-        boolean creado = false;
+    public String[] crear(Pedido pedido) {
+        String[] resultado = new String[2];
+        resultado[0] = "Pedido: no se pudo crear."; // Mensaje por defecto
+        resultado[1] = "-1"; // ID por defecto si falla
+
+        Connection conn = null;
+        PreparedStatement prepStmt = null;
+        ResultSet rs = null;
 
         try {
             conn = DBConnection.getConnection();
-            String sql = "INSERT INTO pedidos (numero_mesa, id_caja, numero_clientes, nota, correo_cliente, metodo_pago, fecha, hora) VALUES (?, ?, ?, ?, ?, ?, CURRENT_DATE(), CURRENT_TIME())";
+            String sql = "INSERT INTO pedidos (numero_mesa, id_caja, numero_clientes, nota, correo_cliente, metodo_pago, fecha, hora) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, CURRENT_DATE(), CURRENT_TIME())";
 
-            prepStmt = conn.prepareStatement(sql);
+            prepStmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             prepStmt.setInt(1, Integer.parseInt(pedido.getNumeroMesa()));
             prepStmt.setInt(2, Integer.parseInt(pedido.getIdCaja()));
             prepStmt.setInt(3, Integer.parseInt(pedido.getNumeroClientes()));
@@ -117,26 +131,40 @@ public class PedidoDAO {
             prepStmt.setString(6, pedido.getMetodoPago());
 
             int filas = prepStmt.executeUpdate();
-            creado = filas > 0;
+
+            if (filas > 0) {
+                rs = prepStmt.getGeneratedKeys();
+                if (rs.next()) {
+                    int idGenerado = rs.getInt(1);
+                    pedido.setId(String.valueOf(idGenerado)); // si lo manejas como String
+                    resultado[0] = "Pedido: creado EXITOSAMENTE";
+                    resultado[1] = String.valueOf(idGenerado);
+                }
+            }
 
         } catch (Exception e) {
             System.err.println("ERROR AL CREAR PEDIDO: " + e.getMessage());
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
         }
 
-        return creado;
+        return resultado;
     }
 
-    public boolean crearReserva(Pedido pedido) {
+public boolean crearReserva(Pedido pedido) {
         boolean creado = false;
 
         try {
@@ -211,15 +239,13 @@ public class PedidoDAO {
 
         try {
             conn = DBConnection.getConnection();
-            String sql = "UPDATE pedidos SET fecha = CURRENT_DATE(), hora = CURRENT_TIME(), id_caja = ?, numero_clientes = ?, id_reserva = ?, nota = ?, metodo_pago = ? WHERE id = ?";
+            String sql = "UPDATE pedidos SET fecha = CURRENT_DATE(), hora = CURRENT_TIME(), id_caja = ?, numero_clientes = ?, nota = ?, metodo_pago = ? WHERE id = ?";
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setInt(1, Integer.parseInt(pedido.getIdCaja()));
             prepStmt.setInt(2, Integer.parseInt(pedido.getNumeroClientes()));
-            prepStmt.setString(3, pedido.getIdReserva());
-            prepStmt.setString(4, pedido.getNota());
-            prepStmt.setString(5, pedido.getMetodoPago());
-            prepStmt.setInt(6, Integer.parseInt(pedido.getId()));
-
+            prepStmt.setString(3, pedido.getNota());
+            prepStmt.setString(4, pedido.getMetodoPago());
+            prepStmt.setInt(5, Integer.parseInt(pedido.getId()));
             int filas = prepStmt.executeUpdate();
             actualizado = filas > 0;
 
