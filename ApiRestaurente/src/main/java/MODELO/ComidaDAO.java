@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class ComidaDAO {
+
     private Connection conn = null;
     private PreparedStatement prepStmt = null;
     private ResultSet rs = null;
@@ -36,9 +37,15 @@ public class ComidaDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null) rs.close();
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -72,9 +79,15 @@ public class ComidaDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null) rs.close();
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -83,33 +96,53 @@ public class ComidaDAO {
         return comida;
     }
 
-    public boolean crear(Comida comida) {
-        boolean creado = false;
+    public String[] crear(Comida comida) {
+        String[] resultado = new String[2];
+        resultado[0] = "Reserva: no se pudo crear."; // Mensaje por defecto
+        resultado[1] = "-1"; // ID por defecto si falla
 
+        Connection conn = null;
+        PreparedStatement prepStmt = null;
+        ResultSet rs = null;
         try {
             conn = DBConnection.getConnection();
             String sql = "INSERT INTO comidas (nombre, precio, tipo) VALUES (?, ?, ?)";
-            prepStmt = conn.prepareStatement(sql);
+            prepStmt = conn.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
             prepStmt.setString(1, comida.getNombre());
             prepStmt.setDouble(2, Double.parseDouble(comida.getPrecio()));
             prepStmt.setString(3, comida.getTipo());
-
-            int filas = prepStmt.executeUpdate();
-            creado = filas > 0;
-
+            
+                            int filas = prepStmt.executeUpdate();
+                            
+            if (filas > 0) {
+                rs = prepStmt.getGeneratedKeys();
+                if (rs.next()) {
+                    int idGenerado = rs.getInt(1);
+                    comida.setId(String.valueOf(idGenerado)); // si lo manejas como String
+                    resultado[0] = "Comida: creado EXITOSAMENTE";
+                    resultado[1] = String.valueOf(idGenerado);
+                }
+            }
         } catch (Exception e) {
             System.err.println("ERROR AL CREAR COMIDA: " + e.getMessage());
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
         }
 
-        return creado;
+        return resultado;
     }
 
     public boolean actualizar(Comida comida) {
@@ -131,8 +164,12 @@ public class ComidaDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -157,8 +194,12 @@ public class ComidaDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -174,7 +215,7 @@ public class ComidaDAO {
             conn = DBConnection.getConnection();
             String sql = "UPDATE comidas SET imagen = ? WHERE id = ?";
             prepStmt = conn.prepareStatement(sql);
-            prepStmt.setString(1,comida.getImagen());
+            prepStmt.setString(1, comida.getImagen());
             prepStmt.setInt(2, Integer.parseInt(comida.getId()));
 
             int filas = prepStmt.executeUpdate();
@@ -185,10 +226,12 @@ public class ComidaDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL ACTUALIZAR IMAGEN CONEXIÓN: " + ex.getMessage());
             }
@@ -214,10 +257,12 @@ public class ComidaDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }

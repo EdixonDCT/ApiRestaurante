@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class CoctelDAO {
+
     private Connection conn = null;
     private PreparedStatement prepStmt = null;
     private ResultSet rs = null;
@@ -35,9 +36,15 @@ public class CoctelDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null) rs.close();
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -70,9 +77,15 @@ public class CoctelDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null) rs.close();
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -81,32 +94,53 @@ public class CoctelDAO {
         return coctel;
     }
 
-    public boolean crear(Coctel coctel) {
-        boolean creado = false;
+    public String[] crear(Coctel coctel) {
+        String[] resultado = new String[2];
+        resultado[0] = "Reserva: no se pudo crear."; // Mensaje por defecto
+        resultado[1] = "-1"; // ID por defecto si falla
+
+        Connection conn = null;
+        PreparedStatement prepStmt = null;
+        ResultSet rs = null;
 
         try {
             conn = DBConnection.getConnection();
             String sql = "INSERT INTO cocteles (nombre, precio) VALUES (?, ?)";
-            prepStmt = conn.prepareStatement(sql);
+            prepStmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             prepStmt.setString(1, coctel.getNombre());
             prepStmt.setDouble(2, Double.parseDouble(coctel.getPrecio()));
 
             int filas = prepStmt.executeUpdate();
-            creado = filas > 0;
 
+            if (filas > 0) {
+                rs = prepStmt.getGeneratedKeys();
+                if (rs.next()) {
+                    int idGenerado = rs.getInt(1);
+                    coctel.setId(String.valueOf(idGenerado)); // si lo manejas como String
+                    resultado[0] = "Coctel: creado EXITOSAMENTE";
+                    resultado[1] = String.valueOf(idGenerado);
+                }
+            }
         } catch (Exception e) {
             System.err.println("ERROR AL CREAR COCTEL: " + e.getMessage());
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
         }
 
-        return creado;
+        return resultado;
     }
 
     public boolean actualizar(Coctel coctel) {
@@ -127,8 +161,12 @@ public class CoctelDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -153,8 +191,12 @@ public class CoctelDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -181,10 +223,12 @@ public class CoctelDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL ACTUALIZAR IMAGEN CONEXIÓN: " + ex.getMessage());
             }
@@ -210,10 +254,12 @@ public class CoctelDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }

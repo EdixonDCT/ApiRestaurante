@@ -85,36 +85,57 @@ public class BebidaDAO {
         return bebida;
     }
 
-    public boolean crear(Bebida bebida) {
-        boolean creado = false;
+    public String[] crear(Bebida bebida) {
+        String[] resultado = new String[2];
+        resultado[0] = "Reserva: no se pudo crear."; // Mensaje por defecto
+        resultado[1] = "-1"; // ID por defecto si falla
+
+        Connection conn = null;
+        PreparedStatement prepStmt = null;
+        ResultSet rs = null;
 
         try {
             conn = DBConnection.getConnection();
             String sql = "INSERT INTO bebidas (nombre, precio, unidad, tipo) VALUES (?, ?, ?, ?)";
-            prepStmt = conn.prepareStatement(sql);
+            prepStmt = conn.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
             prepStmt.setString(1, bebida.getNombre());
             prepStmt.setDouble(2, Double.parseDouble(bebida.getPrecio()));
             prepStmt.setString(3, bebida.getUnidad());
             prepStmt.setString(4, bebida.getTipo());
 
-            int filas = prepStmt.executeUpdate();
-            creado = filas > 0;
-
+           
+                            int filas = prepStmt.executeUpdate();
+                            
+            if (filas > 0) {
+                rs = prepStmt.getGeneratedKeys();
+                if (rs.next()) {
+                    int idGenerado = rs.getInt(1);
+                    bebida.setId(String.valueOf(idGenerado)); // si lo manejas como String
+                    resultado[0] = "Bebida: creada EXITOSAMENTE";
+                    resultado[1] = String.valueOf(idGenerado);
+                }
+            }
         } catch (Exception e) {
             System.err.println("ERROR AL CREAR BEBIDA: " + e.getMessage());
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
         }
 
-        return creado;
+        return resultado;
     }
-
     public boolean actualizar(Bebida bebida) {
         boolean actualizado = false;
 

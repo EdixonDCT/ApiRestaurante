@@ -65,17 +65,19 @@ public class CoctelControlador {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaPrecio).build();
             }
 
-            boolean creado = coctelDAO.crear(coctel);
-            if (creado) {
-                return Response.status(Response.Status.CREATED)
-                        .entity("Coctel: "+coctel.getNombre()+" creado con EXITO.").build();
+            String[] resultado = coctelDAO.crear(coctel);
+
+            if (!resultado[1].equals("-1")) {
+                String json = String.format("{\"mensaje\": \"%s\", \"id\": \"%s\"}", resultado[0], resultado[1]);
+                return Response.status(Response.Status.CREATED).entity(json).build();
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                         .entity("Error: no se pudo crear el coctel.").build();
             }
+
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno del servidor.").build();
+            return Response.serverError().entity("Error interno en el servidor.").build();
         }
     }
 

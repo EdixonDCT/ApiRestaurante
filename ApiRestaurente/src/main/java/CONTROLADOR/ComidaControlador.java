@@ -81,19 +81,19 @@ public class ComidaControlador {
             if (!validaTipo.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaTipo).build();
             }
-            boolean creado = comidaDAO.crear(comida);
-            if (creado) {
-                return Response.status(Response.Status.CREATED)
-                        .entity("Comida: " + comida.getNombre() + " creada con EXITO.")
-                        .build();
+            String[] resultado = comidaDAO.crear(comida);
+
+            if (!resultado[1].equals("-1")) {
+                String json = String.format("{\"mensaje\": \"%s\", \"id\": \"%s\"}", resultado[0], resultado[1]);
+                return Response.status(Response.Status.CREATED).entity(json).build();
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("Error: no se pudo crear COMIDA " + comida.getNombre() + ".")
-                        .build();
+                        .entity("Error: no se pudo crear el comida.").build();
             }
+
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            return Response.serverError().entity("Error interno en el servidor.").build();
         }
     }
 
