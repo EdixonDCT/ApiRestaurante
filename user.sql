@@ -146,11 +146,11 @@ insert into oficios (tipo, salario) values
 ('Mesero', 40000.00);
 -- Insert para trabajadores
 insert into trabajadores (cedula, nombre, apellido, nacimiento, foto, contrasena, id_oficio) values 
-('1001', 'Ana', 'Rojas', '1990-01-01', '3e90db74-9cf7-4b49-926e-f6cda1f76438_foto1.png', '1234', 3),
-('1002', 'Luis', 'Gomez', '1988-05-12', '16f4d046-bf96-48d5-b1f4-59bc7aa2d02d_foto2.png', '1234', 3),
-('1003', 'Sara', 'Lopez', '1995-03-22', 'c0f973a7-326a-4800-9ad1-63c98a4ebead_foto3.png', '1234', 2),
-('1004', 'Pedro', 'Perez', '2000-08-10', '73553a2e-2533-4488-bf19-08a583187e0a_foto4.png', '1234', 2),
-('1005', 'Edixon', 'Castillo', '1992-11-15', '58cbed78-b6c9-4d6f-99cb-9183fc115037_foto5.png', '1904', 1);
+('1001', 'Ana', 'Rojas', '1990-01-01', 'c4725ed6-a2a8-4112-9572-639515e759a0_foto1.png', '1234', 3),
+('1002', 'Luis', 'Gomez', '1988-05-12', '3a2ab7b3-0e76-4b0b-8036-815ad0fc87b8_foto2.png', '1234', 3),
+('1003', 'Sara', 'Lopez', '1995-03-22', '4183b335-f95b-4724-ab04-bf488f3e3448_foto3.png', '1234', 2),
+('1004', 'Pedro', 'Perez', '2000-08-10', 'f74c6d39-39a0-4683-98ae-78c5c058f144_foto4.png', '1234', 2),
+('1005', 'Edixon', 'Castillo', '1992-11-15', 'b00a88c9-af7a-4d1a-8096-1d852a475dde_foto5.png', '1904', 1);
 
 -- Insert para mesas
 insert into mesas (numero, capacidad, disponible) values 
@@ -170,27 +170,27 @@ insert into clientes (correo, cedula, telefono) values
 
 -- Insert para comidas
 insert into comidas (nombre, precio, tipo, imagen, disponible) values 
-('Pizza', 25000, 'Italiana', 'pizza.jpg', true),
-('Hamburguesa', 18000, 'Americana', 'hamburguesa.jpg', true),
-('Taco', 12000, 'Mexicana', 'taco.jpg', true),
-('Sushi', 30000, 'Japonesa', 'sushi.jpg', false),
-('Ensalada', 15000, 'Vegana', 'ensalada.jpg', true);
+('Pizza Mexicana', 25000, 'pizza', 'b7ddc57d-e117-4cd1-929e-ea635ac93ccc_pizza.png', true),
+('Hamburguesa', 18000, 'hamburguesa', 'f1c771d8-3c42-45ba-9076-8d08fdeea12e_burger.png', true),
+('Perro Royal', 12000, 'perro', '779c1a23-e01e-475a-92eb-8c4eaf399c4a_perrro.png', true),
+('Salchipapa', 30000, 'papas', 'd60aeee3-4fec-43c2-9dc1-87fe3cde5668_papas.png', false),
+('Ensalada', 15000, 'ensalada', 'f7a25c73-deb3-439e-abd7-3eb377ecc6b5_salad.png', true);
 
 -- Insert para bebidas
 insert into bebidas (nombre, precio, unidad, tipo, imagen, disponible) values 
-('Coca-Cola', 4000, 'Botella', 'Refresco', 'coca.jpg', true),
-('Agua', 3000, 'Botella', 'Natural', 'agua.jpg', true),
-('Jugo de Mango', 5000, 'Vaso', 'Fruta', 'mango.jpg', true),
-('Café', 3500, 'Taza', 'Caliente', 'cafe.jpg', false),
-('Té', 3000, 'Taza', 'Caliente', 'te.jpg', true);
+('Coca-Cola', 4000, 'Botella', 'Refresco', '7ac2e2eb-7693-424c-99c0-c4b34e4f9087_coca.png', true),
+('Agua', 3000, 'Botella', 'Natural', '130fe7e2-8dda-4877-a920-4b3b44f0fe64_agua.png', true),
+('Jugo de Mango', 5000, 'Vaso', 'Fruta', '4e1644d5-af8e-4c9e-84f2-ba4957d030ea_mango.png', true),
+('Café', 3500, 'Taza', 'Caliente', '1b83f6ea-ed92-421b-b236-874e3f4a38aa_cafe.png', false),
+('Té', 3000, 'Taza', 'Caliente', 'a78e40a3-7a18-4449-99fa-8c9523a85c0f_te.png', true);
 
 -- Insert para cocteles
 insert into cocteles (nombre, precio, imagen, disponible) values 
-('Mojito', 12000, 'mojito.jpg', true),
-('Margarita', 13000, 'margarita.jpg', true),
-('Piña Colada', 14000, 'colada.jpg', false),
-('Caipiriña', 11000, 'caipirina.jpg', true),
-('Bloody Mary', 15000, 'bloody.jpg', true);
+('Mojito', 12000, 'cab4013b-9e63-4025-bf85-fe98e7a89b7a_Mojito.png', true),
+('Margarita', 13000, '105b4caf-38df-4f5f-a304-8ef59a19d9b9_marga.png', true),
+('Piña Colada', 14000, '994255fd-622f-4044-9b02-ba8869ad4337_colada.png', false),
+('Caipiriña', 11000, '02e587a2-b0de-47cb-812b-c251dff92eea_cai.png', true),
+('Bloody Mary', 15000, '01cb075a-8563-4df7-9d5c-355cab9698dd_blodymary.png', true);
 
 -- Insert para ingredientes
 insert into ingredientes (nombre) values 
@@ -198,23 +198,113 @@ insert into ingredientes (nombre) values
 ('Queso'),
 ('Pollo'),
 ('Tomate'),
-('Lechuga');
+('Lechuga'),
+('Salsa de Tomate'),    -- 6
+('Carne Molida'),       -- 7
+('Jalapeños'),          -- 8
+('Pan de Hamburguesa'), -- 9
+('Carne de Res'),       -- 10
+('Queso Cheddar'),      -- 11
+('Pan para Perro'),     -- 12
+('Salchicha'),          -- 13
+('Queso Rallado'),      -- 14
+('Papas Fritas'),       -- 15
+('Salsa Rosada'),       -- 16
+('Sal'),                -- 17
+('Pepino'),             -- 18
+('Zanahoria'),          -- 19
+('Vinagreta'),          -- 20
+('Ron'),                -- 21
+('Hierbabuena'),        -- 22
+('Azúcar'),             -- 23
+('Limón'),              -- 24
+('Soda'),               -- 25
+('Tequila'),            -- 26
+('Triple Sec'),         -- 27
+('Hielo'),              -- 28
+('Crema de Coco'),      -- 29
+('Jugo de Piña'),       -- 30
+('Cachaça'),            -- 31
+('Vodka'),              -- 32
+('Jugo de Tomate'),     -- 33
+('Salsa Worcestershire'),-- 34
+('Pimienta');           -- 35
 
 -- Insert para ingredientes_comida
-insert into ingredientes_comida (id_ingrediente, id_comida) values 
-(1, 1),
-(2, 1),
-(3, 2),
-(4, 3),
-(5, 5);
+insert into ingredientes_comida (id_ingrediente, id_comida) values
+-- Pizza Mexicana (id_comida = 1)
+(1, 1),  -- Harina
+(2, 1),  -- Queso
+(6, 1),  -- Salsa de Tomate
+(7, 1),  -- Carne Molida
+(8, 1),  -- Jalapeños
+
+-- Hamburguesa (id_comida = 2)
+(9, 2),   -- Pan de Hamburguesa
+(10, 2),  -- Carne de Res
+(11, 2),  -- Queso Cheddar
+(5, 2),   -- Lechuga
+(4, 2),   -- Tomate
+
+-- Perro Royal (id_comida = 3)
+(12, 3),  -- Pan para Perro
+(13, 3),  -- Salchicha
+(14, 3),  -- Queso Rallado
+(6, 3),   -- Salsa de Tomate
+(15, 3),  -- Papas Fritas
+
+-- Salchipapa (id_comida = 4)
+(15, 4),  -- Papas Fritas
+(13, 4),  -- Salchicha
+(14, 4),  -- Queso Rallado
+(16, 4),  -- Salsa Rosada
+(17, 4),  -- Sal
+
+-- Ensalada (id_comida = 5)
+(5, 5),   -- Lechuga
+(4, 5),   -- Tomate
+(18, 5),  -- Pepino
+(19, 5),  -- Zanahoria
+(20, 5);  -- Vinagreta
+
 
 -- Insert para ingredientes_coctel
-insert into ingredientes_coctel (id_ingrediente, id_coctel) values 
-(1, 1),
-(2, 2),
-(3, 3),
-(4, 4),
-(5, 5);
+insert into ingredientes_coctel (id_ingrediente, id_coctel) values
+-- Mojito (id_coctel = 1)
+(21, 1), -- Ron
+(22, 1), -- Hierbabuena
+(23, 1), -- Azúcar
+(24, 1), -- Limón
+(25, 1), -- Soda
+
+-- Margarita (id_coctel = 2)
+(26, 2), -- Tequila
+(27, 2), -- Triple Sec
+(24, 2), -- Limón
+(17, 2), -- Sal
+(28, 2), -- Hielo
+
+-- Piña Colada (id_coctel = 3)
+(21, 3), -- Ron
+(29, 3), -- Crema de Coco
+(30, 3), -- Jugo de Piña
+(28, 3), -- Hielo
+(23, 3), -- Azúcar
+
+-- Caipiriña (id_coctel = 4)
+(31, 4), -- Cachaça
+(24, 4), -- Limón
+(23, 4), -- Azúcar
+(28, 4), -- Hielo
+(22, 4), -- Hierbabuena
+
+-- Bloody Mary (id_coctel = 5)
+(32, 5), -- Vodka
+(33, 5), -- Jugo de Tomate
+(34, 5), -- Salsa Worcestershire
+(24, 5), -- Limón
+(35, 5); -- Pimienta
+
 
 -- Insert para reservas
 insert into reservas (cantidad_tentativa,precio, fecha, fecha_tentativa, hora_tentativa) values 
