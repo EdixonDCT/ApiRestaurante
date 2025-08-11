@@ -24,7 +24,7 @@ public class IngredientesComidaControlador {
             return Response.ok(lista).build();
         } catch (Exception e) {
             e.printStackTrace();
-             return Response.serverError().build(); // Retorna error 500
+            return Response.serverError().build(); // Retorna error 500
         }
     }
 
@@ -49,8 +49,24 @@ public class IngredientesComidaControlador {
         } catch (Exception e) {
             e.printStackTrace();
             return Response.serverError()
-            .entity("Error: Error interno en el servidor.")
-            .build();
+                    .entity("Error: Error interno en el servidor.")
+                    .build();
+        }
+    }
+
+    @GET
+    @Path("/comida/{id}")
+    public Response obtenerIngredientesComidaPorComida(@PathParam("id") String id) {
+        try {
+            String validarId = Middlewares.validarEntero(id, "id");
+            if (!validarId.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validarId).build();
+            }
+            List<IngredientesComida> lista = IngComDAO.obtenerPorComida(id);
+            return Response.ok(lista).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().build(); // Retorna error 500
         }
     }
 

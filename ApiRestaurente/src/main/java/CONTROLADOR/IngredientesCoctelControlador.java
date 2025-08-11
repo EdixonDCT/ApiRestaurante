@@ -51,6 +51,22 @@ public class IngredientesCoctelControlador {
                     .build();
         }
     }
+    @GET
+    @Path("/coctel/{id}")
+    public Response obtenerPorCoctel(@PathParam("id") String id) {
+        try {
+            String validarId = Middlewares.validarEntero(id, "id");
+            if (!validarId.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validarId).build();
+            }
+
+            List<IngredientesCoctel> lista = IngCocDAO.obtenerPorCoctel(id);
+            return Response.ok(lista).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().build(); // Retorna error 500
+        }
+    }
 
     @POST
     public Response crear(IngredientesCoctel ingCoc) {

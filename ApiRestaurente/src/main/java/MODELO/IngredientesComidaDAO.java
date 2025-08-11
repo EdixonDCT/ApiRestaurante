@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class IngredientesComidaDAO {
+
     private Connection conn = null;
     private PreparedStatement prepStmt = null;
     private ResultSet rs = null;
@@ -36,9 +37,15 @@ public class IngredientesComidaDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null) rs.close();
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -72,15 +79,64 @@ public class IngredientesComidaDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null) rs.close();
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
         }
 
         return ingCom;
+    }
+
+    public ArrayList<IngredientesComida> obtenerPorComida(String id) {
+        ArrayList<IngredientesComida> lista = new ArrayList<>();
+
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "SELECT ic.id, ic.id_ingrediente, i.nombre AS nombre_ingrediente, ic.id_comida, c.nombre AS nombre_comida FROM ingredientes_comida AS ic INNER JOIN comidas c ON ic.id_comida = c.id INNER JOIN ingredientes i ON ic.id_ingrediente = i.id WHERE ic.id_comida = ?";
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setInt(1, Integer.parseInt(id));
+            rs = prepStmt.executeQuery();
+
+            while (rs.next()) {
+                IngredientesComida ingCom = new IngredientesComida();
+                ingCom = new IngredientesComida();
+                ingCom.setId(rs.getString("id"));
+                ingCom.setIdIngrediente(rs.getString("id_ingrediente"));
+                ingCom.setNombreIngrediente(rs.getString("nombre_ingrediente"));
+                ingCom.setIdComida(rs.getString("id_comida"));
+                ingCom.setNombreComida(rs.getString("nombre_comida"));
+                lista.add(ingCom);
+            }
+
+        } catch (Exception e) {
+            System.err.println("ERROR AL OBTENER INGREDIENTES_COMIDA POR ID: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+
+        return lista;
     }
 
     // MÉTODO: Crear un nuevo registro
@@ -102,8 +158,12 @@ public class IngredientesComidaDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -130,8 +190,12 @@ public class IngredientesComidaDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }

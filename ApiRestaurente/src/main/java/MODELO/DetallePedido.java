@@ -5,11 +5,14 @@ public class DetallePedido {
     private String id_pedido;
     private String id_comida;
     private String cantidad_comida;
+    private String nota_comida;
     private String id_bebida;
     private String cantidad_bebida;
+    private String nota_bebida;
     private String id_coctel;
     private String cantidad_coctel;
-
+    private String nota_coctel;
+            
     // Getters y setters
     public String getId() {
         return id;
@@ -42,6 +45,14 @@ public class DetallePedido {
     public void setCantidad_comida(String cantidad_comida) {
         this.cantidad_comida = cantidad_comida;
     }
+    
+    public String getNota_comida() {
+        return nota_comida;
+    }
+    
+    public void setNota_comida(String nota_comida) {
+        this.nota_comida = nota_comida;
+    }
 
     public String getId_bebida() {
         return id_bebida;
@@ -58,7 +69,14 @@ public class DetallePedido {
     public void setCantidad_bebida(String cantidad_bebida) {
         this.cantidad_bebida = cantidad_bebida;
     }
-
+    
+    public String getNota_bebida() {
+        return nota_bebida;
+    }
+    
+    public void setNota_bebida(String nota_bebida) {
+        this.nota_bebida = nota_bebida;
+    }
     public String getId_coctel() {
         return id_coctel;
     }
@@ -73,5 +91,13 @@ public class DetallePedido {
 
     public void setCantidad_coctel(String cantidad_coctel) {
         this.cantidad_coctel = cantidad_coctel;
+    }
+    
+    public String getNota_coctel() {
+        return nota_coctel;
+    }
+    
+    public void setNota_coctel(String nota_coctel) {
+        this.nota_coctel = nota_coctel;
     }
 }

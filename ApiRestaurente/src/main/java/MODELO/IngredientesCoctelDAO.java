@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class IngredientesCoctelDAO {
+
     private Connection conn = null;
     private PreparedStatement prepStmt = null;
     private ResultSet rs = null;
@@ -35,9 +36,15 @@ public class IngredientesCoctelDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null) rs.close();
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -70,15 +77,64 @@ public class IngredientesCoctelDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null) rs.close();
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
         }
 
         return ingCoc;
+    }
+
+    public ArrayList<IngredientesCoctel> obtenerPorCoctel(String id) {
+        ArrayList<IngredientesCoctel> lista = new ArrayList<>();
+
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "SELECT ic.id,ic.id_ingrediente, i.nombre AS nombre_ingrediente,ic.id_coctel,c.nombre AS nombre_coctel FROM ingredientes_coctel AS ic INNER JOIN cocteles c ON ic.id_coctel = c.id INNER JOIN ingredientes i ON ic.id_ingrediente = i.id WHERE ic.id_coctel = ?";
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setInt(1, Integer.parseInt(id));
+            rs = prepStmt.executeQuery();
+
+            while (rs.next()) {
+                IngredientesCoctel ingCoc = new IngredientesCoctel();
+                ingCoc = new IngredientesCoctel();
+                ingCoc.setId(rs.getString("id"));
+                ingCoc.setIdIngrediente(rs.getString("id_ingrediente"));
+                ingCoc.setNombreIngrediente(rs.getString("nombre_ingrediente"));
+                ingCoc.setIdCoctel(rs.getString("id_coctel"));
+                ingCoc.setNombreCoctel(rs.getString("nombre_coctel"));
+                lista.add(ingCoc);
+            }
+
+        } catch (Exception e) {
+            System.err.println("ERROR AL OBTENER INGREDIENTES_COCTEL POR ID: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+
+        return lista;
     }
 
     public boolean crear(IngredientesCoctel ingCoc) {
@@ -99,8 +155,12 @@ public class IngredientesCoctelDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -126,8 +186,12 @@ public class IngredientesCoctelDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }

@@ -68,6 +68,7 @@ public class DetallePedidoControlador {
             } else if (Middlewares.Vacio(detallePedido.getId_comida())) {
                 detallePedido.setId_comida(null);
                 detallePedido.setCantidad_comida(null);
+                detallePedido.setNota_comida(null);
             } else {
                 String validaCantidadComida = Middlewares.validarEntero(detallePedido.getCantidad_comida(),
                         "cantidad_comida");
@@ -82,6 +83,7 @@ public class DetallePedidoControlador {
             } else if (Middlewares.Vacio(detallePedido.getCantidad_bebida())) {
                 detallePedido.setId_bebida(null);
                 detallePedido.setCantidad_bebida(null);
+                detallePedido.setNota_bebida(null);
             } else {
                 String validaCantidadBebida = Middlewares.validarEntero(detallePedido.getCantidad_bebida(),
                         "cantidad_bebida");
@@ -96,6 +98,7 @@ public class DetallePedidoControlador {
             } else if (Middlewares.Vacio(detallePedido.getId_coctel())) {
                 detallePedido.setId_coctel(null);
                 detallePedido.setCantidad_coctel(null);
+                detallePedido.setNota_coctel(null);
             } else {
                 String validaCantidadCoctel = Middlewares.validarEntero(detallePedido.getCantidad_coctel(),
                         "cantidad_coctel");
