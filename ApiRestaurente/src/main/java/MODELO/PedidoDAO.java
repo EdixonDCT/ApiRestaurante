@@ -31,9 +31,10 @@ public class PedidoDAO {
                 pedido.setIdCaja(rs.getString("id_caja"));
                 pedido.setNumeroClientes(rs.getString("numero_clientes"));
                 pedido.setIdReserva(rs.getString("id_reserva"));
-                pedido.setNota(rs.getString("nota"));
                 pedido.setCorreoCliente(rs.getString("correo_cliente"));
                 pedido.setMetodoPago(rs.getString("metodo_pago"));
+                pedido.setFacturado(rs.getString("facturado"));
+                pedido.setEliminado(rs.getString("eliminado"));
 
                 lista.add(pedido);
             }
@@ -80,7 +81,6 @@ public class PedidoDAO {
                 pedido.setIdCaja(rs.getString("id_caja"));
                 pedido.setNumeroClientes(rs.getString("numero_clientes"));
                 pedido.setIdReserva(rs.getString("id_reserva"));
-                pedido.setNota(rs.getString("nota"));
                 pedido.setCorreoCliente(rs.getString("correo_cliente"));
                 pedido.setMetodoPago(rs.getString("metodo_pago"));
 
@@ -119,16 +119,15 @@ public class PedidoDAO {
 
         try {
             conn = DBConnection.getConnection();
-            String sql = "INSERT INTO pedidos (numero_mesa, id_caja, numero_clientes, nota, correo_cliente, metodo_pago, fecha, hora) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, CURRENT_DATE(), CURRENT_TIME())";
+            String sql = "INSERT INTO pedidos (numero_mesa, id_caja, numero_clientes, correo_cliente, metodo_pago, fecha, hora) "
+                    + "VALUES (?, ?, ?, ?, ?, CURRENT_DATE(), CURRENT_TIME())";
 
             prepStmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             prepStmt.setInt(1, Integer.parseInt(pedido.getNumeroMesa()));
             prepStmt.setInt(2, Integer.parseInt(pedido.getIdCaja()));
             prepStmt.setInt(3, Integer.parseInt(pedido.getNumeroClientes()));
-            prepStmt.setString(4, pedido.getNota());
-            prepStmt.setString(5, pedido.getCorreoCliente());
-            prepStmt.setString(6, pedido.getMetodoPago());
+            prepStmt.setString(4, pedido.getCorreoCliente());
+            prepStmt.setString(5, pedido.getMetodoPago());
 
             int filas = prepStmt.executeUpdate();
 
@@ -209,10 +208,9 @@ public boolean crearReserva(Pedido pedido) {
             prepStmt.setInt(4, Integer.parseInt(pedido.getIdCaja()));
             prepStmt.setInt(5, Integer.parseInt(pedido.getNumeroClientes()));
             prepStmt.setString(6, pedido.getIdReserva());
-            prepStmt.setString(7, pedido.getNota());
-            prepStmt.setString(8, pedido.getCorreoCliente());
-            prepStmt.setString(9, pedido.getMetodoPago());
-            prepStmt.setInt(10, Integer.parseInt(pedido.getId()));
+            prepStmt.setString(7, pedido.getCorreoCliente());
+            prepStmt.setString(8, pedido.getMetodoPago());
+            prepStmt.setInt(9, Integer.parseInt(pedido.getId()));
 
             int filas = prepStmt.executeUpdate();
             actualizado = filas > 0;
@@ -243,9 +241,8 @@ public boolean crearReserva(Pedido pedido) {
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setInt(1, Integer.parseInt(pedido.getIdCaja()));
             prepStmt.setInt(2, Integer.parseInt(pedido.getNumeroClientes()));
-            prepStmt.setString(3, pedido.getNota());
-            prepStmt.setString(4, pedido.getMetodoPago());
-            prepStmt.setInt(5, Integer.parseInt(pedido.getId()));
+            prepStmt.setString(3, pedido.getMetodoPago());
+            prepStmt.setInt(4, Integer.parseInt(pedido.getId()));
             int filas = prepStmt.executeUpdate();
             actualizado = filas > 0;
 
