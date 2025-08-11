@@ -92,7 +92,7 @@ public class TrabajadorControlador {
             if (!validarNacimiento.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarNacimiento).build();
             }
-            
+
             String validarContrasena = Middlewares.ContraseñaVacia(trabajador.getContrasena(), "contraseña");
             if (!validarContrasena.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarContrasena).build();
@@ -185,6 +185,66 @@ public class TrabajadorControlador {
             boolean actualizado = trabajadorDAO.actualizarFoto(trabajador);
             if (actualizado) {
                 return Response.ok().entity("Trabajador: actualizacion de foto con EXITO.").build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("Error: trabajador NO ENCONTRADO o NO ACTUALIZADO.")
+                        .build(); // Retorna error 404
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+        }
+    }
+
+    @PATCH
+    @Path("estado/{cedula}")
+    public Response actualizarEstadoTrabajador(@PathParam("cedula") String cedula, Trabajador trabajador) {
+        try {
+            trabajador.setCedula(cedula); // Establece el ID al objeto que se va a actualizar
+            String validaCedula = Middlewares.validarEntero(cedula, "cedula");
+            if (!validaCedula.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
+            }
+            String validaEstado = Middlewares.validarBooleano(trabajador.getActivo(), "estado");
+            if (!validaEstado.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaEstado).build();
+            }
+            // Actualiza si todo está bien
+            boolean actualizado = trabajadorDAO.cambiarEstado(trabajador);
+            if (actualizado) {
+                return Response.ok().entity("Trabajador: actualizacion de estado con EXITO.").build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("Error: trabajador NO ENCONTRADO o NO ACTUALIZADO.")
+                        .build(); // Retorna error 404
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+        }
+    }
+
+    @PATCH
+    @Path("activar/{cedula}")
+    public Response activarTrabajador(@PathParam("cedula") String cedula, Trabajador trabajador) {
+        try {
+            trabajador.setCedula(cedula); // Establece el ID al objeto que se va a actualizar
+            String validaCedula = Middlewares.validarEntero(cedula, "cedula");
+            if (!validaCedula.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
+            }
+            String validaIdOficio = Middlewares.validarEntero(trabajador.getIdOficio(), "id Oficio");
+            if (!validaIdOficio.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaIdOficio).build();
+            }
+            String validaEstado = Middlewares.validarBooleano(trabajador.getActivo(), "estado");
+            if (!validaEstado.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaEstado).build();
+            }
+            // Actualiza si todo está bien
+            boolean actualizado = trabajadorDAO.activarTrabajador(trabajador);
+            if (actualizado) {
+                return Response.ok().entity("Trabajador: actualizacion de estado con EXITO.").build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("Error: trabajador NO ENCONTRADO o NO ACTUALIZADO.")

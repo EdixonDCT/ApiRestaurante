@@ -125,11 +125,10 @@ public class MesaDAO {
 
         try {
             conn = DBConnection.getConnection();
-            String sql = "UPDATE mesas SET capacidad = ?, disponible = ? WHERE numero = ?";
+            String sql = "UPDATE mesas SET capacidad = ? WHERE numero = ?";
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setInt(1, Integer.parseInt(mesa.getCapacidad()));
-            prepStmt.setInt(2, Integer.parseInt(mesa.getDisponible()));
-            prepStmt.setInt(3, Integer.parseInt(mesa.getNumero()));
+            prepStmt.setInt(2, Integer.parseInt(mesa.getNumero()));
             int filas = prepStmt.executeUpdate();
             actualizado = filas > 0;
 

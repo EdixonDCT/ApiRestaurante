@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class CajaDAO {
+
     private Connection conn = null;
     private PreparedStatement prepStmt = null;
     private ResultSet rs = null;
@@ -39,12 +40,15 @@ public class CajaDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (prepStmt != null)
+                }
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -81,12 +85,15 @@ public class CajaDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (prepStmt != null)
+                }
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -113,10 +120,12 @@ public class CajaDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -126,6 +135,40 @@ public class CajaDAO {
     }
 
     public boolean actualizar(Caja caja) {
+        boolean actualizado = false;
+
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "UPDATE caja SET monto_apertura = ?, monto_cierre = ?, cedula_trabajador = ? WHERE id = ?";
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setDouble(1, Double.parseDouble(caja.getMontoApertura()));
+            prepStmt.setDouble(2, Double.parseDouble(caja.getMontoCierre()));
+            prepStmt.setInt(3, Integer.parseInt(caja.getCedulaTrabajador()));
+            prepStmt.setInt(4, Integer.parseInt(caja.getId()));
+
+            int filas = prepStmt.executeUpdate();
+            actualizado = filas > 0;
+
+        } catch (Exception e) {
+            System.err.println("ERROR AL ACTUALIZAR CAJA: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+
+        return actualizado;
+    }
+
+    public boolean actualizarTotal(Caja caja) {
         boolean actualizado = false;
 
         try {
@@ -149,10 +192,12 @@ public class CajaDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -179,10 +224,12 @@ public class CajaDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -209,10 +256,12 @@ public class CajaDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -238,10 +287,12 @@ public class CajaDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }

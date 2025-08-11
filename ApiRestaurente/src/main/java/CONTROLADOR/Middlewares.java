@@ -42,7 +42,29 @@ public class Middlewares {
         }
         return "ok"; // Si pasa todas las validaciones, retorna "ok"
     }
-
+    
+    public static String validarDoubleCaja(String valor, String campo) {
+        if (Vacio(valor)) {
+            return "Error: " + campo + " no puede estar vacio "; // Si está vacío, retorna mensaje de error
+        }
+        if (!valor.matches("^-?\\d+(\\.\\d+)?$")) {
+            return "Error: " + campo + " debe ser un número y formato correcto (ej: 1  1.0  0.5)";
+        }
+        try {
+            double numero = Double.parseDouble(valor); // Intenta convertir a número
+            if (numero <= 0) {
+                return "Error: " + campo + " debe ser mayor a 0"; // Si es 0 o negativo, error
+            }
+            if (numero > 10000000.00) 
+            {
+                return "Error: " + campo + " no puede tener mas de 10.000.000,00$ en efectivo"; // Si es 0 o negativo, error
+            }
+        } catch (NumberFormatException e) {
+            return "Error: " + campo + " debe ser un numero valido"; // Si no es un número, error
+        }
+        return "ok"; // Si pasa todas las validaciones, retorna "ok"
+    }
+    
     public static String validarEntero(String valor, String campo) {
         if (Vacio(valor)) {
             return "Error: " + campo + " no puede estar vacio "; // Si está vacío, retorna mensaje de error

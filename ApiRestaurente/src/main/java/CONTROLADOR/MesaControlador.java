@@ -110,12 +110,7 @@ public class MesaControlador {
             if (!validaCapacidad.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCapacidad).build();
             }
-
-            String validaDisponiblidad = Middlewares.validarBooleano(mesa.getDisponible(), "disponibilidad");
-            if (!validaDisponiblidad.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaDisponiblidad).build();
-            }
-
+            
             // si todo es correcto accede actualizar
             boolean actualizado = mesaDAO.actualizar(mesa);
             if (actualizado) {

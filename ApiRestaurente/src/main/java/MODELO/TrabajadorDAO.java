@@ -20,7 +20,7 @@ public class TrabajadorDAO {
             conn = DBConnection.getConnection();
 
             // Consulta SQL para seleccionar todos los registros
-            String sql = "SELECT t.cedula,t.nombre,t.apellido,t.nacimiento,t.foto,t.contrasena,o.codigo,o.tipo FROM trabajadores AS t JOIN oficios AS o ON t.id_oficio = o.codigo";
+            String sql = "SELECT t.cedula,t.nombre,t.apellido,t.nacimiento,t.foto,t.contrasena,o.codigo,o.tipo,t.activo FROM trabajadores AS t JOIN oficios AS o ON t.id_oficio = o.codigo";
             prepStmt = conn.prepareStatement(sql);
             rs = prepStmt.executeQuery();
 
@@ -35,6 +35,7 @@ public class TrabajadorDAO {
                 trabajador.setContrasena(rs.getString("contrasena"));
                 trabajador.setIdOficio(rs.getString("codigo"));
                 trabajador.setNombreOficio(rs.getString("tipo"));
+                trabajador.setActivo(rs.getString("activo"));
                 lista.add(trabajador);
             }
 
@@ -64,7 +65,7 @@ public class TrabajadorDAO {
 
         try {
             conn = DBConnection.getConnection();
-            String sql = "SELECT t.cedula,t.nombre,t.apellido,t.nacimiento,t.foto,t.contrasena,o.codigo,o.tipo FROM trabajadores AS t JOIN oficios AS o ON t.id_oficio = o.codigo WHERE t.cedula = ?";
+            String sql = "SELECT t.cedula,t.nombre,t.apellido,t.nacimiento,t.foto,t.contrasena,o.codigo,o.tipo,t.activo FROM trabajadores AS t JOIN oficios AS o ON t.id_oficio = o.codigo WHERE t.cedula = ?";
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setInt(1, Integer.parseInt(cedula));
             rs = prepStmt.executeQuery();
@@ -79,6 +80,7 @@ public class TrabajadorDAO {
                 trabajador.setContrasena(rs.getString("contrasena"));
                 trabajador.setIdOficio(rs.getString("codigo"));
                 trabajador.setNombreOficio(rs.getString("tipo"));
+                trabajador.setActivo(rs.getString("activo"));
             }
 
         } catch (Exception e) {
@@ -228,5 +230,65 @@ public class TrabajadorDAO {
         }
 
         return actualizarFoto;
+    }
+    
+    public boolean activarTrabajador(Trabajador trabajador) {
+        boolean activar = false;
+
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "UPDATE trabajadores SET id_oficio = ?,activo = ? WHERE cedula = ?";
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setInt(1, Integer.parseInt(trabajador.getIdOficio()));
+            prepStmt.setInt(2, Integer.parseInt(trabajador.getActivo()));
+            prepStmt.setInt(3, Integer.parseInt(trabajador.getCedula()));
+
+            int filas = prepStmt.executeUpdate();
+            activar = filas > 0;
+
+        } catch (Exception e) {
+            System.err.println("ERROR AL ACTUALIZAR ESTADO: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (prepStmt != null)
+                    prepStmt.close();
+                if (conn != null)
+                    conn.close();
+            } catch (Exception ex) {
+                System.err.println("ERROR AL ACTUALIZAR ESTADO: " + ex.getMessage());
+            }
+        }
+
+        return activar;
+    }
+        public boolean cambiarEstado(Trabajador trabajador) {
+        boolean activar = false;
+
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "UPDATE trabajadores SET activo = ? WHERE cedula = ?";
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setInt(1, Integer.parseInt(trabajador.getActivo()));
+            prepStmt.setInt(2, Integer.parseInt(trabajador.getCedula()));
+
+            int filas = prepStmt.executeUpdate();
+            activar = filas > 0;
+
+        } catch (Exception e) {
+            System.err.println("ERROR AL ACTUALIZAR ESTADO: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (prepStmt != null)
+                    prepStmt.close();
+                if (conn != null)
+                    conn.close();
+            } catch (Exception ex) {
+                System.err.println("ERROR AL ACTUALIZAR ESTADO: " + ex.getMessage());
+            }
+        }
+
+        return activar;
     }
 }

@@ -16,6 +16,7 @@ create table trabajadores (
     nacimiento date not null,
     foto varchar(255),
     contrasena varchar(100) not null,
+	activo boolean,
     id_oficio int not null,
     primary key (cedula),
     foreign key (id_oficio) references oficios(codigo)
@@ -24,7 +25,7 @@ create table trabajadores (
 create table mesas (
     numero int not null,
     capacidad int not null,
-    disponible boolean default false,
+    disponible boolean default true,
     primary key (numero)
 );
 create table clientes (
@@ -106,6 +107,7 @@ create table caja (
     primary key (id),
     foreign key (cedula_trabajador) references trabajadores(cedula)
 );
+select * from pedidos;
 create table pedidos (
     id int auto_increment,
     numero_mesa int not null,
@@ -118,6 +120,8 @@ create table pedidos (
     nota text,
     correo_cliente varchar(100) not null,
     metodo_pago varchar(50),
+    facturado boolean default(false),
+    eliminado boolean default(false),
     primary key (id),
     foreign key (numero_mesa) references mesas(numero),
     foreign key (id_caja) references caja(id),
@@ -129,10 +133,13 @@ create table detalle_pedido (
     id_pedido int not null,
     id_comida int,
     cantidad_comida int,
+    nota_comida varchar(255),
     id_bebida int,
     cantidad_bebida int,
+	nota_bebida varchar(255),
     id_coctel int,
     cantidad_coctel int,
+	nota_coctel varchar(255),
     primary key (id),
     foreign key (id_pedido) references pedidos(id),
     foreign key (id_comida) references comidas(id),
@@ -145,12 +152,12 @@ insert into oficios (tipo, salario) values
 ('Cajero', 65000.50),
 ('Mesero', 40000.00);
 -- Insert para trabajadores
-insert into trabajadores (cedula, nombre, apellido, nacimiento, foto, contrasena, id_oficio) values 
-('1001', 'Ana', 'Rojas', '1990-01-01', 'c4725ed6-a2a8-4112-9572-639515e759a0_foto1.png', '1234', 3),
-('1002', 'Luis', 'Gomez', '1988-05-12', '3a2ab7b3-0e76-4b0b-8036-815ad0fc87b8_foto2.png', '1234', 3),
-('1003', 'Sara', 'Lopez', '1995-03-22', '4183b335-f95b-4724-ab04-bf488f3e3448_foto3.png', '1234', 2),
-('1004', 'Pedro', 'Perez', '2000-08-10', 'f74c6d39-39a0-4683-98ae-78c5c058f144_foto4.png', '1234', 2),
-('1005', 'Edixon', 'Castillo', '1992-11-15', 'b00a88c9-af7a-4d1a-8096-1d852a475dde_foto5.png', '1904', 1);
+insert into trabajadores (cedula, nombre, apellido, nacimiento, foto, contrasena,activo, id_oficio) values 
+('1001', 'Ana', 'Rojas', '1990-01-01', 'c4725ed6-a2a8-4112-9572-639515e759a0_foto1.png', '1234',1, 3),
+('1002', 'Luis', 'Gomez', '1988-05-12', '3a2ab7b3-0e76-4b0b-8036-815ad0fc87b8_foto2.png', '1234',1, 3),
+('1003', 'Sara', 'Lopez', '1995-03-22', '4183b335-f95b-4724-ab04-bf488f3e3448_foto3.png', '1234',1, 2),
+('1004', 'Pedro', 'Perez', '2000-08-10', 'f74c6d39-39a0-4683-98ae-78c5c058f144_foto4.png', '1234',1, 2),
+('1005', 'Edixon', 'Castillo', '1992-11-15', 'b00a88c9-af7a-4d1a-8096-1d852a475dde_foto5.png', '1904',1, 1);
 
 -- Insert para mesas
 insert into mesas (numero, capacidad, disponible) values 

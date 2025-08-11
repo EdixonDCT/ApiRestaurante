@@ -13,7 +13,7 @@ public class Trabajador {
     //es contraseña con n por el manejo de Ñ
     private String idOficio;//es int porque son numeros enteros
     private String nombreOficio;//es para el Inner Join cuando se consulta el nombre con el id de Oficio
-
+    private String activo;
     public String getCedula() {//obtener la Cedula
         return cedula;
     }
@@ -76,5 +76,13 @@ public class Trabajador {
     
     public void setNombreOficio(String nombreOficio){
         this.nombreOficio = nombreOficio;
+    }
+    
+    public String getActivo(){
+        return activo;
+    }
+    
+    public void setActivo(String activo){
+        this.activo = activo;
     }
 }
