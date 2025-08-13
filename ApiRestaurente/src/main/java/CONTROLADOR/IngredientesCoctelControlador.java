@@ -1,52 +1,61 @@
+// Paquete que agrupa todos los controladores del proyecto.
 package CONTROLADOR;
 
-import MODELO.IngredientesCoctel;
-import MODELO.IngredientesCoctelDAO;
-import MODELO.CoctelDAO;
-import MODELO.IngredienteDAO;
-import CONTROLADOR.Middlewares;
+// Importa las clases necesarias para el controlador.
+import MODELO.IngredientesCoctel; // Clase que representa la asociación entre un ingrediente y un cóctel.
+import MODELO.IngredientesCoctelDAO; // Clase DAO para interactuar con la base de datos de IngredientesCoctel.
+import MODELO.CoctelDAO; // Clase DAO para verificar la existencia de un cóctel.
+import MODELO.IngredienteDAO; // Clase DAO para verificar la existencia de un ingrediente.
+import CONTROLADOR.Middlewares; // Clase que contiene métodos para validar datos.
 
-import java.util.List;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import java.util.List; // Interfaz para manejar listas de objetos.
+import javax.ws.rs.*; // Anotaciones para definir endpoints REST.
+import javax.ws.rs.core.MediaType; // Para especificar tipos de medios (ej. JSON).
+import javax.ws.rs.core.Response; // Para construir y devolver respuestas HTTP.
 
-@Path("ingredientesCoctel")
+// Define la ruta base para acceder a los métodos del controlador.
+@Path("ingredientesCoctel") // Todos los endpoints de esta clase estarán bajo la ruta "/ingredientesCoctel".
+// Indica que las respuestas serán en formato JSON.
 @Produces(MediaType.APPLICATION_JSON)
+// Indica que las peticiones deben ser en formato JSON.
 @Consumes(MediaType.APPLICATION_JSON)
 public class IngredientesCoctelControlador {
 
+    // Instancias de los DAOs necesarios para interactuar con la base de datos.
     private IngredientesCoctelDAO IngCocDAO = new IngredientesCoctelDAO();
     private IngredienteDAO IngDAO = new IngredienteDAO();
     private CoctelDAO CocDAO = new CoctelDAO();
 
+    // Método GET para listar todos los ingredientes de cóctel.
     @GET
     public Response listar() {
         try {
-            List<IngredientesCoctel> lista = IngCocDAO.listarTodos();
-            return Response.ok(lista).build();
+            List<IngredientesCoctel> lista = IngCocDAO.listarTodos(); // Llama al DAO para obtener todos los registros.
+            return Response.ok(lista).build(); // Retorna una respuesta 200 (OK) con la lista de objetos.
         } catch (Exception e) {
-            e.printStackTrace();
-            return Response.serverError().build();
+            e.printStackTrace(); // Imprime la traza del error para depuración.
+            return Response.serverError().build(); // Retorna una respuesta 500 (Internal Server Error).
         }
     }
 
+    // Método GET para obtener un ingrediente de cóctel por su ID.
     @GET
-    @Path("/{id}")
-    public Response obtenerPorId(@PathParam("id") String id) {
+    @Path("/{id}") // La ruta incluye un parámetro dinámico llamado "id".
+    public Response obtenerPorId(@PathParam("id") String id) { // El valor del "id" de la URL se inyecta en la variable 'id'.
         try {
+            // Se valida que el id sea un número entero.
             String validarId = Middlewares.validarEntero(id, "id");
             if (!validarId.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarId).build();
             }
 
-            IngredientesCoctel ingCoc = IngCocDAO.obtenerPorId(id);
-            if (ingCoc != null) {
-                return Response.ok(ingCoc).build();
-            } else {
+            IngredientesCoctel ingCoc = IngCocDAO.obtenerPorId(id); // Busca el registro por el ID.
+            if (ingCoc != null) { // Si se encuentra el registro...
+                return Response.ok(ingCoc).build(); // ...retorna una respuesta 200 (OK) con el objeto.
+            } else { // Si no se encuentra...
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("Error: no se pudo obtener Ingrediente Coctel.")
-                        .build();
+                        .build(); // ...retorna una respuesta 404 (Not Found).
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,26 +65,30 @@ public class IngredientesCoctelControlador {
         }
     }
 
+    // Método GET para obtener los ingredientes de un cóctel específico.
     @GET
-    @Path("/coctel/{id}")
-    public Response obtenerPorCoctel(@PathParam("id") String id) {
+    @Path("/coctel/{id}") // La ruta incluye el ID del cóctel.
+    public Response obtenerPorCoctel(@PathParam("id") String id) { // Recibe el ID del cóctel.
         try {
+            // Se valida que el id sea un número entero.
             String validarId = Middlewares.validarEntero(id, "id");
             if (!validarId.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarId).build();
             }
 
-            List<IngredientesCoctel> lista = IngCocDAO.obtenerPorCoctel(id);
-            return Response.ok(lista).build();
+            List<IngredientesCoctel> lista = IngCocDAO.obtenerPorCoctel(id); // Llama al DAO para obtener la lista de ingredientes del cóctel.
+            return Response.ok(lista).build(); // Retorna una respuesta 200 (OK) con la lista.
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().build(); // Retorna error 500
+            return Response.serverError().build(); // Retorna un error 500.
         }
     }
 
+    // Método POST para crear una nueva asociación entre ingrediente y cóctel.
     @POST
     public Response crear(IngredientesCoctel ingCoc) {
         try {
+            // Valida los IDs de ingrediente y cóctel.
             String validarIdIngrediente = Middlewares.validarEntero(ingCoc.getIdIngrediente(), "id ingrediente");
             if (!validarIdIngrediente.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarIdIngrediente).build();
@@ -85,23 +98,29 @@ public class IngredientesCoctelControlador {
             if (!validarIdCoctel.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarIdCoctel).build();
             }
+            
+            // Verifica que el ingrediente y el cóctel existan en la base de datos.
             boolean ing = IngDAO.existeIngredientePorId(ingCoc.getIdIngrediente());
             boolean coc = CocDAO.existeCoctelPorId(ingCoc.getIdCoctel());
             String mensaje = "";
             boolean creado = false;
+            
             if (ing && coc) {
-               mensaje = "Ingrediente #"+ingCoc.getIdIngrediente()+" y Coctel #"+ingCoc.getIdCoctel()+" encontrados, creando...)";
-               creado = IngCocDAO.crear(ingCoc);
+                // Si ambos existen, procede a crear la asociación.
+                mensaje = "Ingrediente #" + ingCoc.getIdIngrediente() + " y Coctel #" + ingCoc.getIdCoctel() + " encontrados, creando...)";
+                creado = IngCocDAO.crear(ingCoc);
             } else {
-               mensaje = "Error: no se pudo crear INGREDIENTE Coctel.";
+                // Si alguno no existe, se genera un mensaje de error.
+                mensaje = "Error: no se pudo crear INGREDIENTE Coctel.";
             }
+            
             if (creado) {
                 return Response.status(Response.Status.CREATED)
-                        .entity(mensaje).build();
+                        .entity(mensaje).build(); // Retorna una respuesta 201 (Created) si la creación fue exitosa.
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                         .entity(mensaje)
-                        .build();
+                        .build(); // Retorna un 500 si la creación falló.
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,23 +128,24 @@ public class IngredientesCoctelControlador {
         }
     }
 
+    // Método DELETE para eliminar una asociación por su ID.
     @DELETE
     @Path("/{id}")
     public Response eliminar(@PathParam("id") String id) {
         try {
+            // Se valida que el id sea un número entero.
             String validarId = Middlewares.validarEntero(id, "id");
             if (!validarId.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarId).build();
             }
 
-            boolean eliminado = IngCocDAO.eliminar(id);
-            if (eliminado) {
-                return Response.ok().entity("Ingrediente Coctel: Eliminado EXITOSAMENTE.").build();
-            } else {
+            boolean eliminado = IngCocDAO.eliminar(id); // Llama al DAO para eliminar el registro.
+            if (eliminado) { // Si la eliminación fue exitosa...
+                return Response.ok().entity("Ingrediente Coctel: Eliminado EXITOSAMENTE.").build(); // ...retorna una respuesta 200.
+            } else { // Si no se encontró el registro...
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: ingrediente coctel NO ENCONTRADO").build();
+                        .entity("Error: ingrediente coctel NO ENCONTRADO").build(); // ...retorna una respuesta 404.
             }
-
         } catch (Exception e) {
             e.printStackTrace();
             return Response.serverError().entity("Error: Error interno en el servidor.").build();

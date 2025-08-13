@@ -35,7 +35,6 @@ CONTROLADOR\ImagenControlador.class
 MODELO\IngredienteDAO.class
 CONTROLADOR\IngredientesComidaControlador.class
 MODELO\Caja.class
-CONTROLADOR\ImagenControladorViejo.class
 CONTROLADOR\TrabajadorControlador.class
 CONTROLADOR\IngredientesCoctelControlador.class
 CONTROLADOR\PedidoControlador.class
