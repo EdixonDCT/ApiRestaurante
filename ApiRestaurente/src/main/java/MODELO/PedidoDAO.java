@@ -108,6 +108,42 @@ public class PedidoDAO {
         return pedido;
     }
 
+    public boolean existePedidoPorId(String id) {
+        boolean existe = false;
+
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "SELECT 1 FROM pedidos WHERE id = ?";
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setInt(1, Integer.parseInt(id));
+            rs = prepStmt.executeQuery();
+
+            if (rs.next()) {
+                existe = true;
+            }
+
+        } catch (Exception e) {
+            System.err.println("ERROR AL VERIFICAR PEDIDO POR ID: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+
+        return existe;
+    }
+
     public String[] crear(Pedido pedido) {
         String[] resultado = new String[2];
         resultado[0] = "Pedido: no se pudo crear."; // Mensaje por defecto
@@ -163,7 +199,7 @@ public class PedidoDAO {
         return resultado;
     }
 
-public boolean crearReserva(Pedido pedido) {
+    public boolean crearReserva(Pedido pedido) {
         boolean creado = false;
 
         try {
@@ -183,10 +219,12 @@ public boolean crearReserva(Pedido pedido) {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -200,17 +238,14 @@ public boolean crearReserva(Pedido pedido) {
 
         try {
             conn = DBConnection.getConnection();
-            String sql = "UPDATE pedidos SET numero_mesa = ?, fecha = ?, hora = ?, id_caja = ?, numero_clientes = ?, id_reserva = ?, nota = ?, correo_cliente = ?, metodo_pago = ? WHERE id = ?";
+            String sql = "UPDATE pedidos SET numero_mesa = ?, id_caja = ?, numero_clientes = ?, correo_cliente = ?, metodo_pago = ? WHERE id = ?";
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setInt(1, Integer.parseInt(pedido.getNumeroMesa()));
-            prepStmt.setString(2, pedido.getFecha());
-            prepStmt.setString(3, pedido.getHora());
-            prepStmt.setInt(4, Integer.parseInt(pedido.getIdCaja()));
-            prepStmt.setInt(5, Integer.parseInt(pedido.getNumeroClientes()));
-            prepStmt.setString(6, pedido.getIdReserva());
-            prepStmt.setString(7, pedido.getCorreoCliente());
-            prepStmt.setString(8, pedido.getMetodoPago());
-            prepStmt.setInt(9, Integer.parseInt(pedido.getId()));
+            prepStmt.setInt(2, Integer.parseInt(pedido.getIdCaja()));
+            prepStmt.setInt(3, Integer.parseInt(pedido.getNumeroClientes()));
+            prepStmt.setString(4, pedido.getCorreoCliente());
+            prepStmt.setString(5, pedido.getMetodoPago());
+            prepStmt.setInt(6, Integer.parseInt(pedido.getId()));
 
             int filas = prepStmt.executeUpdate();
             actualizado = filas > 0;
@@ -220,10 +255,12 @@ public boolean crearReserva(Pedido pedido) {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -237,11 +274,45 @@ public boolean crearReserva(Pedido pedido) {
 
         try {
             conn = DBConnection.getConnection();
-            String sql = "UPDATE pedidos SET fecha = CURRENT_DATE(), hora = CURRENT_TIME(), id_caja = ?, numero_clientes = ?, nota = ?, metodo_pago = ? WHERE id = ?";
+            String sql = "UPDATE pedidos SET fecha = CURRENT_DATE(), hora = CURRENT_TIME(), id_caja = ?, numero_clientes = ?,correo_cliente = ?,metodo_pago = ? WHERE id = ?";
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setInt(1, Integer.parseInt(pedido.getIdCaja()));
             prepStmt.setInt(2, Integer.parseInt(pedido.getNumeroClientes()));
-            prepStmt.setString(3, pedido.getMetodoPago());
+            prepStmt.setString(3, pedido.getCorreoCliente());
+            prepStmt.setString(4, pedido.getMetodoPago());
+            prepStmt.setInt(5, Integer.parseInt(pedido.getId()));
+            int filas = prepStmt.executeUpdate();
+            actualizado = filas > 0;
+
+        } catch (Exception e) {
+            System.err.println("ERROR AL ACTUALIZAR PEDIDO: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+
+        return actualizado;
+    }
+
+    public boolean EditarReserva(Pedido pedido) {
+        boolean actualizado = false;
+
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "UPDATE pedidos SET numero_mesa = ?, numero_clientes = ?, correo_cliente = ? WHERE id = ?";
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setInt(1, Integer.parseInt(pedido.getNumeroMesa()));
+            prepStmt.setInt(2, Integer.parseInt(pedido.getNumeroClientes()));
+            prepStmt.setString(3, pedido.getCorreoCliente());
             prepStmt.setInt(4, Integer.parseInt(pedido.getId()));
             int filas = prepStmt.executeUpdate();
             actualizado = filas > 0;
@@ -251,10 +322,12 @@ public boolean crearReserva(Pedido pedido) {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -263,53 +336,148 @@ public boolean crearReserva(Pedido pedido) {
         return actualizado;
     }
 
-  public boolean PatchTotal(String id) {
-    boolean actualizado = false;
-    Connection conn = null;
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
+    public boolean patchFacturar(String id) {
+        boolean actualizado = false;
 
-    try {
-        conn = DBConnection.getConnection();
-
-        // 1. Calcular el total del pedido desde detalle_pedido y relaciones
-        String consultaTotal = "SELECT SUM(IFNULL(c.precio * dp.cantidad_comida, 0) + IFNULL(b.precio * dp.cantidad_bebida, 0) + IFNULL(co.precio * dp.cantidad_coctel, 0)) AS total_pedido FROM detalle_pedido AS dp LEFT JOIN comidas AS c ON dp.id_comida = c.id LEFT JOIN bebidas AS b ON dp.id_bebida = b.id LEFT JOIN cocteles AS co ON dp.id_coctel = co.id WHERE dp.id_pedido = ? GROUP BY dp.id_pedido";
-
-        prepStmt = conn.prepareStatement(consultaTotal);
-        prepStmt.setInt(1, Integer.parseInt(id));
-        rs = prepStmt.executeQuery();
-
-        if (!rs.next()) {
-            System.out.println("Pedido: no hay pedidos con el id " + id+".");
-        } else {
-            double total = rs.getDouble("total_pedido");
-
-            // 2. Actualizar la tabla pedidos con el valor total calculado
-            String actualizarSQL = "UPDATE pedidos SET valor_total = ? WHERE id = ?";
-            prepStmt = conn.prepareStatement(actualizarSQL);
-            prepStmt.setDouble(1, total);
-            prepStmt.setInt(2, Integer.parseInt(id));
-
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "UPDATE pedidos SET facturado = 1 WHERE id = ?";
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setInt(1, Integer.parseInt(id));
             int filas = prepStmt.executeUpdate();
             actualizado = filas > 0;
+
+        } catch (Exception e) {
+            System.err.println("ERROR AL ACTUALIZAR ESTADO DE PAGO PEDIDO: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
         }
 
-    } catch (Exception e) {
-        System.err.println("ERROR AL ACTUALIZAR TOTAL DEL PEDIDO: " + e.getMessage());
-        e.printStackTrace();
-    } finally {
-        try {
-            if (rs != null) rs.close();
-            if (prepStmt != null) prepStmt.close();
-            if (conn != null) conn.close();
-        } catch (Exception ex) {
-            System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
-        }
+        return actualizado;
     }
 
-    return actualizado;
-}
+    public boolean patchBorradoNo(String id) {
+        boolean actualizado = false;
 
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "UPDATE pedidos SET eliminado = 0 WHERE id = ?";
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setInt(1, Integer.parseInt(id));
+            int filas = prepStmt.executeUpdate();
+            actualizado = filas > 0;
+
+        } catch (Exception e) {
+            System.err.println("ERROR AL BORRAR PEDIDO PEDIDO: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+
+        return actualizado;
+    }
+
+    public boolean patchBorradoSi(String id) {
+        boolean actualizado = false;
+
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "UPDATE pedidos SET eliminado = 1 WHERE id = ?";
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setInt(1, Integer.parseInt(id));
+            int filas = prepStmt.executeUpdate();
+            actualizado = filas > 0;
+
+        } catch (Exception e) {
+            System.err.println("ERROR AL BORRAR PEDIDO PEDIDO: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+
+        return actualizado;
+    }
+
+    public boolean PatchTotal(String id) {
+        boolean actualizado = false;
+        Connection conn = null;
+        PreparedStatement prepStmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DBConnection.getConnection();
+
+            // 1. Calcular el total del pedido desde detalle_pedido y relaciones
+            String consultaTotal = "SELECT SUM(IFNULL(c.precio * dp.cantidad_comida, 0) + IFNULL(b.precio * dp.cantidad_bebida, 0) + IFNULL(co.precio * dp.cantidad_coctel, 0)) AS total_pedido FROM detalle_pedido AS dp LEFT JOIN comidas AS c ON dp.id_comida = c.id LEFT JOIN bebidas AS b ON dp.id_bebida = b.id LEFT JOIN cocteles AS co ON dp.id_coctel = co.id WHERE dp.id_pedido = ? GROUP BY dp.id_pedido";
+
+            prepStmt = conn.prepareStatement(consultaTotal);
+            prepStmt.setInt(1, Integer.parseInt(id));
+            rs = prepStmt.executeQuery();
+
+            if (!rs.next()) {
+                System.out.println("Pedido: no hay pedidos con el id " + id + ".");
+            } else {
+                double total = rs.getDouble("total_pedido");
+
+                // 2. Actualizar la tabla pedidos con el valor total calculado
+                String actualizarSQL = "UPDATE pedidos SET valor_total = ? WHERE id = ?";
+                prepStmt = conn.prepareStatement(actualizarSQL);
+                prepStmt.setDouble(1, total);
+                prepStmt.setInt(2, Integer.parseInt(id));
+
+                int filas = prepStmt.executeUpdate();
+                actualizado = filas > 0;
+            }
+
+        } catch (Exception e) {
+            System.err.println("ERROR AL ACTUALIZAR TOTAL DEL PEDIDO: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+
+        return actualizado;
+    }
 
     public boolean eliminar(String id) {
         boolean eliminado = false;
@@ -343,10 +511,12 @@ public boolean crearReserva(Pedido pedido) {
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }

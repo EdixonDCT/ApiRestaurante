@@ -95,6 +95,35 @@ public class ComidaDAO {
 
         return comida;
     }
+    public boolean existePorId(String id) {
+    boolean existe = false;
+
+    try {
+        conn = DBConnection.getConnection();
+        String sql = "SELECT 1 FROM comidas WHERE id = ?";
+        prepStmt = conn.prepareStatement(sql);
+        prepStmt.setInt(1, Integer.parseInt(id));
+        rs = prepStmt.executeQuery();
+
+        if (rs.next()) {
+            existe = true;
+        }
+
+    } catch (Exception e) {
+        System.err.println("ERROR AL VERIFICAR COMIDA POR ID: " + e.getMessage());
+        e.printStackTrace();
+    } finally {
+        try {
+            if (rs != null) rs.close();
+            if (prepStmt != null) prepStmt.close();
+            if (conn != null) conn.close();
+        } catch (Exception ex) {
+            System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+        }
+    }
+
+    return existe;
+}
 
     public String[] crear(Comida comida) {
         String[] resultado = new String[2];

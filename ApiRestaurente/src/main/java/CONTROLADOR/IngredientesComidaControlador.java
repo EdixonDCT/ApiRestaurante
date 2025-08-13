@@ -2,6 +2,8 @@ package CONTROLADOR;
 
 import MODELO.IngredientesComida;
 import MODELO.IngredientesComidaDAO;
+import MODELO.IngredienteDAO;
+import MODELO.ComidaDAO;
 import CONTROLADOR.Middlewares;
 
 import java.util.List;
@@ -15,7 +17,8 @@ import javax.ws.rs.core.Response;
 public class IngredientesComidaControlador {
 
     private IngredientesComidaDAO IngComDAO = new IngredientesComidaDAO();
-
+    private IngredienteDAO IngDAO = new IngredienteDAO();
+    private ComidaDAO comDAO = new ComidaDAO();
     // GET: Listar todos
     @GET
     public Response listarIngredientesComida() {
@@ -83,14 +86,22 @@ public class IngredientesComidaControlador {
             if (!validarIdComida.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarIdComida).build();
             }
-
-            boolean creado = IngComDAO.crear(IngCom);
+            boolean ing = IngDAO.existeIngredientePorId(IngCom.getIdIngrediente());
+            boolean com = comDAO.existePorId(IngCom.getIdComida());
+            String mensaje = "";
+            boolean creado = false;
+            if(ing && com){
+               mensaje = "Ingrediente #"+IngCom.getIdIngrediente()+" y Comida #"+IngCom.getIdComida()+" encontrados, creando...)";
+               creado = IngComDAO.crear(IngCom);
+            } else {
+               mensaje = "Error: no se pudo crear INGREDIENTE COMIDA";
+            }
             if (creado) {
                 return Response.status(Response.Status.CREATED)
-                        .entity("Ingrediente Comida: creado con Exito.").build();
+                        .entity(mensaje).build();
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("Error: no se pudo crear Ingrediente Comida.")
+                        .entity(mensaje)
                         .build();
             }
         } catch (Exception e) {

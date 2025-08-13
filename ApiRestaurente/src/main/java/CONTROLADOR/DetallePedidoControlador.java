@@ -2,6 +2,10 @@ package CONTROLADOR;
 
 import MODELO.DetallePedido;
 import MODELO.DetallePedidoDAO;
+import MODELO.BebidaDAO;
+import MODELO.ComidaDAO;
+import MODELO.CoctelDAO;
+import MODELO.PedidoDAO;
 import CONTROLADOR.Middlewares;
 
 import java.util.List;
@@ -15,7 +19,10 @@ import javax.ws.rs.core.Response;
 public class DetallePedidoControlador {
 
     private DetallePedidoDAO DetllPedDAO = new DetallePedidoDAO();
-
+    private PedidoDAO PedDAO = new PedidoDAO();
+    private ComidaDAO comDAO = new ComidaDAO();
+    private BebidaDAO bebDAO = new BebidaDAO();
+    private CoctelDAO cocDAO = new CoctelDAO();
     // GET: Listar todos los detalles
     @GET
     public Response listarTodos() {
@@ -56,11 +63,15 @@ public class DetallePedidoControlador {
     @POST
     public Response crearDetalle(DetallePedido detallePedido) {
         try {
+            
+
             // Validar id_pedido (obligatorio)
             String validaIdPedido = Middlewares.validarEntero(detallePedido.getId_pedido(), "id_pedido");
             if (!validaIdPedido.equals("ok"))
                 return Response.status(400).entity(validaIdPedido).build();
-
+            boolean pedido = PedDAO.existePedidoPorId(detallePedido.getId_pedido());
+            String mensaje = "Pedido: #"+detallePedido.getId_pedido()+" Existe";
+            String mensajeNoExisteLosdemas = "Pedido: #"+detallePedido.getId_pedido()+" Existe";
             // Validar id_comida y su cantidad
             String validaIdComida = Middlewares.validarEnteroNulo(detallePedido.getId_comida(), "id_comida");
             if (!validaIdComida.equals("ok")) {
@@ -74,6 +85,8 @@ public class DetallePedidoControlador {
                         "cantidad_comida");
                 if (!validaCantidadComida.equals("ok"))
                     return Response.status(400).entity(validaCantidadComida).build();
+                boolean comida = comDAO.existePorId(detallePedido.getId_comida());
+                if(comida) mensaje += ",Comida : #"+detallePedido.getId_comida()+" Existe";
             }
 
             // Validar id_bebida y su cantidad
@@ -89,6 +102,8 @@ public class DetallePedidoControlador {
                         "cantidad_bebida");
                 if (!validaCantidadBebida.equals("ok"))
                     return Response.status(400).entity(validaCantidadBebida).build();
+                boolean bebida = bebDAO.existeBebidaPorId(detallePedido.getCantidad_bebida());
+                if(bebida) mensaje += ",Bebida : #"+detallePedido.getId_bebida()+" Existe";
             }
 
             // Validar id_coctel y su cantidad
@@ -104,17 +119,26 @@ public class DetallePedidoControlador {
                         "cantidad_coctel");
                 if (!validaCantidadCoctel.equals("ok"))
                     return Response.status(400).entity(validaCantidadCoctel).build();
+                boolean coctel = cocDAO.existeCoctelPorId(detallePedido.getCantidad_coctel());
+                if(coctel) mensaje += ",Coctel : #"+detallePedido.getCantidad_coctel()+" Existe";
             }
-
-            // Crear detalle
-            boolean creado = DetllPedDAO.crear(detallePedido);
+            boolean creado = false;
+            if(mensaje != mensajeNoExisteLosdemas)
+            {
+                creado = DetllPedDAO.crear(detallePedido);
+                mensaje += ",Encontrados creando...";
+            }
+            else
+            {
+                mensaje = "Error: no se pudo crear DETALLE PEDIDO";
+            }
             if (creado) {
                 return Response.status(Response.Status.CREATED)
-                        .entity("Detalle_pedido: creado EXITOSAMENTE.")
+                        .entity(mensaje)
                         .build();
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("Detalle_pedido: error al crear.")
+                        .entity(mensaje)
                         .build();
             }
 

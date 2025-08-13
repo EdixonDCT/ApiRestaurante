@@ -2,6 +2,8 @@ package CONTROLADOR;
 
 import MODELO.IngredientesCoctel;
 import MODELO.IngredientesCoctelDAO;
+import MODELO.CoctelDAO;
+import MODELO.IngredienteDAO;
 import CONTROLADOR.Middlewares;
 
 import java.util.List;
@@ -15,6 +17,8 @@ import javax.ws.rs.core.Response;
 public class IngredientesCoctelControlador {
 
     private IngredientesCoctelDAO IngCocDAO = new IngredientesCoctelDAO();
+    private IngredienteDAO IngDAO = new IngredienteDAO();
+    private CoctelDAO CocDAO = new CoctelDAO();
 
     @GET
     public Response listar() {
@@ -51,6 +55,7 @@ public class IngredientesCoctelControlador {
                     .build();
         }
     }
+
     @GET
     @Path("/coctel/{id}")
     public Response obtenerPorCoctel(@PathParam("id") String id) {
@@ -80,14 +85,22 @@ public class IngredientesCoctelControlador {
             if (!validarIdCoctel.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarIdCoctel).build();
             }
-
-            boolean creado = IngCocDAO.crear(ingCoc);
+            boolean ing = IngDAO.existeIngredientePorId(ingCoc.getIdIngrediente());
+            boolean coc = CocDAO.existeCoctelPorId(ingCoc.getIdCoctel());
+            String mensaje = "";
+            boolean creado = false;
+            if (ing && coc) {
+               mensaje = "Ingrediente #"+ingCoc.getIdIngrediente()+" y Coctel #"+ingCoc.getIdCoctel()+" encontrados, creando...)";
+               creado = IngCocDAO.crear(ingCoc);
+            } else {
+               mensaje = "Error: no se pudo crear INGREDIENTE Coctel.";
+            }
             if (creado) {
                 return Response.status(Response.Status.CREATED)
-                        .entity("Ingrediente Coctel: creado con EXITO.").build();
+                        .entity(mensaje).build();
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("Error: no se pudo crear INGREDIENTE COMIDA.")
+                        .entity(mensaje)
                         .build();
             }
         } catch (Exception e) {

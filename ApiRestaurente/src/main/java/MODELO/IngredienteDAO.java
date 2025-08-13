@@ -74,6 +74,36 @@ public class IngredienteDAO {
 
         return ingrediente;
     }
+    public boolean existeIngredientePorId(String id) {
+    boolean existe = false;
+
+    try {
+        conn = DBConnection.getConnection();
+        String sql = "SELECT 1 FROM ingredientes WHERE id = ?";
+        prepStmt = conn.prepareStatement(sql);
+        prepStmt.setInt(1, Integer.parseInt(id));
+        rs = prepStmt.executeQuery();
+
+        if (rs.next()) {
+            existe = true; // si trae algo, lo marcamos como true
+        }
+
+    } catch (Exception e) {
+        System.err.println("ERROR AL VERIFICAR INGREDIENTE POR ID: " + e.getMessage());
+        e.printStackTrace();
+    } finally {
+        try {
+            if (rs != null) rs.close();
+            if (prepStmt != null) prepStmt.close();
+            if (conn != null) conn.close();
+        } catch (Exception ex) {
+            System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+        }
+    }
+
+    return existe;
+}
+
 
     public boolean crear(Ingrediente ingrediente) {
         boolean creado = false;

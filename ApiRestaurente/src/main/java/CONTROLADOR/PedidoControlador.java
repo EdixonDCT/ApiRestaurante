@@ -99,6 +99,10 @@ public class PedidoControlador {
             if (!validaNumeroMesa.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroMesa).build();
             }
+            String validaNumeroClientes = Middlewares.validarEntero(pedido.getNumeroClientes(), "numero de clientes");
+            if (!validaNumeroClientes.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroClientes).build();
+            }
             String validaIdReserva = Middlewares.validarEntero(pedido.getIdReserva(), "id reserva");
             if (!validaIdReserva.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaIdReserva).build();
@@ -132,14 +136,6 @@ public class PedidoControlador {
             String validaNumeroMesa = Middlewares.validarEntero(pedido.getNumeroMesa(), "numero mesa");
             if (!validaNumeroMesa.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroMesa).build();
-            }
-            String validaFecha = Middlewares.validarFecha(pedido.getFecha(), "fecha");
-            if (!validaFecha.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaFecha).build();
-            }
-            String validaHora = Middlewares.validarHora(pedido.getHora(), "hora");
-            if (!validaHora.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaHora).build();
             }
             String validaIdCaja = Middlewares.validarEntero(pedido.getIdCaja(), "id caja");
             if (!validaIdCaja.equals("ok")) {
@@ -190,7 +186,7 @@ public class PedidoControlador {
             if (!validaNumeroClientes.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroClientes).build();
             }
-            String validaMetodoPago = Middlewares.validarString(pedido.getMetodoPago(), "numero mesa");
+            String validaMetodoPago = Middlewares.validarString(pedido.getMetodoPago(), "metodo de pago");
             if (!validaMetodoPago.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaMetodoPago).build();
             }
@@ -200,6 +196,43 @@ public class PedidoControlador {
             }
 
             boolean actualizado = pedidoDAO.actualizarReserva(pedido);
+            if (actualizado) {
+                return Response.ok().entity("Pedido: reserva actualizada EXITOSAMENTE.").build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("Error: pedido reserva no encontrado o no actualizada.").build();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().entity("Error interno en el servidor.").build();
+        }
+    }
+
+    @PUT
+    @Path("/reservaEditar/{id}")
+    public Response EditarPedidoReserva(@PathParam("id") String id, Pedido pedido) {
+        try {
+            pedido.setId(id); // Asegurar que el ID venga desde la URL
+
+            String validaNumeroClientes = Middlewares.validarEntero(pedido.getNumeroClientes(), "numero de clientes");
+            if (!validaNumeroClientes.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroClientes).build();
+            }
+            String validaNumeroMesa = Middlewares.validarEntero(pedido.getNumeroMesa(), "numero mesa");
+            if (!validaNumeroMesa.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroMesa).build();
+            }
+            String validaCorreoCliente = Middlewares.validarCorreo(pedido.getCorreoCliente(), "correo cliente");
+            if (!validaCorreoCliente.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCorreoCliente).build();
+            }
+            String validaId = Middlewares.validarEntero(pedido.getId(), "id");
+            if (!validaId.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
+            }
+
+            boolean actualizado = pedidoDAO.EditarReserva(pedido);
             if (actualizado) {
                 return Response.ok().entity("Pedido: reserva actualizada EXITOSAMENTE.").build();
             } else {
@@ -236,6 +269,69 @@ public class PedidoControlador {
         }
     }
 
+    @PATCH
+    @Path("facturar/{id}")
+    public Response PatchFacturar(@PathParam("id") String id) {
+        try {
+
+            String validaId = Middlewares.validarEntero(id, "id");
+            if (!validaId.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
+            }
+            boolean actualizado = pedidoDAO.patchFacturar(id);
+            if (actualizado) {
+                return Response.ok().entity("Pedido: facturado EXITOSAMENTE.").build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("Error: pedido no encontrado o no actualizado.").build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().entity("Error interno en el servidor.").build();
+        }
+    }
+    @PATCH
+    @Path("eliminadosi/{id}")
+    public Response PatchEliminadoSI(@PathParam("id") String id) {
+        try {
+
+            String validaId = Middlewares.validarEntero(id, "id");
+            if (!validaId.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
+            }
+            boolean actualizado = pedidoDAO.patchBorradoSi(id);
+            if (actualizado) {
+                return Response.ok().entity("Pedido: eliminado suave EXITOSAMENTE.").build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("Error: pedido no encontrado o no actualizado.").build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().entity("Error interno en el servidor.").build();
+        }
+    }
+    @PATCH
+    @Path("eliminadono/{id}")
+    public Response PatchEliminadoNO(@PathParam("id") String id) {
+        try {
+
+            String validaId = Middlewares.validarEntero(id, "id");
+            if (!validaId.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
+            }
+            boolean actualizado = pedidoDAO.patchBorradoNo(id);
+            if (actualizado) {
+                return Response.ok().entity("Pedido: rescatado del eliminado suave EXITOSAMENTE.").build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("Error: pedido no encontrado o no actualizado.").build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().entity("Error interno en el servidor.").build();
+        }
+    }
     @DELETE
     @Path("/{id}")
     public Response eliminarPedido(@PathParam("id") String id) {

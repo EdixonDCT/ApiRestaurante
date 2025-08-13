@@ -178,7 +178,7 @@ public class IngredientesComidaDAO {
 
         try {
             conn = DBConnection.getConnection();
-            String sql = "DELETE FROM ingredientes_comida WHERE id = ?";
+            String sql = "DELETE FROM ingredientes_comida WHERE id_comida = ?";
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setInt(1, Integer.parseInt(id));
 
