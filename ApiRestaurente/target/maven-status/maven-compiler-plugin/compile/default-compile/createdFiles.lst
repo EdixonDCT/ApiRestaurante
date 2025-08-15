@@ -9,6 +9,7 @@ MODELO\Comida.class
 MODELO\PedidoDAO.class
 MODELO\DetallePedidoDAO.class
 MODELO\Trabajador.class
+MODELO\Login.class
 MODELO\Cliente.class
 MODELO\OficioDAO.class
 CONTROLADOR\DetallePedidoControlador.class
@@ -26,6 +27,7 @@ CONTROLADOR\ReservaControlador.class
 MODELO\Reserva.class
 MODELO\TrabajadorDAO.class
 MODELO\IngredientesComidaDAO.class
+BD\JwtUtil.class
 BD\DBConnection.class
 CONTROLADOR\CoctelControlador.class
 MODELO\CajaDAO.class
@@ -42,6 +44,7 @@ MODELO\ClienteDAO.class
 MODELO\ComidaDAO.class
 MODELO\IngredientesCoctel.class
 BD\Configuracion.class
+CONTROLADOR\LoginControlador.class
 CONTROLADOR\Middlewares.class
 MODELO\Mesa.class
 CONTROLADOR\CajaControlador.class
