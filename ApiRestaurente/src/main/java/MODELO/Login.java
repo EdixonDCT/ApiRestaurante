@@ -1,15 +1,18 @@
 package MODELO;
 
-//Archivo Java dedicado para los getters y setters de los valores de la tabla,sirve como objeto
+import java.util.List;
+
+// Objeto que representa la respuesta de login para el frontend
 public class Login {
 
-    //valores de la tabla
     private String cedula;
     private String contrasena;
-    private String permisos;
+    private List<String> permisos; // Array de permisos
     private String rol;
     private String token;
     private String refreshToken;
+
+    // --- Getters y Setters ---
 
     public String getCedula() {
         return cedula;
@@ -27,8 +30,12 @@ public class Login {
         this.contrasena = contrasena;
     }
 
-    public void setPermisos(String contrasena) {
-        this.contrasena = contrasena;
+    public List<String> getPermisos() {
+        return permisos;
+    }
+
+    public void setPermisos(List<String> permisos) {
+        this.permisos = permisos;
     }
 
     public String getRol() {

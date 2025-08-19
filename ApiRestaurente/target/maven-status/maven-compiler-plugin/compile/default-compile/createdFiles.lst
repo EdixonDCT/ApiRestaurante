@@ -22,6 +22,7 @@ MODELO\Ingrediente.class
 CONTROLADOR\Servicios.class
 CONTROLADOR\BebidaControlador.class
 CONTROLADOR\ComidaControlador.class
+BD\JwtUtil$TokenValidationResult.class
 MODELO\BebidaDAO.class
 CONTROLADOR\ReservaControlador.class
 MODELO\Reserva.class
@@ -29,6 +30,7 @@ MODELO\TrabajadorDAO.class
 MODELO\IngredientesComidaDAO.class
 BD\JwtUtil.class
 BD\DBConnection.class
+MODELO\LoginDAO.class
 CONTROLADOR\CoctelControlador.class
 MODELO\CajaDAO.class
 MODELO\MesaDAO.class
