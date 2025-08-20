@@ -309,6 +309,77 @@ public class TrabajadorControlador {
         }
     }
 
+    @PATCH
+    @Path("adminTemporal/{cedula}")
+    public Response activarAdminTemporal(@PathParam("cedula") String cedula, Trabajador trabajador) {
+        try {
+            // Asigna la cédula de la URL al objeto trabajador.
+            trabajador.setCedula(cedula);
+            // Valida la cédula.
+            String validaCedula = Middlewares.validarEntero(cedula, "cedula");
+            if (!validaCedula.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
+            }
+            // Valida el 'idOficio'.
+            String validaFechaInicio = Middlewares.validarFecha(trabajador.getAdminTemporalInicio(), "fecha admin temporal inicio");
+            if (!validaFechaInicio.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaFechaInicio).build();
+            }
+            // Valida el estado.
+            String validaFechaFin = Middlewares.validarFecha(trabajador.getAdminTemporalFin(), "fecha admin temporal fin");
+            if (!validaFechaFin.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaFechaFin).build();
+            }
+            // Llama al método 'activarAdminTemporalTrabajador' del DAO.
+            boolean actualizado = trabajadorDAO.activarAdminTemporalTrabajador(trabajador);
+            if (actualizado) {
+                // Si la actualización es exitosa, retorna un 200 (OK).
+                return Response.ok().entity("Trabajador: actualizacion de acceso temporal de administrador con EXITO.").build();
+            } else {
+                // Si el trabajador no se encuentra, retorna un 404 (Not Found).
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("Error: trabajador NO ENCONTRADO o NO ACTUALIZADO.")
+                        .build();
+            }
+        } catch (Exception e) {
+            // Imprime la traza de la excepción.
+            e.printStackTrace();
+            // Retorna un error 500 (Internal Server Error).
+            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+        }
+    }
+    
+    @PATCH
+    @Path("desactivarAdmin/{cedula}")
+    public Response desactivarAdminTemporal(@PathParam("cedula") String cedula, Trabajador trabajador) {
+        try {
+            // Asigna la cédula de la URL al objeto trabajador.
+            trabajador.setCedula(cedula);
+            // Valida la cédula.
+            String validaCedula = Middlewares.validarEntero(cedula, "cedula");
+            if (!validaCedula.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
+            }
+
+            // Llama al método 'activarAdminTemporalTrabajador' del DAO.
+            boolean actualizado = trabajadorDAO.desactivarAdminTemporalTrabajador(trabajador);
+            if (actualizado) {
+                // Si la actualización es exitosa, retorna un 200 (OK).
+                return Response.ok().entity("Trabajador: actualizacion terminado acceso temporal de administrador con EXITO.").build();
+            } else {
+                // Si el trabajador no se encuentra, retorna un 404 (Not Found).
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("Error: trabajador NO ENCONTRADO o NO ACTUALIZADO.")
+                        .build();
+            }
+        } catch (Exception e) {
+            // Imprime la traza de la excepción.
+            e.printStackTrace();
+            // Retorna un error 500 (Internal Server Error).
+            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+        }
+    }
+
     // Método DELETE para eliminar un trabajador por su cédula.
     @DELETE
     @Path("/{cedula}")

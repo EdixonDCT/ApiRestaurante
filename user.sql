@@ -17,6 +17,8 @@ create table trabajadores (
     contrasena varchar(100) not null,
 	activo boolean,
     id_oficio int not null,
+    adminTemporalInicio date,
+    adminTemporalFin date,
     primary key (cedula),
     foreign key (id_oficio) references oficios(codigo)
 );
@@ -155,6 +157,7 @@ insert into mesas (numero, capacidad, disponible) values
 (3, 6, false),
 (4, 4, true),
 (5, 8, false);
+UPDATE trabajadores SET adminTemporalInicio = null,adminTemporalFin = null,activo = 0 WHERE cedula = '1001';
 insert into clientes (correo, cedula, telefono) values 
 ('ana@correo.com', '2001', '3100000001'),
 ('luis@correo.com', '2002', '3100000002'),
@@ -291,7 +294,6 @@ insert into detalle_pedido (id_pedido, id_comida, cantidad_comida, id_bebida, ca
 (3, 3, 1, 3, 2, 3, 2),
 (4, 4, 1, 4, 1, 4, 1),
 (5, 5, 2, 5, 2, 5, 1);
-
 drop table if exists detalle_pedido;
 drop table if exists pedidos;
 drop table if exists caja;
@@ -306,3 +308,22 @@ drop table if exists clientes;
 drop table if exists mesas;
 drop table if exists trabajadores;
 drop table if exists oficios;
+INSERT INTO detalle_pedido 
+(id_pedido, id_comida, cantidad_comida, nota_comida, 
+ id_bebida, cantidad_bebida, nota_bebida, 
+ id_coctel, cantidad_coctel, nota_coctel)
+SELECT 
+  1,  -- id_pedido
+  1,  -- id_comida
+  2,  -- cantidad_comida
+  'Extra queso', -- nota_comida
+  1,  -- id_bebida
+  3,  -- cantidad_bebida
+  'Bien fría',   -- nota_bebida
+  1,  -- id_coctel
+  1,  -- cantidad_coctel
+  'Sin azúcar'   -- nota_coctel
+WHERE EXISTS (SELECT 1 FROM pedidos p WHERE p.id = 1)
+  AND (1 IS NULL OR EXISTS (SELECT 1 FROM comidas c WHERE c.id = 1))
+  AND (1 IS NULL OR EXISTS (SELECT 1 FROM bebidas b WHERE b.id = 1))
+  AND (1 IS NULL OR EXISTS (SELECT 1 FROM cocteles co WHERE co.id = 1));

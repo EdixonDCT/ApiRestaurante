@@ -135,110 +135,149 @@ public class DetallePedidoDAO {
     }
 
     // MÉTODO: Crea un nuevo registro de detalle de pedido en la base de datos.
-    public boolean crear(DetallePedido d) {
-        boolean creado = false;
+public boolean crear(DetallePedido d) {
+    boolean creado = false;
 
-        try {
-            // Establece la conexión.
-            conn = DBConnection.getConnection();
-            // Consulta SQL para insertar un nuevo registro.
-            String sql = "INSERT INTO detalle_pedido (id_pedido, id_comida, cantidad_comida, nota_comida, id_bebida, cantidad_bebida, nota_bebida, id_coctel, cantidad_coctel, nota_coctel) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            // Prepara la sentencia.
-            prepStmt = conn.prepareStatement(sql);
+    try {
+        conn = DBConnection.getConnection();
 
-            // Asigna el id_pedido (campo obligatorio).
-            prepStmt.setInt(1, Integer.parseInt(d.getId_pedido()));
+        // Consulta SQL con validaciones: 
+        // - id_pedido siempre debe existir
+        // - id_comida, id_bebida, id_coctel pueden ser NULL o deben existir en su tabla
+        String sql = 
+            "INSERT INTO detalle_pedido " +
+            "(id_pedido, id_comida, cantidad_comida, nota_comida, " +
+            " id_bebida, cantidad_bebida, nota_bebida, " +
+            " id_coctel, cantidad_coctel, nota_coctel) " +
+            "SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ? " +
+            "WHERE EXISTS (SELECT 1 FROM pedidos p WHERE p.id = ?) " +
+            "  AND (? IS NULL OR EXISTS (SELECT 1 FROM comidas c WHERE c.id = ?)) " +
+            "  AND (? IS NULL OR EXISTS (SELECT 1 FROM bebidas b WHERE b.id = ?)) " +
+            "  AND (? IS NULL OR EXISTS (SELECT 1 FROM cocteles co WHERE co.id = ?))";
 
-            // Asigna los valores para los productos. Se verifica si el valor no es nulo o vacío
-            // para evitar errores al intentar convertir un String nulo a Int.
-            // Si el valor es nulo, se inserta un valor nulo en la base de datos.
+        prepStmt = conn.prepareStatement(sql);
 
-            // id_comida
-            if (d.getId_comida() != null && !d.getId_comida().isEmpty()) {
-                prepStmt.setInt(2, Integer.parseInt(d.getId_comida()));
-            } else {
-                prepStmt.setNull(2, java.sql.Types.INTEGER);
-            }
+        // ----------------------------
+        // 1) Parámetros del INSERT
+        // ----------------------------
+        // id_pedido
+        prepStmt.setInt(1, Integer.parseInt(d.getId_pedido()));
 
-            // cantidad_comida
-            if (d.getCantidad_comida() != null && !d.getCantidad_comida().isEmpty()) {
-                prepStmt.setInt(3, Integer.parseInt(d.getCantidad_comida()));
-            } else {
-                prepStmt.setNull(3, java.sql.Types.INTEGER);
-            }
-
-            // nota_comida
-            if (d.getNota_comida() != null && !d.getNota_comida().isEmpty()) {
-                prepStmt.setString(4, d.getNota_comida());
-            } else {
-                prepStmt.setNull(4, java.sql.Types.VARCHAR);
-            }
-
-            // id_bebida
-            if (d.getId_bebida() != null && !d.getId_bebida().isEmpty()) {
-                prepStmt.setInt(5, Integer.parseInt(d.getId_bebida()));
-            } else {
-                prepStmt.setNull(5, java.sql.Types.INTEGER);
-            }
-
-            // cantidad_bebida
-            if (d.getCantidad_bebida() != null && !d.getCantidad_bebida().isEmpty()) {
-                prepStmt.setInt(6, Integer.parseInt(d.getCantidad_bebida()));
-            } else {
-                prepStmt.setNull(6, java.sql.Types.INTEGER);
-            }
-
-            // nota_bebida
-            if (d.getNota_bebida() != null && !d.getNota_bebida().isEmpty()) {
-                prepStmt.setString(7, d.getNota_bebida());
-            } else {
-                prepStmt.setNull(7, java.sql.Types.VARCHAR);
-            }
-
-            // id_coctel
-            if (d.getId_coctel() != null && !d.getId_coctel().isEmpty()) {
-                prepStmt.setInt(8, Integer.parseInt(d.getId_coctel()));
-            } else {
-                prepStmt.setNull(8, java.sql.Types.INTEGER);
-            }
-
-            // cantidad_coctel
-            if (d.getCantidad_coctel() != null && !d.getCantidad_coctel().isEmpty()) {
-                prepStmt.setInt(9, Integer.parseInt(d.getCantidad_coctel()));
-            } else {
-                prepStmt.setNull(9, java.sql.Types.INTEGER);
-            }
-
-            // nota_coctel
-            if (d.getNota_coctel() != null && !d.getNota_coctel().isEmpty()) {
-                prepStmt.setString(10, d.getNota_coctel());
-            } else {
-                prepStmt.setNull(10, java.sql.Types.VARCHAR);
-            }
-
-            // Ejecuta la inserción y obtiene el número de filas afectadas.
-            int filas = prepStmt.executeUpdate();
-            // La operación es exitosa si se insertó al menos una fila.
-            creado = filas > 0;
-        } catch (Exception e) {
-            // Manejo de errores.
-            System.err.println("ERROR AL CREAR DETALLE_PEDIDO: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            // Cierre de recursos.
-            try {
-                if (prepStmt != null)
-                    prepStmt.close();
-                if (conn != null)
-                    conn.close();
-            } catch (Exception ex) {
-                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
-            }
+        // id_comida
+        if (d.getId_comida() != null && !d.getId_comida().isEmpty()) {
+            prepStmt.setInt(2, Integer.parseInt(d.getId_comida()));
+        } else {
+            prepStmt.setNull(2, java.sql.Types.INTEGER);
         }
 
-        return creado;
+        // cantidad_comida
+        if (d.getCantidad_comida() != null && !d.getCantidad_comida().isEmpty()) {
+            prepStmt.setInt(3, Integer.parseInt(d.getCantidad_comida()));
+        } else {
+            prepStmt.setNull(3, java.sql.Types.INTEGER);
+        }
 
+        // nota_comida
+        if (d.getNota_comida() != null && !d.getNota_comida().isEmpty()) {
+            prepStmt.setString(4, d.getNota_comida());
+        } else {
+            prepStmt.setNull(4, java.sql.Types.VARCHAR);
+        }
+
+        // id_bebida
+        if (d.getId_bebida() != null && !d.getId_bebida().isEmpty()) {
+            prepStmt.setInt(5, Integer.parseInt(d.getId_bebida()));
+        } else {
+            prepStmt.setNull(5, java.sql.Types.INTEGER);
+        }
+
+        // cantidad_bebida
+        if (d.getCantidad_bebida() != null && !d.getCantidad_bebida().isEmpty()) {
+            prepStmt.setInt(6, Integer.parseInt(d.getCantidad_bebida()));
+        } else {
+            prepStmt.setNull(6, java.sql.Types.INTEGER);
+        }
+
+        // nota_bebida
+        if (d.getNota_bebida() != null && !d.getNota_bebida().isEmpty()) {
+            prepStmt.setString(7, d.getNota_bebida());
+        } else {
+            prepStmt.setNull(7, java.sql.Types.VARCHAR);
+        }
+
+        // id_coctel
+        if (d.getId_coctel() != null && !d.getId_coctel().isEmpty()) {
+            prepStmt.setInt(8, Integer.parseInt(d.getId_coctel()));
+        } else {
+            prepStmt.setNull(8, java.sql.Types.INTEGER);
+        }
+
+        // cantidad_coctel
+        if (d.getCantidad_coctel() != null && !d.getCantidad_coctel().isEmpty()) {
+            prepStmt.setInt(9, Integer.parseInt(d.getCantidad_coctel()));
+        } else {
+            prepStmt.setNull(9, java.sql.Types.INTEGER);
+        }
+
+        // nota_coctel
+        if (d.getNota_coctel() != null && !d.getNota_coctel().isEmpty()) {
+            prepStmt.setString(10, d.getNota_coctel());
+        } else {
+            prepStmt.setNull(10, java.sql.Types.VARCHAR);
+        }
+
+        // ----------------------------
+        // 2) Parámetros de validaciones en el WHERE
+        // ----------------------------
+        // pedido obligatorio
+        prepStmt.setInt(11, Integer.parseInt(d.getId_pedido()));
+
+        // comida
+        if (d.getId_comida() != null && !d.getId_comida().isEmpty()) {
+            prepStmt.setInt(12, Integer.parseInt(d.getId_comida()));
+            prepStmt.setInt(13, Integer.parseInt(d.getId_comida()));
+        } else {
+            prepStmt.setNull(12, java.sql.Types.INTEGER);
+            prepStmt.setNull(13, java.sql.Types.INTEGER);
+        }
+
+        // bebida
+        if (d.getId_bebida() != null && !d.getId_bebida().isEmpty()) {
+            prepStmt.setInt(14, Integer.parseInt(d.getId_bebida()));
+            prepStmt.setInt(15, Integer.parseInt(d.getId_bebida()));
+        } else {
+            prepStmt.setNull(14, java.sql.Types.INTEGER);
+            prepStmt.setNull(15, java.sql.Types.INTEGER);
+        }
+
+        // coctel
+        if (d.getId_coctel() != null && !d.getId_coctel().isEmpty()) {
+            prepStmt.setInt(16, Integer.parseInt(d.getId_coctel()));
+            prepStmt.setInt(17, Integer.parseInt(d.getId_coctel()));
+        } else {
+            prepStmt.setNull(16, java.sql.Types.INTEGER);
+            prepStmt.setNull(17, java.sql.Types.INTEGER);
+        }
+
+        // Ejecuta
+        int filas = prepStmt.executeUpdate();
+        creado = filas > 0; // si filas = 0, significa que no cumplió validaciones
+
+    } catch (Exception e) {
+        System.err.println("ERROR AL CREAR DETALLE_PEDIDO: " + e.getMessage());
+        e.printStackTrace();
+    } finally {
+        try {
+            if (prepStmt != null) prepStmt.close();
+            if (conn != null) conn.close();
+        } catch (Exception ex) {
+            System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+        }
     }
+
+    return creado;
+}
+
 
     // MÉTODO: Elimina los detalles de un pedido específico por el ID del pedido.
     public boolean eliminar(String id) {

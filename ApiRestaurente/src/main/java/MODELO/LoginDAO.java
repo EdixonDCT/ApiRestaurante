@@ -16,28 +16,21 @@ public class LoginDAO {
     /**
      * Valida si la cédula y contraseña existen en la base de datos.
      */
-    public Login autenticar(String cedula, String contrasena) {
-        Login login = null;
+    public boolean autenticar(String cedula, String contrasena) {
+        boolean creado = false;
         try {
             conn = DBConnection.getConnection();
 
-            String sql = "SELECT cedula, rol FROM TB_TRABAJADOR WHERE cedula = ? AND contrasena = ?";
+            String sql = "SELECT cedula,contrasena FROM trabajadores WHERE cedula = ? AND contrasena = ?";
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setString(1, cedula);
             prepStmt.setString(2, contrasena);
             rs = prepStmt.executeQuery();
-
             if (rs.next()) {
-                login = new Login();
-                login.setCedula(rs.getString("cedula"));
-                login.setContrasena(contrasena);
-                login.setRol(rs.getString("rol"));
-
-                // Obtener permisos
-                List<String> permisos = obtenerPermisos(cedula);
-                login.setPermisos(permisos);
+                String cedulaSQL = rs.getString("cedula");
+                String contrasenaSQL = rs.getString("contrasena");
+                if (cedula.equals(cedulaSQL) && contrasena.equals(contrasenaSQL)) creado = true;
             }
-
         } catch (Exception e) {
             System.err.println("ERROR AL AUTENTICAR: " + e.getMessage());
             e.printStackTrace();
@@ -50,27 +43,47 @@ public class LoginDAO {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
         }
-        return login; // null si no existe
+        return creado;
     }
-
+    public String obtenerRol(String cedula) {
+        String rol = null;
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "SELECT o.tipo AS rol FROM trabajadores AS t JOIN oficios AS o ON t.id_oficio = o.codigo WHERE cedula = ?";
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setString(1, cedula);
+            rs = prepStmt.executeQuery();
+            if (rs.next()) {
+                rol = rs.getString("rol");
+            }
+        } catch (Exception e) {
+            System.err.println("ERROR AL AUTENTICAR: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (prepStmt != null) prepStmt.close();
+                if (conn != null) conn.close();
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+        return rol;
+    }
     /**
      * Devuelve los permisos asociados a la cédula desde la tabla permisos.
      */
-    private List<String> obtenerPermisos(String cedula) {
+    public List<String> obtenerPermisos(String cedula) {
         List<String> permisos = new ArrayList<>();
         try {
             conn = DBConnection.getConnection();
 
-            String sql = "SELECT p.nombre_permiso " +
-                         "FROM TB_PERMISOS p " +
-                         "INNER JOIN TB_USUARIO_PERMISOS up ON p.id_permiso = up.id_permiso " +
-                         "WHERE up.cedula = ?";
+            String sql = "SELECT * FROM ingredientes WHERE id != ?";
             prepStmt = conn.prepareStatement(sql);
-            prepStmt.setString(1, cedula);
+            prepStmt.setString(1,cedula );
             rs = prepStmt.executeQuery();
-
             while (rs.next()) {
-                permisos.add(rs.getString("nombre_permiso"));
+                permisos.add(rs.getString("nombre"));
             }
 
         } catch (Exception e) {
