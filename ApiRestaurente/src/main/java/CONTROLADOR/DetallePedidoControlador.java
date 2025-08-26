@@ -66,7 +66,29 @@ public class DetallePedidoControlador {
             return Response.serverError().entity("Error interno al obtener.").build();
         }
     }
+    @GET
+    @Path("/pedido/{id}") // La ruta incluye un parámetro dinámico llamado "id".
+    public Response obtenerPorIdPedido(@PathParam("id") String id) { // El valor del "id" de la URL se inyecta en la variable 'id'.
+        try {
+            // Se valida que el id sea un número entero
+            String validacion = Middlewares.validarEntero(id, "id pedido"); // Valida que el ID sea un número entero.
+            if (!validacion.equals("ok")) { // Si la validación no es exitosa...
+                return Response.status(Response.Status.BAD_REQUEST).entity(validacion).build(); // ...retorna una respuesta 400 (Bad Request).
+            }
 
+            List<DetallePedido> detallePedido = DetllPedDAO.obtenerPorPedidoId(id); // Busca el detalle de pedido por el ID.
+            if (detallePedido != null) { // Si se encuentra el detalle de pedido...
+                return Response.ok(detallePedido).build(); // ...retorna una respuesta 200 (OK) con el objeto DetallePedido.
+            } else { // Si no se encuentra...
+                return Response.status(Response.Status.NOT_FOUND) // ...retorna una respuesta 404 (Not Found).
+                        .entity("DetallePedido: pedido id #" + id + " no encontrada.")
+                        .build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().entity("Error interno al obtener.").build();
+        }
+    }
     // POST: Crear nuevo detalle de pedido
     @POST
     public Response crearDetalle(DetallePedido detallePedido) { // Recibe un objeto DetallePedido del cuerpo de la petición.
