@@ -3,10 +3,10 @@ package CONTROLADOR;
 
 // Importa las clases necesarias para el controlador.
 import MODELO.IngredientesCoctel; // Clase que representa la asociación entre un ingrediente y un cóctel.
-import MODELO.IngredientesCoctelDAO; // Clase DAO para interactuar con la base de datos de IngredientesCoctel.
-import MODELO.CoctelDAO; // Clase DAO para verificar la existencia de un cóctel.
-import MODELO.IngredienteDAO; // Clase DAO para verificar la existencia de un ingrediente.
-import CONTROLADOR.Middlewares; // Clase que contiene métodos para validar datos.
+import DAO.IngredientesCoctelDAO; // Clase DAO para interactuar con la base de datos de IngredientesCoctel.
+import DAO.CoctelDAO; // Clase DAO para verificar la existencia de un cóctel.
+import DAO.IngredienteDAO; // Clase DAO para verificar la existencia de un ingrediente.
+import Utils.Middlewares; // Clase que contiene métodos para validar datos.
 
 import java.util.List; // Interfaz para manejar listas de objetos.
 import javax.ws.rs.*; // Anotaciones para definir endpoints REST.

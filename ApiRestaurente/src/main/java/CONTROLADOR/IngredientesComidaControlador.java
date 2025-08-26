@@ -3,10 +3,10 @@ package CONTROLADOR;
 
 // Importa las clases necesarias para el controlador.
 import MODELO.IngredientesComida; // Clase que representa la asociación entre un ingrediente y una comida.
-import MODELO.IngredientesComidaDAO; // Clase DAO para interactuar con la base de datos de IngredientesComida.
-import MODELO.IngredienteDAO; // Clase DAO para verificar la existencia de un ingrediente.
-import MODELO.ComidaDAO; // Clase DAO para verificar la existencia de una comida.
-import CONTROLADOR.Middlewares; // Clase que contiene métodos para validar datos.
+import DAO.IngredientesComidaDAO; // Clase DAO para interactuar con la base de datos de IngredientesComida.
+import DAO.IngredienteDAO; // Clase DAO para verificar la existencia de un ingrediente.
+import DAO.ComidaDAO; // Clase DAO para verificar la existencia de una comida.
+import Utils.Middlewares; // Clase que contiene métodos para validar datos.
 
 import java.util.List; // Interfaz para manejar listas de objetos.
 import javax.ws.rs.*; // Anotaciones para definir endpoints REST.

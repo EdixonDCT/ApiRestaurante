@@ -4,9 +4,9 @@ package CONTROLADOR;
 // Importa la clase modelo Oficio
 import MODELO.Oficio;
 // Importa la clase DAO que gestiona la base de datos para Oficio
-import MODELO.OficioDAO;
+import DAO.OficioDAO;
 // Importa el middleware de validación para Oficio
-import CONTROLADOR.Middlewares;
+import Utils.Middlewares;
 
 import java.util.List;
 

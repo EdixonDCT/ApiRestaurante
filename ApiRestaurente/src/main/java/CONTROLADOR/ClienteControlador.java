@@ -2,10 +2,10 @@
 package CONTROLADOR;
 
 import MODELO.Cliente; // Importa la clase 'Cliente' para el modelo de datos.
-import MODELO.ClienteDAO; // Importa la clase 'ClienteDAO' para la persistencia de datos.
+import DAO.ClienteDAO; // Importa la clase 'ClienteDAO' para la persistencia de datos.
 import MODELO.Mesa; // Importa la clase 'Mesa', aunque no se usa en este controlador.
 // Importa el middleware de validación para Oficio
-import CONTROLADOR.Middlewares; // Importa la clase 'Middlewares' para realizar validaciones de datos.
+import Utils.Middlewares; // Importa la clase 'Middlewares' para realizar validaciones de datos.
 
 import java.util.List; // Importa la clase 'List' para manejar colecciones de objetos.
 

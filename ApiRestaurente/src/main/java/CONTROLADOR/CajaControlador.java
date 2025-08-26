@@ -1,9 +1,9 @@
 package CONTROLADOR; // Declara el paquete donde se encuentra esta clase controladora.
 
 import MODELO.Caja; // Importa la clase 'Caja' que representa el modelo de datos de una caja.
-import MODELO.CajaDAO; // Importa la clase 'CajaDAO' para interactuar con la base de datos.
+import DAO.CajaDAO; // Importa la clase 'CajaDAO' para interactuar con la base de datos.
 import MODELO.Trabajador; // Importa la clase 'Trabajador', aunque no se usa directamente en este código.
-import CONTROLADOR.Middlewares; // Importa la clase 'Middlewares' para las validaciones.
+import Utils.Middlewares; // Importa la clase 'Middlewares' para las validaciones.
 
 import javax.ws.rs.*; // Importa todas las anotaciones de JAX-RS para servicios web RESTful.
 import javax.ws.rs.core.*; // Importa todas las clases de JAX-RS para manejar respuestas HTTP.

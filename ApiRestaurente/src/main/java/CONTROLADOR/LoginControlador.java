@@ -1,8 +1,8 @@
 package CONTROLADOR;
 
-import BD.JwtUtil;
+import Utils.JwtUtil;
 import MODELO.Login;
-import MODELO.LoginDAO;
+import DAO.LoginDAO;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,18 +16,13 @@ public class LoginControlador {
 
     private LoginDAO loginDAO = new LoginDAO();
 
-    @GET
-    public Response listarTokens() {
-        Login login = new Login();
-        login.setCedula("114024793");
-        return Response.ok(login).build();
-          }
     @POST
-    public Response logearse(Login login){
+    public Response logearse(Login login) {
         boolean validar = loginDAO.autenticar(login.getCedula(), login.getContrasena());
-        if (!validar) return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Credenciales inválidas\"}").build();
-        String rol = loginDAO.obtenerRol(login.getCedula());
-        login.setRol(rol);
+        if (!validar) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity("{\"Error\":\"Credenciales inválidas\"}").build();
+        }
+        loginDAO.obtenerDatos(login);
         List<String> permisos = loginDAO.obtenerPermisos(login.getCedula());
         login.setPermisos(permisos);
         String token = JwtUtil.generarAccessToken();
@@ -36,7 +31,6 @@ public class LoginControlador {
         login.setRefreshToken(refreshToken);
         return Response.ok(login).build();
     }
-    
     @POST
     @Path("/validar")
     public Response validarToken(Login login) {
@@ -46,15 +40,10 @@ public class LoginControlador {
         // Validar y renovar si aplica
         JwtUtil.TokenValidationResult resultado = JwtUtil.validarYRenovarAccessToken(accessToken, refreshToken);
 
-        if (!resultado.isValido()) {
-            return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity("Error: Token inválido o expirado.")
-                    .build();
+        if (!resultado.EsValido()) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity(resultado).build();
         }
-
-// Actualizamos el token en el objeto
-        login.setToken(resultado.getNuevoToken());
-        return Response.ok(login).build();
+        return Response.ok(resultado).build();
 
     }
 }

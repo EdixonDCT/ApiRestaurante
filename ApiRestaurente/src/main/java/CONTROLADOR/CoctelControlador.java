@@ -2,8 +2,8 @@
 package CONTROLADOR;
 
 import MODELO.Coctel; // Importa la clase 'Coctel', que representa un cóctel.
-import MODELO.CoctelDAO; // Importa la clase 'CoctelDAO' para interactuar con la base de datos.
-import CONTROLADOR.Middlewares; // Importa la clase 'Middlewares' para las validaciones de datos.
+import DAO.CoctelDAO; // Importa la clase 'CoctelDAO' para interactuar con la base de datos.
+import Utils.Middlewares; // Importa la clase 'Middlewares' para las validaciones de datos.
 
 import java.util.List; // Importa la interfaz 'List' para manejar colecciones de objetos.
 

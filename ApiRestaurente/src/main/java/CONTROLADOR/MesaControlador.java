@@ -4,9 +4,9 @@ package CONTROLADOR;
 // Importa la clase modelo Mesa
 import MODELO.Mesa;
 // Importa la clase DAO que gestiona la base de datos para Mesa
-import MODELO.MesaDAO;
+import DAO.MesaDAO;
 // Importa la clase de validación (middlewares)
-import CONTROLADOR.Middlewares;
+import Utils.Middlewares;
 
 import java.util.List;
 

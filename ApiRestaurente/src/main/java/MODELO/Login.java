@@ -9,11 +9,12 @@ public class Login {
     private String contrasena;
     private List<String> permisos; // Array de permisos
     private String rol;
+    private String fotoPerfil;
+    private String nombreApellido;
     private String token;
     private String refreshToken;
 
     // --- Getters y Setters ---
-
     public String getCedula() {
         return cedula;
     }
@@ -46,6 +47,22 @@ public class Login {
         this.rol = rol;
     }
 
+    public String getFotoPerfil() {
+        return fotoPerfil;
+    }
+
+    public void setFotoPerfil(String fotoPerfil) {
+        this.fotoPerfil = fotoPerfil;
+    }
+    
+    public String getNombreApellido() {
+        return nombreApellido;
+    }
+
+    public void setNombreApellido(String nombreApellido) {
+        this.nombreApellido = nombreApellido;
+    }
+    
     public String getToken() {
         return token;
     }

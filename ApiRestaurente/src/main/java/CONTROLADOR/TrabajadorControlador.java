@@ -4,9 +4,9 @@ package CONTROLADOR;
 // Importa la clase modelo Trabajador.
 import MODELO.Trabajador;
 // Importa la clase DAO que gestiona la base de datos para Trabajador.
-import MODELO.TrabajadorDAO;
+import DAO.TrabajadorDAO;
 // Importa el middleware de validación para Trabajador.
-import CONTROLADOR.Middlewares;
+import Utils.Middlewares;
 
 import java.util.List;
 

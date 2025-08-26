@@ -3,12 +3,12 @@ package CONTROLADOR;
 
 // Importa las clases necesarias para el modelo, DAO y validaciones
 import MODELO.DetallePedido; // Clase que representa el objeto DetallePedido.
-import MODELO.DetallePedidoDAO; // Clase DAO para interactuar con la base de datos de detalles de pedido.
-import MODELO.BebidaDAO; // Clase DAO para bebidas, usada para validaciones.
-import MODELO.ComidaDAO; // Clase DAO para comidas, usada para validaciones.
-import MODELO.CoctelDAO; // Clase DAO para cócteles, usada para validaciones.
-import MODELO.PedidoDAO; // Clase DAO para pedidos, usada para validaciones.
-import CONTROLADOR.Middlewares; // Clase que contiene métodos para validar datos.
+import DAO.DetallePedidoDAO; // Clase DAO para interactuar con la base de datos de detalles de pedido.
+import DAO.BebidaDAO; // Clase DAO para bebidas, usada para validaciones.
+import DAO.ComidaDAO; // Clase DAO para comidas, usada para validaciones.
+import DAO.CoctelDAO; // Clase DAO para cócteles, usada para validaciones.
+import DAO.PedidoDAO; // Clase DAO para pedidos, usada para validaciones.
+import Utils.Middlewares; // Clase que contiene métodos para validar datos.
 
 import java.util.List; // Interfaz para manejar listas de objetos.
 import javax.ws.rs.*; // Anotaciones para definir endpoints REST.
