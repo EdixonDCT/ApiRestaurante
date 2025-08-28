@@ -1,6 +1,6 @@
 package CONTROLADOR;
 
-import Utils.JwtUtil;
+import UTILS.JwtUtil;
 import MODELO.Login;
 import DAO.LoginDAO;
 import java.util.Arrays;
@@ -30,20 +30,5 @@ public class LoginControlador {
         login.setToken(token);
         login.setRefreshToken(refreshToken);
         return Response.ok(login).build();
-    }
-    @POST
-    @Path("/validar")
-    public Response validarToken(Login login) {
-        String accessToken = login.getToken();
-        String refreshToken = login.getRefreshToken();
-
-        // Validar y renovar si aplica
-        JwtUtil.TokenValidationResult resultado = JwtUtil.validarYRenovarAccessToken(accessToken, refreshToken);
-
-        if (!resultado.EsValido()) {
-            return Response.status(Response.Status.UNAUTHORIZED).entity(resultado).build();
-        }
-        return Response.ok(resultado).build();
-
     }
 }

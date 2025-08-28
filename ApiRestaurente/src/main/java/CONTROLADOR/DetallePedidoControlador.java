@@ -8,7 +8,7 @@ import DAO.BebidaDAO; // Clase DAO para bebidas, usada para validaciones.
 import DAO.ComidaDAO; // Clase DAO para comidas, usada para validaciones.
 import DAO.CoctelDAO; // Clase DAO para cócteles, usada para validaciones.
 import DAO.PedidoDAO; // Clase DAO para pedidos, usada para validaciones.
-import Utils.Middlewares; // Clase que contiene métodos para validar datos.
+import UTILS.Middlewares; // Clase que contiene métodos para validar datos.
 
 import java.util.List; // Interfaz para manejar listas de objetos.
 import javax.ws.rs.*; // Anotaciones para definir endpoints REST.

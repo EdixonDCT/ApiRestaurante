@@ -12,11 +12,9 @@ public class Trabajador {
     private String foto;//la foto es string porque almacena su URL
     private String contrasena;//es string porque puede tener texto,numero y signos
     //es contraseña con n por el manejo de Ñ
-    private String idOficio;//es int porque son numeros enteros
-    private String nombreOficio;//es para el Inner Join cuando se consulta el nombre con el id de Oficio
+    private String idRol;//es int porque son numeros enteros
+    private String nombreRol;//es para el Inner Join cuando se consulta el nombre con el id de Oficio
     private String activo;
-    private String adminTemporalInicio;
-    private String adminTemporalFin;
 
     public String getCedula() {//obtener la Cedula
         return cedula;
@@ -66,20 +64,20 @@ public class Trabajador {
         this.contrasena = contrasena;
     }
 
-    public String getIdOficio() {//obtener el ID del Codigo Oficio
-        return idOficio;
+    public String getIdRol() {//obtener el ID del Codigo Oficio
+        return idRol;
     }
 
-    public void setIdOficio(String idOficio) {//asginar el ID del Codigo Oficio
-        this.idOficio = idOficio;
+    public void setIdRol(String idRol) {//asginar el ID del Codigo Oficio
+        this.idRol = idRol;
     }
 
-    public String getNombreOficio() {
-        return nombreOficio;
+    public String getNombreRol() {
+        return nombreRol;
     }
 
-    public void setNombreOficio(String nombreOficio) {
-        this.nombreOficio = nombreOficio;
+    public void setNombreRol(String nombreRol) {
+        this.nombreRol = nombreRol;
     }
 
     public String getActivo() {
@@ -88,21 +86,5 @@ public class Trabajador {
 
     public void setActivo(String activo) {
         this.activo = activo;
-    }
-
-    public String getAdminTemporalInicio() {
-        return adminTemporalInicio;
-    }
-
-    public void setAdminTemporalInicio(String adminTemporalInicio) {
-        this.adminTemporalInicio = adminTemporalInicio;
-    }
-
-    public String getAdminTemporalFin() {
-        return adminTemporalFin;
-    }
-
-    public void setAdminTemporalFin(String adminTemporalFin) {
-        this.adminTemporalFin = adminTemporalFin;
     }
 }

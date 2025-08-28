@@ -5,7 +5,7 @@ package CONTROLADOR;
 import MODELO.Pedido;
 import DAO.PedidoDAO;
 // Importa la clase de validación (Middlewares)
-import Utils.Middlewares;
+import UTILS.Middlewares;
 
 import java.util.List;
 

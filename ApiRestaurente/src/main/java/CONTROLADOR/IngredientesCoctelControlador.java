@@ -6,7 +6,7 @@ import MODELO.IngredientesCoctel; // Clase que representa la asociación entre u
 import DAO.IngredientesCoctelDAO; // Clase DAO para interactuar con la base de datos de IngredientesCoctel.
 import DAO.CoctelDAO; // Clase DAO para verificar la existencia de un cóctel.
 import DAO.IngredienteDAO; // Clase DAO para verificar la existencia de un ingrediente.
-import Utils.Middlewares; // Clase que contiene métodos para validar datos.
+import UTILS.Middlewares; // Clase que contiene métodos para validar datos.
 
 import java.util.List; // Interfaz para manejar listas de objetos.
 import javax.ws.rs.*; // Anotaciones para definir endpoints REST.

@@ -6,7 +6,7 @@ import MODELO.IngredientesComida; // Clase que representa la asociación entre u
 import DAO.IngredientesComidaDAO; // Clase DAO para interactuar con la base de datos de IngredientesComida.
 import DAO.IngredienteDAO; // Clase DAO para verificar la existencia de un ingrediente.
 import DAO.ComidaDAO; // Clase DAO para verificar la existencia de una comida.
-import Utils.Middlewares; // Clase que contiene métodos para validar datos.
+import UTILS.Middlewares; // Clase que contiene métodos para validar datos.
 
 import java.util.List; // Interfaz para manejar listas de objetos.
 import javax.ws.rs.*; // Anotaciones para definir endpoints REST.

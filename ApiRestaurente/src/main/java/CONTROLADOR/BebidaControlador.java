@@ -2,7 +2,7 @@ package CONTROLADOR; // Define el paquete al que pertenece esta clase.
 
 import MODELO.Bebida; // Importa la clase Bebida del paquete MODELO.
 import DAO.BebidaDAO; // Importa la clase BebidaDAO del paquete MODELO.
-import Utils.Middlewares; // Importa la clase Middlewares del paquete CONTROLADOR.
+import UTILS.Middlewares; // Importa la clase Middlewares del paquete CONTROLADOR.
 
 import java.util.List; // Importa la clase List para trabajar con listas de objetos.
 import javax.ws.rs.*; // Importa todas las clases del paquete JAX-RS para crear servicios web RESTful.

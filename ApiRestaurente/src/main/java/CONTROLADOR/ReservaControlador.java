@@ -4,8 +4,8 @@ package CONTROLADOR;
 // Importa las clases necesarias para el funcionamiento del controlador.
 import MODELO.Reserva;        // Importa la clase del modelo que representa una reserva.
 import DAO.ReservaDAO;     // Importa la clase de acceso a datos para las reservas.
-import Utils.Servicios;  // Importa la clase de servicios que contiene la lógica de negocio.
-import Utils.Middlewares;// Importa la clase con funciones de validación de datos.
+import UTILS.Servicios;  // Importa la clase de servicios que contiene la lógica de negocio.
+import UTILS.Middlewares;// Importa la clase con funciones de validación de datos.
 
 // Importaciones de la librería JAX-RS para crear servicios web RESTful.
 import javax.ws.rs.*;             // Anotaciones como @Path, @GET, @POST, etc.

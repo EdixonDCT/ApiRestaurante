@@ -21,7 +21,7 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
             conn = DBConnection.getConnection(); // Obtiene una conexión a la base de datos.
 
             // Consulta SQL para seleccionar todos los registros, uniendo la tabla de trabajadores y oficios.
-            String sql = "SELECT t.cedula,t.nombre,t.apellido,t.nacimiento,t.foto,t.contrasena,o.codigo,o.tipo,t.activo,t.adminTemporalInicio,t.adminTemporalFin FROM trabajadores AS t JOIN oficios AS o ON t.id_oficio = o.codigo";
+            String sql = "SELECT t.cedula,t.nombre,t.apellido,t.nacimiento,t.foto,t.contrasena,t.id_rol,r.nombre AS rol,t.activo FROM trabajadores AS t JOIN roles AS r ON t.id_rol = r.id";
             prepStmt = conn.prepareStatement(sql); // Prepara la sentencia SQL.
             rs = prepStmt.executeQuery(); // Ejecuta la consulta y almacena los resultados.
 
@@ -34,11 +34,9 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
                 trabajador.setNacimiento(rs.getString("nacimiento")); // Asigna el valor de la columna 'nacimiento'.
                 trabajador.setFoto(rs.getString("foto")); // Asigna el valor de la columna 'foto'.
                 trabajador.setContrasena(rs.getString("contrasena")); // Asigna el valor de la columna 'contrasena'.
-                trabajador.setIdOficio(rs.getString("codigo")); // Asigna el ID del oficio de la tabla 'oficios'.
-                trabajador.setNombreOficio(rs.getString("tipo")); // Asigna el nombre del oficio de la tabla 'oficios'.
+                trabajador.setIdRol(rs.getString("id_rol")); // Asigna el ID del oficio de la tabla 'oficios'.
+                trabajador.setNombreRol(rs.getString("rol")); // Asigna el nombre del oficio de la tabla 'oficios'.
                 trabajador.setActivo(rs.getString("activo")); // Asigna el valor de la columna 'activo'.
-                trabajador.setAdminTemporalInicio(rs.getString("adminTemporalInicio"));//Asigna el valor de la columna 'Admin temporal inicio fecha'
-                trabajador.setAdminTemporalFin(rs.getString("adminTemporalFin"));//Asigna el valor de la columna 'Admin temporal fin fecha'
                 lista.add(trabajador); // Agrega el objeto a la lista.
             }
 
@@ -81,11 +79,9 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
                 trabajador.setNacimiento(rs.getString("nacimiento"));
                 trabajador.setFoto(rs.getString("foto"));
                 trabajador.setContrasena(rs.getString("contrasena"));
-                trabajador.setIdOficio(rs.getString("codigo"));
-                trabajador.setNombreOficio(rs.getString("tipo"));
+                trabajador.setIdRol(rs.getString("codigo"));
+                trabajador.setNombreRol(rs.getString("tipo"));
                 trabajador.setActivo(rs.getString("activo"));
-                trabajador.setAdminTemporalInicio(rs.getString("adminTemporalInicio"));
-                trabajador.setAdminTemporalFin(rs.getString("adminTemporalFin"));
             }
 
         } catch (Exception e) {
@@ -119,7 +115,7 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
             prepStmt.setString(3, trabajador.getApellido()); // Asigna el apellido.
             prepStmt.setString(4, trabajador.getNacimiento()); // Asigna la fecha de nacimiento.
             prepStmt.setString(5, trabajador.getContrasena()); // Asigna la contraseña.
-            prepStmt.setInt(6,Integer.parseInt(trabajador.getIdOficio())); // Asigna el ID del oficio.
+            prepStmt.setInt(6,Integer.parseInt(trabajador.getIdRol())); // Asigna el ID del oficio.
 
             // Ejecutar inserción y verificar si se insertó al menos una fila
             int filas = prepStmt.executeUpdate(); // Ejecuta la inserción.
@@ -153,7 +149,7 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
             prepStmt.setString(2, trabajador.getApellido());
             prepStmt.setString(3, trabajador.getNacimiento());
             prepStmt.setString(4, trabajador.getContrasena());
-            prepStmt.setInt(5, Integer.parseInt(trabajador.getIdOficio()));
+            prepStmt.setInt(5, Integer.parseInt(trabajador.getIdRol()));
             prepStmt.setInt(6, Integer.parseInt(trabajador.getCedula())); // Usa la cédula para identificar el registro.
 
             int filas = prepStmt.executeUpdate(); // Ejecuta la actualización.
@@ -244,7 +240,7 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
             conn = DBConnection.getConnection();
             String sql = "UPDATE trabajadores SET id_oficio = ?,activo = ? WHERE cedula = ?"; // Consulta para actualizar oficio y estado.
             prepStmt = conn.prepareStatement(sql);
-            prepStmt.setInt(1, Integer.parseInt(trabajador.getIdOficio())); // Asigna el nuevo ID de oficio.
+            prepStmt.setInt(1, Integer.parseInt(trabajador.getIdRol())); // Asigna el nuevo ID de oficio.
             prepStmt.setInt(2, Integer.parseInt(trabajador.getActivo())); // Asigna el nuevo estado (activo/inactivo).
             prepStmt.setInt(3, Integer.parseInt(trabajador.getCedula())); // Usa la cédula para el `WHERE`.
 
@@ -297,60 +293,4 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
 
         return activar; // Devuelve `true` o `false`.
     }
-    public boolean activarAdminTemporalTrabajador(Trabajador trabajador) { // Método para actualizar el oficio y el estado de un trabajador.
-        boolean activar = false; // Variable de estado.
-
-        try {
-            conn = DBConnection.getConnection();
-            String sql = "UPDATE trabajadores SET adminTemporalInicio = ?,adminTemporalFin = ? WHERE cedula = ?"; // Consulta para actualizar oficio y estado.
-            prepStmt = conn.prepareStatement(sql);
-            prepStmt.setString(1, trabajador.getAdminTemporalInicio());
-            prepStmt.setString(2,trabajador.getAdminTemporalFin());
-            prepStmt.setString(3, trabajador.getCedula()); // Asigna el nuevo ID de oficio.
-            int filas = prepStmt.executeUpdate();
-            activar = filas > 0;
-
-        } catch (Exception e) {
-            System.err.println("ERROR AL ACTUALIZAR ESTADO: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            try {
-                if (prepStmt != null)
-                    prepStmt.close();
-                if (conn != null)
-                    conn.close();
-            } catch (Exception ex) {
-                System.err.println("ERROR AL ACTUALIZAR ESTADO: " + ex.getMessage());
-            }
-        }
-
-        return activar; // Devuelve `true` o `false`.
-    }
-    public boolean desactivarAdminTemporalTrabajador(Trabajador trabajador) { // Método para actualizar el oficio y el estado de un trabajador.
-        boolean desactivar = false; // Variable de estado.
-
-        try {
-            conn = DBConnection.getConnection();
-            String sql = "UPDATE trabajadores SET adminTemporalInicio = null,adminTemporalFin = null,activo = 0 WHERE cedula = ?"; // Consulta para actualizar oficio y estado.
-            prepStmt = conn.prepareStatement(sql);
-            prepStmt.setString(1, trabajador.getCedula()); // Asigna el nuevo ID de oficio.
-            int filas = prepStmt.executeUpdate();
-            desactivar = filas > 0;
-
-        } catch (Exception e) {
-            System.err.println("ERROR AL ACTUALIZAR ESTADO: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            try {
-                if (prepStmt != null)
-                    prepStmt.close();
-                if (conn != null)
-                    conn.close();
-            } catch (Exception ex) {
-                System.err.println("ERROR AL ACTUALIZAR ESTADO: " + ex.getMessage());
-            }
-        }
-
-        return desactivar; // Devuelve `true` o `false`.
-}
 }

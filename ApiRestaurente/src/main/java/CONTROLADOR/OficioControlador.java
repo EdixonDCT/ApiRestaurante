@@ -6,7 +6,7 @@ import MODELO.Oficio;
 // Importa la clase DAO que gestiona la base de datos para Oficio
 import DAO.OficioDAO;
 // Importa el middleware de validación para Oficio
-import Utils.Middlewares;
+import UTILS.Middlewares;
 
 import java.util.List;
 
