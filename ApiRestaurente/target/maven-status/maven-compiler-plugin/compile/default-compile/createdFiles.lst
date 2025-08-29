@@ -1,10 +1,8 @@
-CONTROLADOR\OficioControlador.class
 CONTROLADOR\IngredienteControlador.class
 DAO\CoctelDAO.class
 CONTROLADOR\MesaControlador.class
 DAO\IngredientesComidaDAO.class
 MODELO\Bebida.class
-MODELO\Oficio.class
 DAO\DetallePedidoDAO.class
 MODELO\IngredientesComida.class
 MODELO\Comida.class
@@ -14,7 +12,9 @@ DAO\TrabajadorDAO.class
 MODELO\Trabajador.class
 MODELO\Login.class
 MODELO\Cliente.class
+CONTROLADOR\RolesControlador.class
 CONTROLADOR\DetallePedidoControlador.class
+CONTROLADOR\RegisterControlador.class
 UTILS\Servicios.class
 BD\DBConnectionTest.class
 MODELO\Coctel.class
@@ -37,13 +37,14 @@ BD\DBConnection.class
 CONTROLADOR\CoctelControlador.class
 UTILS\JwtUtil$TokenValidationResult.class
 DAO\ReservaDAO.class
+MODELO\Roles.class
 CONTROLADOR\ImagenControlador.class
 DAO\MesaDAO.class
 CONTROLADOR\IngredientesComidaControlador.class
 MODELO\Caja.class
-DAO\OficioDAO.class
 CONTROLADOR\TrabajadorControlador.class
 DAO\BebidaDAO.class
+DAO\RolesDAO.class
 CONTROLADOR\IngredientesCoctelControlador.class
 CONTROLADOR\PedidoControlador.class
 MODELO\IngredientesCoctel.class

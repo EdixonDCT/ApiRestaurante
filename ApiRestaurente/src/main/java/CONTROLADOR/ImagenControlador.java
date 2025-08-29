@@ -55,7 +55,7 @@ public class ImagenControlador {
             }
 
             // Construye la URL pública para acceder a la imagen
-            String urlPublica = "http://localhost:8080/ApiRestaurente/IMAGENES/" + nombreFinal;
+            String urlPublica = "http://localhost:8080/ApiRestaurante/IMAGENES/" + nombreFinal;
 
             System.out.println("✅ Imagen subida. Ruta: " + archivoDestino.getAbsolutePath());
 

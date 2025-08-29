@@ -21,6 +21,10 @@ public class LoginControlador {
         boolean validar = loginDAO.autenticar(login.getCedula(), login.getContrasena());
         if (!validar) {
             return Response.status(Response.Status.UNAUTHORIZED).entity("{\"Error\":\"Credenciales inválidas\"}").build();
+        } 
+        boolean activo = loginDAO.ValidarActivo(login.getCedula());
+        if (!activo) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity("{\"Error\":\"Usuario no activo\"}").build();
         }
         loginDAO.obtenerDatos(login);
         List<String> permisos = loginDAO.obtenerPermisos(login.getCedula());

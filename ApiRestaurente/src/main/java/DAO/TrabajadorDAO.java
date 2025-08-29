@@ -108,15 +108,15 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
 
         try {
             conn = DBConnection.getConnection();
-            String sql = "INSERT INTO trabajadores(cedula, nombre, apellido, nacimiento, contrasena, id_oficio) values (?,?,?,?,?,?)"; // Consulta de inserción.
+            String sql = "INSERT INTO trabajadores(cedula, nombre, apellido, nacimiento, contrasena, id_rol) values (?,?,?,?,?,?)"; // Consulta de inserción.
             prepStmt = conn.prepareStatement(sql);
-            prepStmt.setInt(1,Integer.parseInt(trabajador.getCedula())); // Asigna la cédula.
+            prepStmt.setString(1, trabajador.getCedula()); // Asigna la cédula.
             prepStmt.setString(2, trabajador.getNombre()); // Asigna el nombre.
             prepStmt.setString(3, trabajador.getApellido()); // Asigna el apellido.
             prepStmt.setString(4, trabajador.getNacimiento()); // Asigna la fecha de nacimiento.
             prepStmt.setString(5, trabajador.getContrasena()); // Asigna la contraseña.
             prepStmt.setInt(6,Integer.parseInt(trabajador.getIdRol())); // Asigna el ID del oficio.
-
+            
             // Ejecutar inserción y verificar si se insertó al menos una fila
             int filas = prepStmt.executeUpdate(); // Ejecuta la inserción.
             creado = filas > 0; // Si el número de filas afectadas es mayor que 0, fue exitoso.

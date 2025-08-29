@@ -46,6 +46,33 @@ public class LoginDAO {
         }
         return creado;
     }
+        public boolean ValidarActivo(String cedula) {
+        boolean activo = false;
+        try {
+            conn = DBConnection.getConnection();
+
+            String sql = "SELECT activo FROM trabajadores WHERE cedula = ?";
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setString(1, cedula);
+            rs = prepStmt.executeQuery();
+            if (rs.next()) {
+                String activoSQL = rs.getString("activo");
+                if (activoSQL.equals("1")) activo = true;
+            }
+        } catch (Exception e) {
+            System.err.println("ERROR AL AUTENTICAR: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (prepStmt != null) prepStmt.close();
+                if (conn != null) conn.close();
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+        return activo;
+    }
     public Login obtenerDatos(Login Login) {
         try {
             conn = DBConnection.getConnection();

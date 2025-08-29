@@ -77,67 +77,6 @@ public class TrabajadorControlador {
         }
     }
 
-    // Método POST para crear un nuevo trabajador.
-    @POST
-    // El objeto Trabajador se deserializa automáticamente del cuerpo de la petición.
-    public Response crearTrabajador(Trabajador trabajador) {
-        try {
-            // Valida el campo 'cedula' del objeto trabajador.
-            String validaCedula = Middlewares.validarEntero(trabajador.getCedula(), "cedula");
-            if (!validaCedula.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
-            }
-
-            // Valida el campo 'nombre'.
-            String validarNombre = Middlewares.validarString(trabajador.getNombre(), "nombre");
-            if (!validarNombre.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validarNombre).build();
-            }
-
-            // Valida el campo 'apellido'.
-            String validarApellido = Middlewares.validarString(trabajador.getApellido(), "apellido");
-            if (!validarApellido.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validarApellido).build();
-            }
-
-            // Valida el campo 'nacimiento' (formato de fecha).
-            String validarNacimiento = Middlewares.validarFecha(trabajador.getNacimiento(), "nacimiento");
-            if (!validarNacimiento.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validarNacimiento).build();
-            }
-
-            // Valida que el campo 'contraseña' no esté vacío.
-            String validarContrasena = Middlewares.ContraseñaVacia(trabajador.getContrasena(), "contraseña");
-            if (!validarContrasena.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validarContrasena).build();
-            }
-
-            // Valida el campo 'idOficio'.
-            String validaCodigoOficio = Middlewares.validarEntero(trabajador.getIdRol(), "id rol");
-            if (!validaCodigoOficio.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaCodigoOficio).build();
-            }
-
-            // Si todas las validaciones son exitosas, llama al método 'crear' del DAO.
-            boolean creado = trabajadorDAO.crear(trabajador);
-            if (creado) {
-                // Si la creación fue exitosa, retorna un 201 (Created) con un mensaje.
-                return Response.status(Response.Status.CREATED)
-                        .entity("Trabajador: " + trabajador.getNombre() + " " + trabajador.getApellido() + " creado con EXITO.")
-                        .build();
-            } else {
-                // Si la creación falla, retorna un 500 (Internal Server Error).
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("Error: no se pudo crear TRABAJADOR.")
-                        .build();
-            }
-        } catch (Exception e) {
-            // Imprime la traza de la excepción.
-            e.printStackTrace();
-            // Retorna un error 500 (Internal Server Error).
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
-        }
-    }
 
     // Método PUT para actualizar un trabajador existente.
     @PUT
