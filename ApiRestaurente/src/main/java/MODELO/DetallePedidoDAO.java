@@ -134,73 +134,75 @@ public class DetallePedidoDAO {
         return lista;
     }
     
-public ArrayList<DetallePedido> obtenerPorPedidoId(String id) {
-    ArrayList<DetallePedido> lista = new ArrayList<>();
+public ArrayList<DetallePedido> obtenerPorPedidoId(String id) {//es el metodo que trae los datos del pedido para la factura
+    ArrayList<DetallePedido> lista = new ArrayList<>();//
 
     try {
+                    // Establece la conexión.
         conn = DBConnection.getConnection();
 
-        String sql = "SELECT dp.id, dp.id_pedido, p.fecha, p.hora, p.numero_mesa, p.metodo_pago, "
-                   + "c.id AS id_comida, c.nombre AS comida, c.precio AS precio_comida, dp.cantidad_comida, dp.nota_comida, "
-                   + "(c.precio * dp.cantidad_comida) AS total_comida, "
-                   + "b.id AS id_bebida, b.nombre AS bebida, b.precio AS precio_bebida, dp.cantidad_bebida, dp.nota_bebida, "
-                   + "(b.precio * dp.cantidad_bebida) AS total_bebida, "
-                   + "co.id AS id_coctel, co.nombre AS coctel, co.precio AS precio_coctel, dp.cantidad_coctel, dp.nota_coctel, "
-                   + "(co.precio * dp.cantidad_coctel) AS total_coctel, "
-                   + "p.id_reserva, r.precio AS precio_reserva, t.nombre AS nombre_cajero "
-                   + "FROM detalle_pedido dp "
-                   + "LEFT JOIN comidas c ON c.id = dp.id_comida "
-                   + "LEFT JOIN bebidas b ON b.id = dp.id_bebida "
-                   + "LEFT JOIN cocteles co ON co.id = dp.id_coctel "
-                   + "INNER JOIN pedidos p ON p.id = dp.id_pedido "
-                   + "LEFT JOIN reservas r ON r.id = p.id_reserva "
-                   + "LEFT JOIN caja ca ON ca.id = p.id_caja "
-                   + "LEFT JOIN trabajadores t ON t.cedula = ca.cedula_trabajador "
-                   + "WHERE dp.id_pedido = ?";
+        String sql = "SELECT dp.id, dp.id_pedido, p.fecha, p.hora, p.numero_mesa, p.metodo_pago, "//seleccionamos los datos del pedido para no realizar mas consultas
+                   + "c.id AS id_comida, c.nombre AS comida, c.precio AS precio_comida, dp.cantidad_comida, dp.nota_comida, "//pasamos la informacion de la comida
+                   + "(c.precio * dp.cantidad_comida) AS total_comida, "//pasamos el precio de la comida ya multiplicada
+                   + "b.id AS id_bebida, b.nombre AS bebida, b.precio AS precio_bebida, dp.cantidad_bebida, dp.nota_bebida, "//pasamos la informacion de la bebida
+                   + "(b.precio * dp.cantidad_bebida) AS total_bebida, "//pasamos la precio de la bebida ya multiplicada
+                   + "co.id AS id_coctel, co.nombre AS coctel, co.precio AS precio_coctel, dp.cantidad_coctel, dp.nota_coctel, "//pasamos la informacion del coctel
+                   + "(co.precio * dp.cantidad_coctel) AS total_coctel, "//pasamos la informacion del coctel ya multiplicado
+                   + "p.id_reserva, r.precio AS precio_reserva, t.nombre AS nombre_cajero "//informacion de reserva si existe y su precio, ademas del nombre del cajero
+                   + "FROM detalle_pedido dp "//la tabla principal que se busca
+                   + "LEFT JOIN comidas c ON c.id = dp.id_comida "//si hay coincidencia devuelve sino null en comidas
+                   + "LEFT JOIN bebidas b ON b.id = dp.id_bebida "//si hay coincidencia devuelve sino null en comidas
+                   + "LEFT JOIN cocteles co ON co.id = dp.id_coctel "//si hay coincidencia devuelve sino null en cocteles
+                   + "INNER JOIN pedidos p ON p.id = dp.id_pedido "//si hay coincidencia devuelve sino null en comidas
+                   + "LEFT JOIN reservas r ON r.id = p.id_reserva "//si hay coincidencia devuelve sino null en reservas
+                   + "LEFT JOIN caja ca ON ca.id = p.id_caja "//si hay coincidencia devuelve sino null en caja pero igual siempre tendra una caja 
+                   + "LEFT JOIN trabajadores t ON t.cedula = ca.cedula_trabajador "//si hay coincidencia devuelve sino null pero lo mismo siempre habra un trabajador
+                   + "WHERE dp.id_pedido = ?";//todo donde el id pedido 
 
         prepStmt = conn.prepareStatement(sql);
-        prepStmt.setInt(1, Integer.parseInt(id));
+        prepStmt.setInt(1, Integer.parseInt(id));//se envia el parametro
         rs = prepStmt.executeQuery();
 
         while (rs.next()) {
+            //usa un modelo detallePedido que esta diseñado para tener todos los datos
             DetallePedido d = new DetallePedido();
 
             // Datos generales
-            d.setId(rs.getString("id"));
-            d.setId_pedido(rs.getString("id_pedido"));
-            d.setFecha(rs.getString("fecha"));
-            d.setHora(rs.getString("hora"));
-            d.setNumero_mesa(rs.getString("numero_mesa"));
-            d.setMetodo_pago(rs.getString("metodo_pago"));
+            d.setId(rs.getString("id"));//se obtiene el id del detalle pedido pero pueden ser varios por eso es un arrayList
+            d.setId_pedido(rs.getString("id_pedido"));//se obtiene el id del pedido
+            d.setFecha(rs.getString("fecha"));//se obtiene la fecha del pedido
+            d.setHora(rs.getString("hora"));//se obtiene la hora del pedido
+            d.setNumero_mesa(rs.getString("numero_mesa"));//se obtiene la mesa del pedido
+            d.setMetodo_pago(rs.getString("metodo_pago"));//se obtiene el metodo de pago
 
             // Comida
-            d.setId_comida(rs.getString("id_comida"));
-            d.setComida(rs.getString("comida"));
-            d.setPrecio_comida(rs.getString("precio_comida"));
-            d.setCantidad_comida(rs.getString("cantidad_comida"));
-            d.setNota_comida(rs.getString("nota_comida"));
-            d.setTotal_comida(rs.getString("total_comida"));
+            d.setId_comida(rs.getString("id_comida"));//se obtiene el id de la comida
+            d.setComida(rs.getString("comida"));//se obtiene el nombre de la comida
+            d.setPrecio_comida(rs.getString("precio_comida"));//se obtiene el precio normal de la comida
+            d.setCantidad_comida(rs.getString("cantidad_comida"));//se obtiene la cantidad de comida solicitada
+            d.setNota_comida(rs.getString("nota_comida"));//nota comida puede ser nulo pero es informacion adicional
+            d.setTotal_comida(rs.getString("total_comida"));//se obtinee el resultado de precio comida por cantidad comida
 
             // Bebida
-            d.setId_bebida(rs.getString("id_bebida"));
-            d.setBebida(rs.getString("bebida"));
-            d.setPrecio_bebida(rs.getString("precio_bebida"));
-            d.setCantidad_bebida(rs.getString("cantidad_bebida"));
-            d.setNota_bebida(rs.getString("nota_bebida"));
-            d.setTotal_bebida(rs.getString("total_bebida"));
+            d.setId_bebida(rs.getString("id_bebida"));//se obtiene el id de la bebida
+            d.setBebida(rs.getString("bebida"));//se obtiene el nombre de la bebida
+            d.setPrecio_bebida(rs.getString("precio_bebida"));//se obtiene el precio de la bebida
+            d.setCantidad_bebida(rs.getString("cantidad_bebida"));//se se obtiene la cantidad de bebida solicitada
+            d.setNota_bebida(rs.getString("nota_bebida"));//nota bebida puede ser nulo pero es informacion adicional
+            d.setTotal_bebida(rs.getString("total_bebida"));//se obtiene por el resultado de precio bebida y la cantidad bebida
 
             // Cóctel
-            d.setId_coctel(rs.getString("id_coctel"));
-            d.setCoctel(rs.getString("coctel"));
-            d.setPrecio_coctel(rs.getString("precio_coctel"));
-            d.setCantidad_coctel(rs.getString("cantidad_coctel"));
-            d.setNota_coctel(rs.getString("nota_coctel"));
-            d.setTotal_coctel(rs.getString("total_coctel"));
+            d.setId_coctel(rs.getString("id_coctel"));//se obtiene el id de coctel
+            d.setCoctel(rs.getString("coctel"));//se obtiene el nombre del coctel
+            d.setPrecio_coctel(rs.getString("precio_coctel"));//se obtiene el precio del coctel
+            d.setCantidad_coctel(rs.getString("cantidad_coctel"));//se obtiene la cantidad del coctel solicitada
+            d.setNota_coctel(rs.getString("nota_coctel"));//nota coctel puede ser nulo pero es informacion adicional
+            d.setTotal_coctel(rs.getString("total_coctel"));//se obtiene por el resultado del precio coctel y la cantidad coctel
 
             // Reserva y cajero
-            d.setId_reserva(rs.getString("id_reserva"));
-            d.setPrecio_reserva(rs.getString("precio_reserva"));
-            d.setNombre_cajero(rs.getString("nombre_cajero"));
+            d.setId_reserva(rs.getString("id_reserva"));//id de la reserva pero puede ser nulo
+            d.setPrecio_reserva(rs.getString("precio_reserva"));//precio de la reserva pero si el anterior es nulo este tambien pero es un calculo hecho al realizar la reserva
+            d.setNombre_cajero(rs.getString("nombre_cajero"));//nombre del cajero que facturo
 
             lista.add(d);
         }

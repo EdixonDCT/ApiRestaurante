@@ -1,108 +1,104 @@
-package MODELO;
+package MODELO; // Define el paquete MODELO donde se encuentra la clase Trabajador
 
-import java.time.LocalDate;
+public class Trabajador { // Clase que representa a un trabajador del sistema
 
-public class Trabajador {
+    private String cedula; // Cédula del trabajador (se usa String por simplicidad en validaciones)
+    private String nombre; // Nombre del trabajador
+    private String apellido; // Apellido del trabajador
+    private String nacimiento; // Fecha de nacimiento como String para facilitar validaciones con expresiones regulares
+    private String foto; // URL o ruta de la foto del trabajador
+    private String contrasena; // Contraseña del trabajador (puede contener letras, números y símbolos)
+    private String idOficio; // Identificador del oficio que desempeña el trabajador
+    private String nombreOficio; // Nombre del oficio (usado en consultas con INNER JOIN)
+    private String activo; // Estado de actividad del trabajador (ej. "sí", "no")
+    private String adminTemporalInicio; // Fecha de inicio como administrador temporal
+    private String adminTemporalFin; // Fecha de fin como administrador temporal
 
-    private String cedula;//es int porque es un numero entero
-    private String nombre;
-    private String apellido;
-    private String nacimiento;//Es String para que sea mas sencillo subirlo ala base de datos y hacer validaciones con regex
-    //es nacimiento y no Fecha de Nacimiento para ser mas simple
-    private String foto;//la foto es string porque almacena su URL
-    private String contrasena;//es string porque puede tener texto,numero y signos
-    //es contraseña con n por el manejo de Ñ
-    private String idOficio;//es int porque son numeros enteros
-    private String nombreOficio;//es para el Inner Join cuando se consulta el nombre con el id de Oficio
-    private String activo;
-    private String adminTemporalInicio;
-    private String adminTemporalFin;
-
-    public String getCedula() {//obtener la Cedula
+    public String getCedula() { // Obtener la cédula del trabajador
         return cedula;
     }
 
-    public void setCedula(String cedula) {//asginar la Cedula
+    public void setCedula(String cedula) { // Asignar la cédula del trabajador
         this.cedula = cedula;
     }
 
-    public String getNombre() {//obtener el Nombre
+    public String getNombre() { // Obtener el nombre del trabajador
         return nombre;
     }
 
-    public void setNombre(String nombre) {//asignar el Nombre
+    public void setNombre(String nombre) { // Asignar el nombre del trabajador
         this.nombre = nombre;
     }
 
-    public String getApellido() {//obtener el Apellido
+    public String getApellido() { // Obtener el apellido del trabajador
         return apellido;
     }
 
-    public void setApellido(String apellido) {//asignar el Apellido
+    public void setApellido(String apellido) { // Asignar el apellido del trabajador
         this.apellido = apellido;
     }
 
-    public String getNacimiento() {//obtener la Fecha de nacimiento
+    public String getNacimiento() { // Obtener la fecha de nacimiento
         return nacimiento;
     }
 
-    public void setNacimiento(String nacimiento) {//asignar la Fecha de nacimiento
+    public void setNacimiento(String nacimiento) { // Asignar la fecha de nacimiento
         this.nacimiento = nacimiento;
     }
 
-    public String getFoto() {//obtener la Foto
+    public String getFoto() { // Obtener la foto del trabajador
         return foto;
     }
 
-    public void setFoto(String foto) {//asginar la Foto
+    public void setFoto(String foto) { // Asignar la foto del trabajador
         this.foto = foto;
     }
 
-    public String getContrasena() {//obtener la Contraseña
+    public String getContrasena() { // Obtener la contraseña del trabajador
         return contrasena;
     }
 
-    public void setContrasena(String contrasena) {//asignar la Contraseña
+    public void setContrasena(String contrasena) { // Asignar la contraseña del trabajador
         this.contrasena = contrasena;
     }
 
-    public String getIdOficio() {//obtener el ID del Codigo Oficio
+    public String getIdOficio() { // Obtener el ID del oficio
         return idOficio;
     }
 
-    public void setIdOficio(String idOficio) {//asginar el ID del Codigo Oficio
+    public void setIdOficio(String idOficio) { // Asignar el ID del oficio
         this.idOficio = idOficio;
     }
 
-    public String getNombreOficio() {
+    public String getNombreOficio() { // Obtener el nombre del oficio
         return nombreOficio;
     }
 
-    public void setNombreOficio(String nombreOficio) {
+    public void setNombreOficio(String nombreOficio) { // Asignar el nombre del oficio
         this.nombreOficio = nombreOficio;
     }
 
-    public String getActivo() {
+    public String getActivo() { // Obtener el estado de actividad del trabajador
         return activo;
     }
 
-    public void setActivo(String activo) {
+    public void setActivo(String activo) { // Asignar el estado de actividad del trabajador
         this.activo = activo;
     }
 
-    public String getAdminTemporalInicio() {
+    public String getAdminTemporalInicio() { // Obtener la fecha de inicio como administrador temporal
         return adminTemporalInicio;
     }
 
-    public void setAdminTemporalInicio(String adminTemporalInicio) {
+    public void setAdminTemporalInicio(String adminTemporalInicio) { // Asignar la fecha de inicio como administrador temporal
         this.adminTemporalInicio = adminTemporalInicio;
     }
 
-    public String getAdminTemporalFin() {
+    public String getAdminTemporalFin() { // Obtener la fecha de fin como administrador temporal
         return adminTemporalFin;
     }
 
-    public void setAdminTemporalFin(String adminTemporalFin) {
+    public void setAdminTemporalFin(String adminTemporalFin) { // Asignar la fecha de fin como administrador temporal
         this.adminTemporalFin = adminTemporalFin;
     }
 }
