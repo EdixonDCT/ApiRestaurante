@@ -24,12 +24,11 @@ public class JwtFilter implements ContainerRequestFilter {
             return;
         }
         String authHeader = requestContext.getHeaderString("Authorization");
-
         // Validar que exista y tenga formato "Bearer <token>"
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             requestContext.abortWith(
                     Response.status(Response.Status.UNAUTHORIZED)
-                            .entity("Error: Token ausente o inválido")
+                            .entity("{\"Error\":\"Header ausente o Invalido\"}")
                             .build()
             );
             return;
@@ -42,14 +41,14 @@ public class JwtFilter implements ContainerRequestFilter {
             if (!JwtUtil.validarTokenBoolean(token)) {
                 requestContext.abortWith(
                         Response.status(Response.Status.UNAUTHORIZED)
-                                .entity("Error: Token inválido")
+                                .entity("{\"TokenInvalido\":\"Token Invalido\"}")
                                 .build()
                 );
             }
         } catch (Exception e) {
             requestContext.abortWith(
                     Response.status(Response.Status.UNAUTHORIZED)
-                            .entity("Error validando token: " + e.getMessage())
+                            .entity("{\"TokenInvalido\":\"Validado Token "+ e.getMessage()+"\"}")
                             .build()
             );
         }

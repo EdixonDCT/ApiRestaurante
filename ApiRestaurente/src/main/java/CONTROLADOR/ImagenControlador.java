@@ -69,7 +69,7 @@ public class ImagenControlador {
             // En caso de error, imprime la traza y retorna un error 500
             e.printStackTrace();
             return Response.status(500)
-                    .entity("{\"error\":\"No se pudo guardar la imagen.\"}")
+                    .entity("{\"Error\":\"No se pudo guardar la imagen.\"}")
                     .build();
         }
     }

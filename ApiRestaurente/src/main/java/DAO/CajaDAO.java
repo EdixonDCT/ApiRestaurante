@@ -357,6 +357,41 @@ public class CajaDAO {
         return actualizado;
     }
 
+    public Boolean cajaEnPedido(String numero) {
+        Boolean mesaPedido = false;
+        try {
+            conn = DBConnection.getConnection();
+            // Consulta SQL que busca por el número de la mesa.
+            String sql = "SELECT 1 AS existe FROM pedidos WHERE id_caja = ?";
+            prepStmt = conn.prepareStatement(sql);
+            // Asigna el número como parámetro, convirtiéndolo a entero.
+            prepStmt.setInt(1, Integer.parseInt(numero));
+            rs = prepStmt.executeQuery();
+            if (rs.next()) { // Si hay al menos una fila
+                mesaPedido = true;
+            }
+        } catch (Exception e) {
+            System.err.println("ERROR AL OBTENER CAJA POR ID: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            // Cierre de recursos.
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+        return mesaPedido;
+    }
+
     // Método para eliminar un registro de caja por su ID
     public boolean eliminar(String id) {
         // Inicializa la variable de éxito a false

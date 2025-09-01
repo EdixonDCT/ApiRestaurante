@@ -8,6 +8,7 @@ import java.sql.ResultSet; // Importa la clase para manejar los resultados de un
 import java.util.ArrayList; // Importa la clase ArrayList para crear listas de objetos.
 
 public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se encarga de las operaciones con la tabla de trabajadores.
+
     private Connection conn = null; // Variable para la conexión a la base de datos, inicializada en nulo.
     private PreparedStatement prepStmt = null; // Variable para la sentencia SQL preparada, inicializada en nulo.
     private ResultSet rs = null; // Variable para el conjunto de resultados de la consulta, inicializada en nulo.
@@ -47,11 +48,17 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
             // Cerrar conexiones
             try { // Intenta cerrar los recursos de la base de datos.
                 if (rs != null) // Si el ResultSet no es nulo, lo cierra.
+                {
                     rs.close();
+                }
                 if (prepStmt != null) // Si el PreparedStatement no es nulo, lo cierra.
+                {
                     prepStmt.close();
+                }
                 if (conn != null) // Si la conexión no es nula, la cierra.
+                {
                     conn.close();
+                }
             } catch (Exception ex) { // Captura errores al cerrar los recursos.
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage()); // Muestra el error.
             }
@@ -89,17 +96,53 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (prepStmt != null)
+                }
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
         }
         return trabajador; // Devuelve el objeto trabajador o nulo si no se encontró.
+    }
+
+    public Boolean obtenerPorCedulaBoolean(String cedula) { // Método para buscar un trabajador por su cédula.
+        boolean existe = false; // Inicializa el objeto trabajador como nulo.
+
+        try {
+            conn = DBConnection.getConnection(); // Establece la conexión.
+            String sql = "SELECT 1 FROM trabajadores WHERE cedula = ?"; // Consulta con un parámetro.
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setInt(1, Integer.parseInt(cedula)); // Asigna el valor de la cédula al parámetro de la consulta.
+            rs = prepStmt.executeQuery();
+            if (rs.next()) { // Si hay al menos una fila
+                existe = true;
+            }
+        } catch (Exception e) {
+            System.err.println("ERROR AL OBTENER TRABAJADOR POR CEDULA: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+        return existe; // Devuelve el objeto trabajador o nulo si no se encontró.
     }
 
     // MÉTODO: Insertar un nuevo trabajador
@@ -115,8 +158,8 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
             prepStmt.setString(3, trabajador.getApellido()); // Asigna el apellido.
             prepStmt.setString(4, trabajador.getNacimiento()); // Asigna la fecha de nacimiento.
             prepStmt.setString(5, trabajador.getContrasena()); // Asigna la contraseña.
-            prepStmt.setInt(6,Integer.parseInt(trabajador.getIdRol())); // Asigna el ID del oficio.
-            
+            prepStmt.setInt(6, Integer.parseInt(trabajador.getIdRol())); // Asigna el ID del oficio.
+
             // Ejecutar inserción y verificar si se insertó al menos una fila
             int filas = prepStmt.executeUpdate(); // Ejecuta la inserción.
             creado = filas > 0; // Si el número de filas afectadas es mayor que 0, fue exitoso.
@@ -126,10 +169,12 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -160,10 +205,12 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -190,10 +237,12 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -221,10 +270,12 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL ACTUALIZAR FOTO CONEXIÓN: " + ex.getMessage());
             }
@@ -232,7 +283,7 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
 
         return actualizarFoto; // Devuelve `true` o `false`.
     }
-    
+
     public boolean activarTrabajador(Trabajador trabajador) { // Método para actualizar el oficio y el estado de un trabajador.
         boolean activar = false; // Variable de estado.
 
@@ -252,10 +303,12 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL ACTUALIZAR ESTADO: " + ex.getMessage());
             }
@@ -263,7 +316,7 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
 
         return activar; // Devuelve `true` o `false`.
     }
-    
+
     public boolean cambiarEstado(Trabajador trabajador) { // Método para cambiar el estado de un trabajador.
         boolean activar = false; // Variable de estado.
 
@@ -282,10 +335,12 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
             e.printStackTrace();
         } finally {
             try {
-                if (prepStmt != null)
+                if (prepStmt != null) {
                     prepStmt.close();
-                if (conn != null)
+                }
+                if (conn != null) {
                     conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL ACTUALIZAR ESTADO: " + ex.getMessage());
             }

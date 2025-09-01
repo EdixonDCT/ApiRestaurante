@@ -33,7 +33,10 @@ public class RegisterControlador {
             if (!validaCedula.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
             }
-
+            
+            boolean repetido = trabajadorDAO.obtenerPorCedulaBoolean(trabajador.getCedula());
+            if (repetido) return Response.status(Response.Status.BAD_REQUEST).entity("{\"Error\":\"Trabajador con cc."+trabajador.getCedula()+" ya Existe\"}").build();
+            
             // Valida el campo 'nombre'.
             String validarNombre = Middlewares.validarString(trabajador.getNombre(), "nombre");
             if (!validarNombre.equals("ok")) {
@@ -74,14 +77,16 @@ public class RegisterControlador {
             } else {
                 // Si la creación falla, retorna un 500 (Internal Server Error).
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("{\"Error\":\"No se pudo crear trabajador\"}")
+                        .entity("{\"Error\":\"No se pudo crear trabajador.\"}")
                         .build();
             }
         } catch (Exception e) {
             // Imprime la traza de la excepción.
             e.printStackTrace();
             // Retorna un error 500 (Internal Server Error).
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
     @PATCH
@@ -112,7 +117,9 @@ public class RegisterControlador {
             // Imprime la traza de la excepción.
             e.printStackTrace();
             // Retorna un error 500 (Internal Server Error).
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 

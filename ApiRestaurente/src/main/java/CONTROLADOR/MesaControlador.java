@@ -56,14 +56,14 @@ public class MesaControlador {
             } else {
                 // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: no se pudo obtener MESA.")
+                       .entity("{\"Error\":\"No se pudo obtener Mesa.\"}")
                         .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
             // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
             return Response.serverError()
-                    .entity("Error: Error interno en el servidor.")
+                     .entity("{\"Error\":\"Error interno en el servidor.\"}")
                     .build();
         }
     }
@@ -77,28 +77,35 @@ public class MesaControlador {
             if (!validaNumero.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaNumero).build();
             }
+            
+            boolean repetido = mesaDAO.obtenerPorNumeroBoolean(mesa.getNumero());
+            if (repetido) return Response.status(Response.Status.BAD_REQUEST).entity("{\"Error\":\"Mesa con #"+mesa.getNumero()+" ya Existe\"}").build();
+            
             // Valida que la capacidad de la mesa sea un entero
             String validaCapacidad = Middlewares.validarEntero(mesa.getCapacidad(), "capacidad");
             if (!validaCapacidad.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCapacidad).build();
             }
-            
+
             // Si las validaciones son correctas, intenta crear la mesa en la base de datos
             boolean creado = mesaDAO.crear(mesa);
             if (creado) {
                 // Si la creación es exitosa, retorna una respuesta 201 (Created).
+                String mensaje = "Mesa #"+mesa.getNumero()+" creada Exitosamente.";
                 return Response.status(Response.Status.CREATED)
-                        .entity("Mesa: #" + mesa.getNumero() + " creado con EXITO.")
+                        .entity("{\"Ok\":\""+mensaje+"\"}")
                         .build();
             } else {
                 // Si la creación falla, retorna una respuesta 500 (Internal Server Error).
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("Error: no se pudo crear MESA #" + mesa.getNumero())
+                        .entity("{\"Error\":\"No se pudo crear Mesa.\"}")
                         .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -120,24 +127,29 @@ public class MesaControlador {
             if (!validaCapacidad.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCapacidad).build();
             }
-            
+
             // Intenta actualizar la mesa en la base de datos
             boolean actualizado = mesaDAO.actualizar(mesa);
             if (actualizado) {
                 // Si la actualización es exitosa, retorna una respuesta 200 (OK).
-                return Response.ok().entity("Mesa: #" + mesa.getNumero() + " actualizado con EXITO.").build();
+               String mensaje = "Mesa #"+mesa.getNumero()+" actualizada Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\""+mensaje+"\"}")
+                        .build();
             } else {
                 // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: mesa NO ENCONTRADO o NO ACTUALIZADO.")
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo actualizar Mesa.\"}")
                         .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
-    
+
     // Método PATCH para actualizar parcialmente el estado de disponibilidad de una mesa
     @PATCH
     @Path("/{numero}")
@@ -154,21 +166,26 @@ public class MesaControlador {
             if (!validaDisponiblidad.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaDisponiblidad).build();
             }
-            
+
             // Si las validaciones son correctas, actualiza el estado de la mesa
             boolean actualizado = mesaDAO.actualizarEstado(mesa);
             if (actualizado) {
                 // Si la actualización es exitosa, retorna una respuesta 200 (OK).
-                return Response.ok().entity("Mesa: actualizacion de #" + numero + " Disponibilidad con EXITO.").build();
+                String mensaje = "Mesa actualizada correctamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
                 // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: mesa NO ENCONTRADO o NO ACTUALIZADO.")
+                        .entity("{\"Error\":\"No se puedo parchear Mesa.\"}")
                         .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -182,19 +199,32 @@ public class MesaControlador {
             if (!validaNumero.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaNumero).build();
             }
-
+            boolean mesaEnPedido = mesaDAO.mesaEnPedido(numero);
+            if(mesaEnPedido)
+            { 
+                String mensaje = "Mesa #" + numero + " no se puede eliminar porque esta relacionado a un Pedido.";
+                return Response.status(Response.Status.BAD_REQUEST).entity("{\"Error\":\"" + mensaje + "\"}").build();
+            }
             boolean eliminado = mesaDAO.eliminar(numero); // Intenta eliminar la mesa.
             if (eliminado) {
                 // Si se elimina con éxito, retorna una respuesta 200 (OK).
-                return Response.ok().entity("Mesa: #" + numero + " Eliminada EXITOSAMENTE.").build();
+                String mensaje = "Mesa: #" + numero + " Eliminada EXITOSAMENTE.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
                 // Si no se encuentra la mesa para eliminar, retorna una respuesta 404 (Not Found).
+                String mensaje = "Mesa NO ENCONTRADA.";
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: mesa NO ENCONTRADO.").build();
+                        .entity("{\"Error\":\"" + mensaje + "\"}")
+                        .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            String mensaje = "Error interno o en el servidor.";
+            return Response.serverError()
+                    .entity("{\"Error\":\"" + mensaje + "\"}")
+                    .build();
         }
     }
 }

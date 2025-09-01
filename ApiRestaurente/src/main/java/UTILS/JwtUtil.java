@@ -106,19 +106,17 @@ public class JwtUtil {
         // Ambos inválidos
         return new TokenValidationResult(false, null, null);
     }
-    public static boolean validarTokenBoolean(String accessToken) {
-            DecodedJWT decoded = verificarToken(accessToken);
-            Date expira = decoded.getExpiresAt();
-            long tiempoRestante = expira.getTime() - System.currentTimeMillis();
+public static boolean validarTokenBoolean(String accessToken) {
+    try {
+        DecodedJWT decoded = verificarToken(accessToken);
+        Date expira = decoded.getExpiresAt();
+        long tiempoRestante = expira.getTime() - System.currentTimeMillis();
 
-            // Si aún está válido normalmente
-            if (tiempoRestante > 0) {
-                return true;
-            }
-            else{
-                return false;
-            }
+        return tiempoRestante > 0; // true si aún no ha expirado
+    } catch (Exception e) {
+        return false; // token inválido (firma mala, corrupto, etc.)
     }
+}
     // Clase auxiliar para retornar resultado y token
     public static class TokenValidationResult {
 
