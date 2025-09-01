@@ -134,62 +134,90 @@ public class DetallePedidoDAO {
         return lista;
     }
     
-    public ArrayList<DetallePedido> obtenerPorPedidoId(String id) {
-        // Inicializa un ArrayList para almacenar los objetos DetallePedido.
-        ArrayList<DetallePedido> lista = new ArrayList<>();
+public ArrayList<DetallePedido> obtenerPorPedidoId(String id) {
+    ArrayList<DetallePedido> lista = new ArrayList<>();
 
-        try {
-            // Establece la conexión.
-            conn = DBConnection.getConnection();
-            // Define la consulta SQL para buscar detalles por el ID del pedido.
-            String sql = "SELECT dp.id, dp.id_pedido, c.id AS id_comida, c.nombre AS comida, c.precio AS precio_comida, dp.cantidad_comida, dp.nota_comida, (c.precio * dp.cantidad_comida) AS total_comida, b.id AS id_bebida, b.nombre AS bebida, b.precio AS precio_bebida, dp.cantidad_bebida, dp.nota_bebida, (b.precio * dp.cantidad_bebida) AS total_bebida, co.id AS id_coctel, co.nombre AS coctel, co.precio AS precio_coctel, dp.cantidad_coctel, dp.nota_coctel, (co.precio * dp.cantidad_coctel) AS total_coctel FROM detalle_pedido dp LEFT JOIN comidas c ON c.id = dp.id_comida LEFT JOIN bebidas b ON b.id = dp.id_bebida LEFT JOIN cocteles co ON co.id = dp.id_coctel WHERE dp.id_pedido = ?";
-            // Prepara la sentencia.
-            prepStmt = conn.prepareStatement(sql);
-            // Convierte el ID de String a Int y lo asigna al parámetro de la consulta.
-            prepStmt.setInt(1, Integer.parseInt(id));
-            // Ejecuta la consulta.
-            rs = prepStmt.executeQuery();
+    try {
+        conn = DBConnection.getConnection();
 
-            // Itera sobre los resultados, ya que un pedido puede tener varios detalles.
-            while (rs.next()) {
-                // Crea y llena un nuevo objeto DetallePedido.
-                DetallePedido d = new DetallePedido();
-                d.setId(rs.getString("id"));
-                d.setId_pedido(rs.getString("id_pedido"));
-                d.setId_comida(rs.getString("comida"));
-                d.setCantidad_comida(rs.getString("cantidad_comida")+"/"+rs.getString("precio_comida"));
-                d.setNota_comida(rs.getString("nota_comida"));
-                d.setId_bebida(rs.getString("bebida"));
-                d.setCantidad_bebida(rs.getString("cantidad_bebida")+"/"+rs.getString("precio_bebida"));
-                d.setNota_bebida(rs.getString("nota_bebida"));
-                d.setId_coctel(rs.getString("coctel"));
-                d.setCantidad_coctel(rs.getString("cantidad_coctel")+"/"+rs.getString("precio_coctel"));
-                d.setNota_coctel(rs.getString("nota_coctel"));
-                // Agrega el objeto a la lista.
-                lista.add(d);
-            }
-        } catch (Exception e) {
-            // Manejo de errores.
-            System.err.println("ERROR AL LISTAR DETALLE_PEDIDO: " + e.getMessage());
-        } finally {
-            // Cierre de recursos.
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (prepStmt != null) {
-                    prepStmt.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (Exception ex) {
-                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
-            }
+        String sql = "SELECT dp.id, dp.id_pedido, p.fecha, p.hora, p.numero_mesa, p.metodo_pago, "
+                   + "c.id AS id_comida, c.nombre AS comida, c.precio AS precio_comida, dp.cantidad_comida, dp.nota_comida, "
+                   + "(c.precio * dp.cantidad_comida) AS total_comida, "
+                   + "b.id AS id_bebida, b.nombre AS bebida, b.precio AS precio_bebida, dp.cantidad_bebida, dp.nota_bebida, "
+                   + "(b.precio * dp.cantidad_bebida) AS total_bebida, "
+                   + "co.id AS id_coctel, co.nombre AS coctel, co.precio AS precio_coctel, dp.cantidad_coctel, dp.nota_coctel, "
+                   + "(co.precio * dp.cantidad_coctel) AS total_coctel, "
+                   + "p.id_reserva, r.precio AS precio_reserva, t.nombre AS nombre_cajero "
+                   + "FROM detalle_pedido dp "
+                   + "LEFT JOIN comidas c ON c.id = dp.id_comida "
+                   + "LEFT JOIN bebidas b ON b.id = dp.id_bebida "
+                   + "LEFT JOIN cocteles co ON co.id = dp.id_coctel "
+                   + "INNER JOIN pedidos p ON p.id = dp.id_pedido "
+                   + "LEFT JOIN reservas r ON r.id = p.id_reserva "
+                   + "LEFT JOIN caja ca ON ca.id = p.id_caja "
+                   + "LEFT JOIN trabajadores t ON t.cedula = ca.cedula_trabajador "
+                   + "WHERE dp.id_pedido = ?";
+
+        prepStmt = conn.prepareStatement(sql);
+        prepStmt.setInt(1, Integer.parseInt(id));
+        rs = prepStmt.executeQuery();
+
+        while (rs.next()) {
+            DetallePedido d = new DetallePedido();
+
+            // Datos generales
+            d.setId(rs.getString("id"));
+            d.setId_pedido(rs.getString("id_pedido"));
+            d.setFecha(rs.getString("fecha"));
+            d.setHora(rs.getString("hora"));
+            d.setNumero_mesa(rs.getString("numero_mesa"));
+            d.setMetodo_pago(rs.getString("metodo_pago"));
+
+            // Comida
+            d.setId_comida(rs.getString("id_comida"));
+            d.setComida(rs.getString("comida"));
+            d.setPrecio_comida(rs.getString("precio_comida"));
+            d.setCantidad_comida(rs.getString("cantidad_comida"));
+            d.setNota_comida(rs.getString("nota_comida"));
+            d.setTotal_comida(rs.getString("total_comida"));
+
+            // Bebida
+            d.setId_bebida(rs.getString("id_bebida"));
+            d.setBebida(rs.getString("bebida"));
+            d.setPrecio_bebida(rs.getString("precio_bebida"));
+            d.setCantidad_bebida(rs.getString("cantidad_bebida"));
+            d.setNota_bebida(rs.getString("nota_bebida"));
+            d.setTotal_bebida(rs.getString("total_bebida"));
+
+            // Cóctel
+            d.setId_coctel(rs.getString("id_coctel"));
+            d.setCoctel(rs.getString("coctel"));
+            d.setPrecio_coctel(rs.getString("precio_coctel"));
+            d.setCantidad_coctel(rs.getString("cantidad_coctel"));
+            d.setNota_coctel(rs.getString("nota_coctel"));
+            d.setTotal_coctel(rs.getString("total_coctel"));
+
+            // Reserva y cajero
+            d.setId_reserva(rs.getString("id_reserva"));
+            d.setPrecio_reserva(rs.getString("precio_reserva"));
+            d.setNombre_cajero(rs.getString("nombre_cajero"));
+
+            lista.add(d);
         }
-
-        return lista;
+    } catch (Exception e) {
+        System.err.println("ERROR AL LISTAR DETALLE_PEDIDO: " + e.getMessage());
+    } finally {
+        try {
+            if (rs != null) rs.close();
+            if (prepStmt != null) prepStmt.close();
+            if (conn != null) conn.close();
+        } catch (Exception ex) {
+            System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+        }
     }
+    return lista;
+}
+
     // MÉTODO: Crea un nuevo registro de detalle de pedido en la base de datos.
 public boolean crear(DetallePedido d) {
     boolean creado = false;
