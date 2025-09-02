@@ -62,6 +62,35 @@ public class ClienteControlador { // Definición de la clase del controlador.
         }
     }
 
+    @GET // Anotación para peticiones HTTP GET.
+    @Path("verificar/{correo}") // Mapea a la ruta '/clientes/{correo}'.
+    public Response verificarSiExisteCliente(@PathParam("correo") String correo) { // Método para obtener un cliente por su correo.
+        try { // Bloque try-catch.
+            String validaCorreo = Middlewares.validarCorreo(correo, "correo"); // Valida el formato del correo.
+            if (!validaCorreo.equals("ok")) { // Si la validación falla...
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCorreo).build(); // ...retorna un 400 (Bad Request).
+            }
+
+            boolean existe = clienteDAO.obtenerPorCorreoBoolean(correo);
+            if (existe) { // Si la creación es exitosa...
+                String mensaje = "Cliente " + correo + " si Existe.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
+            } else {
+                // Si la creación falla, retorna una respuesta 500 (Internal Server Error).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"Cliente no Existe.\"}")
+                        .build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
+        }
+    }
+
     // Método POST para crear un nuevo oficio
     @POST // Anotación para peticiones HTTP POST (crear).
     public Response crearCliente(Cliente cliente) { // Método para crear un nuevo cliente.
@@ -71,8 +100,14 @@ public class ClienteControlador { // Definición de la clase del controlador.
             if (!validaCorreo.equals("ok")) { // Si la validación falla...
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCorreo).build(); // ...retorna un 400.
             }
+
+            boolean repetido = clienteDAO.obtenerPorCorreoBoolean(cliente.getCorreo());
+            if (repetido) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("{\"Error\":\"Correo del cliente(" + cliente.getCorreo() + ") ya Existe\"}").build();
+            }
+
             // Valida el campo tipo
-            String validaCedula = Middlewares.validarCantidad9o10(cliente.getCedula(), "cedula"); // Valida la cédula.
+            String validaCedula = Middlewares.validarCantidad6o10(cliente.getCedula(), "cedula"); // Valida la cédula.
             if (!validaCedula.equals("ok")) { // Si la validación falla...
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build(); // ...retorna un 400.
             }
@@ -83,19 +118,24 @@ public class ClienteControlador { // Definición de la clase del controlador.
             // Crea el oficio si pasa las validaciones
             boolean creado = clienteDAO.crear(cliente); // Llama al DAO para crear el cliente.
             if (creado) { // Si la creación es exitosa...
-                return Response.status(Response.Status.CREATED) // ...retorna un 201 (Created).
-                        .entity("Cliente: " + cliente.getCorreo() + " creado con EXITO.") // Agrega un mensaje de éxito.
-                        .build(); // Retorna la respuesta.
-            } else { // Si la creación falla...
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR) // ...retorna un 500.
-                        .entity("Error: no se pudo crear CLIENTE " + cliente.getCorreo()) // Agrega un mensaje de error.
-                        .build(); // Retorna la respuesta.
+                String mensaje = "Cliente " + cliente.getCorreo() + " creado Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
+            } else {
+                // Si la creación falla, retorna una respuesta 500 (Internal Server Error).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo crear Cliente.\"}")
+                        .build();
             }
-        } catch (Exception e) { // Captura cualquier excepción.
-            e.printStackTrace(); // Imprime la traza del error.
-            return Response.serverError().entity("Error: Error interno en el servidor,"+e).build(); // Retorna un 500 con el mensaje de error.
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
+
     // Método PUT para actualizar un oficio existente
     @PUT // Anotación para peticiones HTTP PUT (actualizar).
     @Path("/{correo}") // Mapea a la ruta '/clientes/{correo}'.
@@ -120,7 +160,7 @@ public class ClienteControlador { // Definición de la clase del controlador.
             // si todo es correcto accede a actualizar
             boolean actualizado = clienteDAO.actualizar(cliente); // Llama al DAO para actualizar el cliente.
             if (actualizado) { // Si la actualización es exitosa...
-                return Response.ok().entity("Cliente: " + cliente.getCorreo()+ " actualizado con EXITO.").build(); // ...retorna un 200 con un mensaje de éxito.
+                return Response.ok().entity("Cliente: " + cliente.getCorreo() + " actualizado con EXITO.").build(); // ...retorna un 200 con un mensaje de éxito.
             } else { // Si la actualización falla...
                 return Response.status(Response.Status.NOT_FOUND) // ...retorna un 404 (Not Found).
                         .entity("Error: cliente NO ENCONTRADO o NO ACTUALIZADO.") // Agrega un mensaje de error.

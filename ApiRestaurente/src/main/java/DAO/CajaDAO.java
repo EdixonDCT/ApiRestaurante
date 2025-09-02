@@ -433,4 +433,65 @@ public class CajaDAO {
         // Retorna si la eliminación fue exitosa
         return eliminado;
     }
+
+    public Boolean verDisponibleCaja() { // Método para buscar un trabajador por su cédula.
+        boolean existe = false; // Inicializa el objeto trabajador como nulo.
+
+        try {
+            conn = DBConnection.getConnection(); // Establece la conexión.
+            String sql = "SELECT 1 FROM caja WHERE fecha_cierre IS null AND hora_cierre IS null AND monto_cierre IS null;"; // Consulta con un parámetro.
+            prepStmt = conn.prepareStatement(sql); // Asigna el valor de la cédula al parámetro de la consulta.
+            rs = prepStmt.executeQuery();
+            if (rs.next()) { // Si hay al menos una fila
+                existe = true;
+            }
+        } catch (Exception e) {
+            System.err.println("ERROR AL OBTENER MESA POR NUMERO: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+        return existe; // Devuelve el objeto trabajador o nulo si no se encontró.
+    }
+
+    public Boolean CerrarCajaPedidos(String id) {
+    boolean existe = false;
+
+    try {
+        conn = DBConnection.getConnection(); 
+        String sql = "UPDATE pedidos SET facturado = 1 WHERE id_caja = ?";
+        prepStmt = conn.prepareStatement(sql);
+        prepStmt.setInt(1, Integer.parseInt(id));
+
+        int filas = prepStmt.executeUpdate(); // cuántas filas fueron actualizadas
+        existe = filas > 0;
+
+    } catch (Exception e) {
+        System.err.println("ERROR AL CERRAR CAJA PEDIDOS: " + e.getMessage());
+        e.printStackTrace();
+    } finally {
+        try {
+            if (prepStmt != null) prepStmt.close();
+            if (conn != null) conn.close();
+        } catch (Exception ex) {
+            System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+        }
+    }
+
+    return existe; 
+}
+
+
 }

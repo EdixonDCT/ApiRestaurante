@@ -157,7 +157,23 @@ public class Middlewares {
         }
         return "ok";
     }
-
+    public static String validarCantidad6o10(String valor, String campo) {
+        if (Vacio(valor)) {
+            return "ok";
+        }
+        if (!valor.matches("^-?\\d+$")) {
+            return "{\"Error\":\"" + campo + " debe ser un numero entero valido\"}";
+        }
+        long numero = Long.parseLong(valor);
+        if (numero <= 0) {
+            return "{\"Error\":\"" + campo + " debe ser mayor a 0\"}";
+        }
+        int longitud = valor.length();
+        if (longitud != 6 && longitud != 10) {
+            return "{\"Error\":\"" + campo + " debe tener 6 o 10 caracteres\"}";
+        }
+        return "ok";
+    }
     // Correo
     public static String validarCorreo(String valor, String campo) {
         if (Vacio(valor)) {

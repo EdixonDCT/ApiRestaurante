@@ -10,8 +10,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 /**
- * Clase para la persistencia de datos (DAO) de la entidad Mesa.
- * Se encarga de las operaciones de la base de datos (CRUD) para la tabla 'mesas'.
+ * Clase para la persistencia de datos (DAO) de la entidad Mesa. Se encarga de
+ * las operaciones de la base de datos (CRUD) para la tabla 'mesas'.
  */
 public class MesaDAO {
 
@@ -118,8 +118,8 @@ public class MesaDAO {
         }
         return mesa;
     }
-    
-        public Boolean mesaEnPedido(String numero) {
+
+    public Boolean mesaEnPedido(String numero) {
         Boolean mesaPedido = false;
         try {
             conn = DBConnection.getConnection();
@@ -153,6 +153,42 @@ public class MesaDAO {
         }
         return mesaPedido;
     }
+
+    public Integer mesaCantidad(String numero) {
+        Integer mesaNumero = 0;
+        try {
+            conn = DBConnection.getConnection();
+            // Consulta SQL que busca por el número de la mesa.
+            String sql = "SELECT capacidad FROM mesas WHERE numero = ?";
+            prepStmt = conn.prepareStatement(sql);
+            // Asigna el número como parámetro, convirtiéndolo a entero.
+            prepStmt.setInt(1, Integer.parseInt(numero));
+            rs = prepStmt.executeQuery();
+            if (rs.next()) { // Si hay al menos una fila
+                mesaNumero = rs.getInt("capacidad");
+            }
+        } catch (Exception e) {
+            System.err.println("ERROR AL OBTENER CAPACIDAD POR NUMERO: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            // Cierre de recursos.
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+        return mesaNumero;
+    }
+
     /**
      * Crea una nueva mesa en la base de datos.
      *
@@ -196,7 +232,8 @@ public class MesaDAO {
     /**
      * Actualiza la capacidad de una mesa existente.
      *
-     * @param mesa El objeto Mesa con la nueva capacidad y el número de la mesa a actualizar.
+     * @param mesa El objeto Mesa con la nueva capacidad y el número de la mesa
+     * a actualizar.
      * @return true si la actualización fue exitosa, false en caso contrario.
      */
     public boolean actualizar(Mesa mesa) {
@@ -256,8 +293,12 @@ public class MesaDAO {
         } finally {
             // Cierre de recursos.
             try {
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -302,7 +343,7 @@ public class MesaDAO {
         }
         return actualizado;
     }
-    
+
     public Boolean obtenerPorNumeroBoolean(String numero) { // Método para buscar un trabajador por su cédula.
         boolean existe = false; // Inicializa el objeto trabajador como nulo.
 
@@ -311,6 +352,38 @@ public class MesaDAO {
             String sql = "SELECT 1 FROM mesas WHERE numero = ?"; // Consulta con un parámetro.
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setInt(1, Integer.parseInt(numero)); // Asigna el valor de la cédula al parámetro de la consulta.
+            rs = prepStmt.executeQuery();
+            if (rs.next()) { // Si hay al menos una fila
+                existe = true;
+            }
+        } catch (Exception e) {
+            System.err.println("ERROR AL OBTENER MESA POR NUMERO: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+        return existe; // Devuelve el objeto trabajador o nulo si no se encontró.
+    }
+
+    public Boolean verDisponibleMesa() { // Método para buscar un trabajador por su cédula.
+        boolean existe = false; // Inicializa el objeto trabajador como nulo.
+
+        try {
+            conn = DBConnection.getConnection(); // Establece la conexión.
+            String sql = "SELECT 1 FROM mesas WHERE disponible = 1;"; // Consulta con un parámetro.
+            prepStmt = conn.prepareStatement(sql); // Asigna el valor de la cédula al parámetro de la consulta.
             rs = prepStmt.executeQuery();
             if (rs.next()) { // Si hay al menos una fila
                 existe = true;

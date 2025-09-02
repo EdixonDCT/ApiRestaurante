@@ -222,4 +222,37 @@ public class ClienteDAO {
         // Retorna el resultado de la operación.
         return eliminado;
     }
+    
+    public Boolean obtenerPorCorreoBoolean(String correo) { // Método para buscar un trabajador por su cédula.
+        boolean existe = false; // Inicializa el objeto trabajador como nulo.
+
+        try {
+            conn = DBConnection.getConnection(); // Establece la conexión.
+            String sql = "SELECT 1 FROM clientes WHERE correo = ?"; // Consulta con un parámetro.
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setString(1,correo); // Asigna el valor de la cédula al parámetro de la consulta.
+            rs = prepStmt.executeQuery();
+            if (rs.next()) { // Si hay al menos una fila
+                existe = true;
+            }
+        } catch (Exception e) {
+            System.err.println("ERROR AL OBTENER MESA POR NUMERO: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+        return existe; // Devuelve el objeto trabajador o nulo si no se encontró.
+    }
 }

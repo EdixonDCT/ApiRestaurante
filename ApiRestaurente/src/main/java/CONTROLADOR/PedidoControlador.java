@@ -2,6 +2,8 @@
 package CONTROLADOR;
 
 // Importa el modelo Pedido y su DAO (Data Access Object)
+import DAO.ClienteDAO;
+import DAO.MesaDAO;
 import MODELO.Pedido;
 import DAO.PedidoDAO;
 // Importa la clase de validación (Middlewares)
@@ -25,9 +27,10 @@ public class PedidoControlador {
 
     // Instancia del DAO para interactuar con la base de datos de pedidos
     private PedidoDAO pedidoDAO = new PedidoDAO();
+    private MesaDAO mesaDAO = new MesaDAO();
+    private ClienteDAO clienteDAO = new ClienteDAO(); // Crea una instancia de 'ClienteDAO'.
 
     // --- Métodos GET ---
-
     // Maneja la petición GET a "/pedidos"
     // Retorna una lista de todos los pedidos
     @GET
@@ -63,19 +66,21 @@ public class PedidoControlador {
                 // Si se encuentra, retorna una respuesta 200 (OK) con el pedido
                 return Response.ok(pedido).build();
             } else {
-                // Si no se encuentra, retorna una respuesta 404 (Not Found)
+                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: pedido no encontrado.")
+                        .entity("{\"Error\":\"No se pudo obtener Pedido.\"}")
                         .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno en el servidor.").build();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
     // --- Métodos POST ---
-
     // Maneja la petición POST a "/pedidos"
     // Crea un nuevo pedido a partir de los datos recibidos en el cuerpo de la petición
     @POST
@@ -102,26 +107,49 @@ public class PedidoControlador {
             if (!validaMetodoPago.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaMetodoPago).build();
             }
+            Boolean correoExiste = clienteDAO.obtenerPorCorreoBoolean(pedido.getCorreoCliente());
+            if (!correoExiste) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"El correo del Cliente no EXISTE.\"}")
+                        .build();
+            }
 
+            Integer cantidadMesa = mesaDAO.mesaCantidad(pedido.getNumeroMesa());
+            Integer cantidadCliente = Integer.parseInt(pedido.getNumeroClientes());
+
+            Boolean esMayorOIgual = cantidadMesa >= cantidadCliente;
+            if (!esMayorOIgual) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"Seleccione Mesa que sea igual o mayor a la Cantidad de Clientes.\"}")
+                        .build();
+            }
             // Si todas las validaciones son correctas, intenta crear el pedido
             String[] resultado = pedidoDAO.crear(pedido);
 
             // El resultado del DAO contiene un mensaje y el nuevo ID.
             if (!resultado[1].equals("-1")) {
-                // Si se creó, retorna una respuesta 201 (Created) con un JSON que incluye el ID
-                String json = String.format("{\"mensaje\": \"%s\", \"id\": \"%s\"}", resultado[0], resultado[1]);
-                return Response.status(Response.Status.CREATED).entity(json).build();
+                // Si se creó, retorna una respuesta 201 (Created) con un JSON que incluye "Ok"
+                String mensaje = "Pedido creado EXITOSAMENTE.";
+                String json = String.format("{\"Ok\": \"%s\", \"id\": \"%s\"}", mensaje, resultado[1]);
+                
+                return Response.status(Response.Status.CREATED)
+                        .entity(json)
+                        .build();
             } else {
-                // Si la creación falla, retorna una respuesta 500 (Internal Server Error)
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("Error: no se pudo crear el pedido.").build();
+                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"No se pudo crear Pedido.\"}")
+                        .build();
             }
-
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno en el servidor.").build();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
+
 
     // Maneja la petición POST a "/pedidos/reserva"
     // Crea un pedido a partir de una reserva, validando los campos específicos para esta acción
@@ -166,7 +194,6 @@ public class PedidoControlador {
     }
 
     // --- Métodos PUT y PATCH (Actualizaciones) ---
-
     // Maneja la petición PUT a "/pedidos/{id}"
     // Actualiza todos los campos de un pedido existente
     @PUT
@@ -206,16 +233,21 @@ public class PedidoControlador {
             boolean actualizado = pedidoDAO.actualizar(pedido);
             if (actualizado) {
                 // Si la actualización es exitosa, retorna 200 (OK)
-                return Response.ok().entity("Pedido: actualizado EXITOSAMENTE.").build();
+                String mensaje = "Pedido #" + pedido.getId() + " actualizado Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
-                // Si el pedido no existe, retorna 404 (Not Found)
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: pedido no encontrado o no actualizado.").build();
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo actualizar Mesa.\"}")
+                        .build();
             }
-
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -316,14 +348,21 @@ public class PedidoControlador {
             // Llama al DAO para actualizar el total del pedido
             boolean actualizado = pedidoDAO.PatchTotal(id);
             if (actualizado) {
-                return Response.ok().entity("Pedido: total del pedido ACTUALIZADO EXITOSAMENTE.").build();
+                String mensaje = "Pedido #" + id + " Detalles Pedidos Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: pedido no encontrado o no actualizado.").build();
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo actualizar Pedido.\"}")
+                        .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -349,7 +388,7 @@ public class PedidoControlador {
             return Response.serverError().entity("Error interno en el servidor.").build();
         }
     }
-    
+
     // Maneja la petición PATCH a "/pedidos/eliminadosi/{id}"
     // Realiza un "soft delete" (eliminación suave) de un pedido
     @PATCH
@@ -372,7 +411,7 @@ public class PedidoControlador {
             return Response.serverError().entity("Error interno en el servidor.").build();
         }
     }
-    
+
     // Maneja la petición PATCH a "/pedidos/eliminadono/{id}"
     // Revierte un "soft delete" (restaura un pedido)
     @PATCH
@@ -397,7 +436,6 @@ public class PedidoControlador {
     }
 
     // --- Métodos DELETE ---
-
     // Maneja la petición DELETE a "/pedidos/{id}"
     // Elimina un pedido de forma permanente por su ID
     @DELETE

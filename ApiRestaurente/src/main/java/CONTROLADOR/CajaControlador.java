@@ -42,14 +42,39 @@ public class CajaControlador { // Definición de la clase principal del controla
             } else {
                 // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
                 return Response.status(Response.Status.NOT_FOUND)
-                       .entity("{\"Error\":\"No se pudo obtener Mesa.\"}")
+                        .entity("{\"Error\":\"No se pudo obtener Mesa.\"}")
                         .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
             // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
             return Response.serverError()
-                     .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
+        }
+    }
+
+    @GET
+    @Path("verDisponible") // La URL incluye un parámetro dinámico llamado "numero".
+    public Response verDisponible(){
+        try {
+            Boolean disponibles = cajaDAO.verDisponibleCaja(); // Busca la mesa por su número en la base de datos.
+            if (disponibles) {
+                String mensaje = "Si hay Cajas Disponibles.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
+            } else {
+                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"No hay Cajas Disponibles.\"}")
+                        .build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
                     .build();
         }
     }
@@ -117,7 +142,7 @@ public class CajaControlador { // Definición de la clase principal del controla
             boolean actualizado = cajaDAO.actualizar(caja); // Llama al DAO para actualizar la caja.
             if (actualizado) // Si la actualización fue exitosa...
             {
-               String mensaje = "Caja actualizada Exitosamente.";
+                String mensaje = "Caja actualizada Exitosamente.";
                 return Response.status(Response.Status.CREATED)
                         .entity("{\"Ok\":\"" + mensaje + "\"}")
                         .build();
@@ -184,7 +209,7 @@ public class CajaControlador { // Definición de la clase principal del controla
             boolean actualizado = cajaDAO.actualizarTotal(caja); // Llama al DAO para actualizar el total de la caja.
             if (actualizado) // Si la actualización fue exitosa...
             {
-               String mensaje = "Caja Actualizada Exitosamente.";
+                String mensaje = "Caja Actualizada Exitosamente.";
                 return Response.status(Response.Status.CREATED)
                         .entity("{\"Ok\":\"" + mensaje + "\"}")
                         .build();
@@ -221,6 +246,7 @@ public class CajaControlador { // Definición de la clase principal del controla
             boolean parchear = cajaDAO.actualizarCierre(caja); // Llama al DAO para actualizar el cierre.
             if (parchear) // Si la actualización fue exitosa...
             {
+                boolean facturadoPedidos = cajaDAO.CerrarCajaPedidos(caja.getId());
                 String mensaje = "Caja Cerrada Exitosamente.";
                 return Response.status(Response.Status.CREATED)
                         .entity("{\"Ok\":\"" + mensaje + "\"}")

@@ -37,8 +37,10 @@ public class DetallePedidoControlador {
             List<DetallePedido> lista = DetllPedDAO.listarTodos(); // Llama al DAO para obtener todos los detalles de pedidos.
             return Response.ok(lista).build(); // Retorna una respuesta 200 (OK) con la lista.
         } catch (Exception e) {
-            e.printStackTrace(); // Imprime la traza del error para depuración.
-            return Response.serverError().entity("Error interno al listar.").build(); // Retorna una respuesta 500 (Internal Server Error).
+            e.printStackTrace();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -56,34 +58,36 @@ public class DetallePedidoControlador {
             List<DetallePedido> detallePedido = DetllPedDAO.obtenerPorId(id); // Busca el detalle de pedido por el ID.
             if (detallePedido != null) { // Si se encuentra el detalle de pedido...
                 return Response.ok(detallePedido).build(); // ...retorna una respuesta 200 (OK) con el objeto DetallePedido.
-            } else { // Si no se encuentra...
-                return Response.status(Response.Status.NOT_FOUND) // ...retorna una respuesta 404 (Not Found).
-                        .entity("DetallePedido: pedido id #" + id + " no encontrada.")
+            } else {
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo encontrar Detalle Pedido por ID.\"}")
                         .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno al obtener.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
     // POST: Crear nuevo detalle de pedido
     @POST
-    public Response crearDetalle(DetallePedido detallePedido) { // Recibe un objeto DetallePedido del cuerpo de la petición.
+    public Response crearDetalle(DetallePedido detallePedido) {
         try {
-            
             // Validar id_pedido (obligatorio y debe ser un entero)
             String validaIdPedido = Middlewares.validarEntero(detallePedido.getId_pedido(), "id_pedido");
             if (!validaIdPedido.equals("ok")) {
                 return Response.status(400).entity(validaIdPedido).build();
             }
-            
+
             // Verificar si el pedido existe
             boolean pedido = PedDAO.existePedidoPorId(detallePedido.getId_pedido());
             String mensaje = "Pedido: #" + detallePedido.getId_pedido() + " Existe";
             String mensajeNoExisteLosdemas = "Pedido: #" + detallePedido.getId_pedido() + " Existe";
-            
-            // Validar id_comida y su cantidad
+
+            // -------- COMIDA --------
             String validaIdComida = Middlewares.validarEnteroNulo(detallePedido.getId_comida(), "id_comida");
             if (!validaIdComida.equals("ok")) {
                 return Response.status(400).entity(validaIdComida).build();
@@ -97,17 +101,20 @@ public class DetallePedidoControlador {
                 if (!validaCantidadComida.equals("ok")) {
                     return Response.status(400).entity(validaCantidadComida).build();
                 }
+                // 🔹 Convertir a String
+                detallePedido.setCantidad_comida(String.valueOf(detallePedido.getCantidad_comida()));
+
                 boolean comida = comDAO.existePorId(detallePedido.getId_comida());
                 if (comida) {
                     mensaje += ", Comida : #" + detallePedido.getId_comida() + " Existe";
                 }
             }
 
-            // Validar id_bebida y su cantidad
+            // -------- BEBIDA --------
             String validaIdBebida = Middlewares.validarEnteroNulo(detallePedido.getId_bebida(), "id_bebida");
             if (!validaIdBebida.equals("ok")) {
                 return Response.status(400).entity(validaIdBebida).build();
-            } else if (Middlewares.Vacio(detallePedido.getCantidad_bebida())) {
+            } else if (Middlewares.Vacio(detallePedido.getId_bebida())) {
                 detallePedido.setId_bebida(null);
                 detallePedido.setCantidad_bebida(null);
                 detallePedido.setNota_bebida(null);
@@ -117,13 +124,16 @@ public class DetallePedidoControlador {
                 if (!validaCantidadBebida.equals("ok")) {
                     return Response.status(400).entity(validaCantidadBebida).build();
                 }
-                boolean bebida = bebDAO.existeBebidaPorId(detallePedido.getCantidad_bebida());
+                // 🔹 Convertir a String
+                detallePedido.setCantidad_bebida(String.valueOf(detallePedido.getCantidad_bebida()));
+
+                boolean bebida = bebDAO.existeBebidaPorId(detallePedido.getId_bebida());
                 if (bebida) {
                     mensaje += ", Bebida : #" + detallePedido.getId_bebida() + " Existe";
                 }
             }
 
-            // Validar id_coctel y su cantidad
+            // -------- COCTEL --------
             String validaIdCoctel = Middlewares.validarEnteroNulo(detallePedido.getId_coctel(), "id_coctel");
             if (!validaIdCoctel.equals("ok")) {
                 return Response.status(400).entity(validaIdCoctel).build();
@@ -137,34 +147,40 @@ public class DetallePedidoControlador {
                 if (!validaCantidadCoctel.equals("ok")) {
                     return Response.status(400).entity(validaCantidadCoctel).build();
                 }
-                boolean coctel = cocDAO.existeCoctelPorId(detallePedido.getCantidad_coctel());
+                // 🔹 Convertir a String
+                detallePedido.setCantidad_coctel(String.valueOf(detallePedido.getCantidad_coctel()));
+
+                boolean coctel = cocDAO.existeCoctelPorId(detallePedido.getId_coctel());
                 if (coctel) {
-                    mensaje += ", Coctel : #" + detallePedido.getCantidad_coctel() + " Existe";
+                    mensaje += ", Coctel : #" + detallePedido.getId_coctel() + " Existe";
                 }
             }
-            
+
+            // -------- CREAR DETALLE --------
             boolean creado = false;
-            // Solo se intenta crear si se encontró alguna comida, bebida o cóctel
             if (!mensaje.equals(mensajeNoExisteLosdemas)) {
                 creado = DetllPedDAO.crear(detallePedido);
-                mensaje += ", Encontrados creando...";
-            } else {
-                mensaje = "Error: no se pudo crear DETALLE PEDIDO, ya que no se encontraron items.";
-            }
-            
-            if (creado) {
-                return Response.status(Response.Status.CREATED)
-                        .entity(mensaje)
-                        .build();
+                mensaje += " | DetallesPedido Creados con Éxito";
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity(mensaje)
+                        .entity("{\"Error\":\"No se pudo crear Detalle Pedido porque no se encontraron ITEMS.\"}")
                         .build();
             }
 
+            if (creado) {
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
+            } else {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo crear Detalle Pedido.\"}")
+                        .build();
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Detalle_pedido: error interno al crear.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -182,16 +198,21 @@ public class DetallePedidoControlador {
             // Llama al DAO para eliminar el detalle
             boolean eliminado = DetllPedDAO.eliminar(id);
             if (eliminado) { // Si la eliminación fue exitosa...
-                return Response.ok("DetallePedido ID " + id + " eliminado exitosamente.").build();
-            } else { // Si no se encuentra...
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("DetallePedido con ID " + id + " no encontrado.")
+                String mensaje = "Detalle pedido con el Pedido #" + id + " Eliminado Correctamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
+            } else {
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo eliminar Detalle Pedido por ID.\"}")
                         .build();
             }
-
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno al eliminar.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 }
