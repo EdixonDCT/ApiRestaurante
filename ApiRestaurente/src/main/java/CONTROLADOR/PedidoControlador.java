@@ -79,7 +79,38 @@ public class PedidoControlador {
                     .build();
         }
     }
+    
+    @GET
+    @Path("reserva/{id}")
+    public Response obtenerPedidoPorReserva(@PathParam("id") String id) {
+        try {
+            // Valida que el ID del pedido sea un número entero válido
+            String validaId = Middlewares.validarEntero(id, "ID");
+            if (!validaId.equals("ok")) {
+                // Si el ID es inválido, retorna una respuesta 400 (Bad Request)
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
+            }
 
+            // Busca el pedido por su ID
+            Pedido pedido = pedidoDAO.obtenerPorReserva(id);
+            if (pedido != null) {
+                // Si se encuentra, retorna una respuesta 200 (OK) con el pedido
+                return Response.ok(pedido).build();
+            } else {
+                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"No se pudo obtener Pedido.\"}")
+                        .build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
+        }
+    }
+    
     // --- Métodos POST ---
     // Maneja la petición POST a "/pedidos"
     // Crea un nuevo pedido a partir de los datos recibidos en el cuerpo de la petición
@@ -178,18 +209,22 @@ public class PedidoControlador {
             // Llama al DAO para crear el pedido de reserva
             boolean creado = pedidoDAO.crearReserva(pedido);
             if (creado) {
-                // Retorna una respuesta 201 (Created)
+                String mensaje = "Pedido Reserva creado EXITOSAMENTE.";
                 return Response.status(Response.Status.CREATED)
-                        .entity("Pedido: reserva creada EXITOSAMENTE.").build();
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
-                // Retorna una respuesta 500 si la creación falla
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("Error: no se pudo crear el pedido reserva.").build();
+                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"No se pudo crear Pedido de la Reserva.\"}")
+                        .build();
             }
-
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno en el servidor.").build();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -240,7 +275,7 @@ public class PedidoControlador {
             } else {
                 // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("{\"Error\":\"No se pudo actualizar Mesa.\"}")
+                        .entity("{\"Error\":\"No se pudo actualizar Pedido.\"}")
                         .build();
             }
         } catch (Exception e) {
@@ -264,10 +299,6 @@ public class PedidoControlador {
             if (!validaIdCaja.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaIdCaja).build();
             }
-            String validaNumeroClientes = Middlewares.validarEntero(pedido.getNumeroClientes(), "numero de clientes");
-            if (!validaNumeroClientes.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroClientes).build();
-            }
             String validaMetodoPago = Middlewares.validarString(pedido.getMetodoPago(), "metodo de pago");
             if (!validaMetodoPago.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaMetodoPago).build();
@@ -281,15 +312,21 @@ public class PedidoControlador {
             boolean actualizado = pedidoDAO.actualizarReserva(pedido);
             if (actualizado) {
                 // Si se actualiza, retorna 200 (OK)
-                return Response.ok().entity("Pedido: reserva actualizada EXITOSAMENTE.").build();
+                String mensaje = "Reserva activada Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
-                // Si no se encuentra, retorna 404 (Not Found)
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: pedido reserva no encontrado o no actualizada.").build();
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo activar Reserva.\"}")
+                        .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -378,14 +415,21 @@ public class PedidoControlador {
             }
             boolean actualizado = pedidoDAO.patchFacturar(id);
             if (actualizado) {
-                return Response.ok().entity("Pedido: facturado EXITOSAMENTE.").build();
+                String mensaje = "Pedido #" + id + " facturado Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: pedido no encontrado o no actualizado.").build();
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo facturar Pedido.\"}")
+                        .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -401,14 +445,21 @@ public class PedidoControlador {
             }
             boolean actualizado = pedidoDAO.patchBorradoSi(id);
             if (actualizado) {
-                return Response.ok().entity("Pedido: eliminado suave EXITOSAMENTE.").build();
+                String mensaje = "Pedido #" + id + " Eliminado Suave con Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: pedido no encontrado o no actualizado.").build();
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo eliminar suave el pedido.\"}")
+                        .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -424,14 +475,21 @@ public class PedidoControlador {
             }
             boolean actualizado = pedidoDAO.patchBorradoNo(id);
             if (actualizado) {
-                return Response.ok().entity("Pedido: rescatado del eliminado suave EXITOSAMENTE.").build();
+                String mensaje = "Pedido #" + id + " Incluido Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: pedido no encontrado o no actualizado.").build();
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo re activar el pedido.\"}")
+                        .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -451,15 +509,21 @@ public class PedidoControlador {
             // Llama al DAO para eliminar el pedido
             boolean eliminado = pedidoDAO.eliminar(id);
             if (eliminado) {
-                return Response.ok().entity("Pedido eliminado exitosamente.").build();
+                String mensaje = "Pedido #" + id + " eliminado Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: pedido no encontrado.").build();
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo eliminar Pedido.\"}")
+                        .build();
             }
-
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 }

@@ -2,6 +2,8 @@
 package CONTROLADOR;
 
 // Importa las clases necesarias para el funcionamiento del controlador.
+import DAO.ClienteDAO;
+import DAO.MesaDAO;
 import MODELO.Reserva;        // Importa la clase del modelo que representa una reserva.
 import DAO.ReservaDAO;     // Importa la clase de acceso a datos para las reservas.
 import UTILS.Servicios;  // Importa la clase de servicios que contiene la lógica de negocio.
@@ -24,6 +26,8 @@ public class ReservaControlador {
 
     // Instancia de la clase ReservaDAO para interactuar con la capa de datos.
     private ReservaDAO reservaDAO = new ReservaDAO();
+    private MesaDAO mesaDAO = new MesaDAO();
+    private ClienteDAO clienteDAO = new ClienteDAO(); // Crea una instancia de 'ClienteDAO'.
 
     // Método que maneja las solicitudes GET para listar todas las reservas.
     @GET
@@ -48,16 +52,18 @@ public class ReservaControlador {
         // Valida que el ID recibido sea un número entero.
         String validar = Middlewares.validarEntero(id, "id");
         // Si la validación falla (no retorna "ok")...
-        if (!validar.equals("ok"))
-            // ...retorna una respuesta 400 (Bad Request) con el mensaje de error.
+        if (!validar.equals("ok")) // ...retorna una respuesta 400 (Bad Request) con el mensaje de error.
+        {
             return Response.status(400).entity(validar).build();
+        }
 
         // Llama al DAO para buscar la reserva por el ID.
         Reserva r = reservaDAO.obtenerPorId(id);
         // Si la reserva se encuentra (no es null)...
-        if (r != null)
-            // ...retorna una respuesta HTTP 200 (OK) con la reserva.
+        if (r != null) // ...retorna una respuesta HTTP 200 (OK) con la reserva.
+        {
             return Response.ok(r).build();
+        }
         // Si la reserva no se encuentra...
         // ...retorna una respuesta 404 (Not Found) con un mensaje de error.
         return Response.status(404).entity("Reserva no encontrada.").build();
@@ -68,65 +74,98 @@ public class ReservaControlador {
     // El objeto Reserva se deserializa automáticamente del cuerpo de la petición JSON.
     public Response crear(Reserva reserva) {
         try {
+            String[] partes = reserva.getCantidadTentativa().split("/");
             // Llama a una función de middleware para validar la cantidad tentativa.
-            String validaCantidadTentativa = Middlewares.validarEntero(reserva.getCantidadTentativa(),
-                    "Cantidad Tentativa");
+            reserva.setCantidadTentativa(partes[0]);
+            String validaCantidadTentativa = Middlewares.validarEntero(reserva.getCantidadTentativa(), "Cantidad Tentativa");
             // Si la validación falla...
-            if (!validaCantidadTentativa.equals("ok"))
-                // ...retorna un 400 (Bad Request) con el mensaje de error.
+            if (!validaCantidadTentativa.equals("ok")) // ...retorna un 400 (Bad Request) con el mensaje de error.
+            {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCantidadTentativa)
                         .build();
-
+            }
             // Llama a un servicio para calcular el precio de la reserva.
             reserva.setPrecio(Servicios.CalcularReserva(reserva.getCantidadTentativa()));
-
             // Valida el precio calculado.
             String validaPrecio = Middlewares.validarDouble(reserva.getPrecio(), "precio");
             // Si la validación falla...
-            if (!validaPrecio.equals("ok"))
-                // ...retorna un 400 (Bad Request).
+            if (!validaPrecio.equals("ok")) // ...retorna un 400 (Bad Request).
+            {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaPrecio).build();
+            }
 
             // Valida el formato de la fecha tentativa.
             String validarFecha = Middlewares.validarFecha(reserva.getFechaTentativa(), "fecha_tentativa");
             // Si la validación falla...
-            if (!validarFecha.equals("ok"))
-                // ...retorna un 400 (Bad Request).
+            if (!validarFecha.equals("ok")) // ...retorna un 400 (Bad Request).
+            {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarFecha).build();
+            }
 
             // Valida el formato de la hora tentativa.
             String validarHora = Middlewares.validarHora(reserva.getHoraTentativa(), "hora_tentativa");
             // Si la validación falla...
-            if (!validarHora.equals("ok"))
-                // ...retorna un 400 (Bad Request).
+            if (!validarHora.equals("ok")) // ...retorna un 400 (Bad Request).
+            {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarHora).build();
-            
+            }
+
+            String validaCorreoCliente = Middlewares.validarCorreo(partes[2], "correo cliente");
+            if (!validaCorreoCliente.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCorreoCliente).build();
+            }
+
+            Boolean correoExiste = clienteDAO.obtenerPorCorreoBoolean(partes[2]);
+            if (!correoExiste) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"El correo del Cliente no EXISTE.\"}")
+                        .build();
+            }
+
+            Integer cantidadMesa = mesaDAO.mesaCantidad(partes[1]);
+            Integer cantidadCliente = Integer.parseInt(reserva.getCantidadTentativa());
+
+            String validaNumeroMesa = Middlewares.validarEntero(partes[1], "numero mesa");
+            if (!validaNumeroMesa.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroMesa).build();
+            }
+
+            Boolean esMayorOIgual = cantidadMesa >= cantidadCliente;
+            if (!esMayorOIgual) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"Seleccione Mesa que sea igual o mayor a la Cantidad Tentativa de Clientes.\"}")
+                        .build();
+            }
             // Llama al método 'crear' del DAO, que devuelve un array de strings.
             String[] resultado = reservaDAO.crear(reserva);
 
             // El segundo elemento del array (el ID) es "-1" si hubo un error.
             if (!resultado[1].equals("-1")) {
                 // Si la creación fue exitosa, construye una respuesta JSON.
-                String json = String.format("{\"mensaje\": \"%s\", \"id\": \"%s\"}", resultado[0], resultado[1]);
-                // Retorna un 201 (Created) con el JSON y el nuevo ID.
-                return Response.status(Response.Status.CREATED).entity(json).build();
-            } else {
-                // Si hubo un error en el DAO, retorna un 500 (Internal Server Error).
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("Error: no se pudo crear el reserva.").build();
-            }
+                String mensaje = "Reserva creada EXITOSAMENTE.";
+                String json = String.format("{\"Ok\": \"%s\", \"id\": \"%s\"}", mensaje, resultado[1]);
 
+                return Response.status(Response.Status.CREATED)
+                        .entity(json)
+                        .build();
+            } else {
+                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"No se pudo crear Pedido.\"}")
+                        .build();
+            }
         } catch (Exception e) {
-            // Imprime la traza de la pila para depuración en el servidor.
             e.printStackTrace();
-            // Retorna un 500 (Internal Server Error) al cliente.
-            return Response.serverError().entity("Error interno en el servidor.").build();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
-    // Método que maneja las solicitudes PUT para actualizar una reserva.
+// Método que maneja las solicitudes PUT para actualizar una reserva.
     @PUT
-    // La ruta incluye el ID de la reserva a actualizar.
+// La ruta incluye el ID de la reserva a actualizar.
     @Path("/{id}")
     public Response actualizar(@PathParam("id") String id, Reserva reserva) {
         try {
@@ -135,18 +174,73 @@ public class ReservaControlador {
             // Valida el ID recibido.
             String validaId = Middlewares.validarEntero(reserva.getId(), "Id");
             // Si la validación falla...
-            if (!validaId.equals("ok"))
-                // ...retorna un 400 (Bad Request).
+            if (!validaId.equals("ok")) // ...retorna un 400 (Bad Request).
+            {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
+            }
+
+            // Valida el formato de la fecha.
+            String validarFecha = Middlewares.validarFecha(reserva.getFechaTentativa(), "fecha_tentativa");
+            // Si la validación falla...
+            if (!validarFecha.equals("ok")) // ...retorna un 400 (Bad Request).
+            {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validarFecha).build();
+            }
+
+            // Valida el formato de la hora.
+            String validarHora = Middlewares.validarHora(reserva.getHoraTentativa(), "hora_tentativa");
+            // Si la validación falla...
+            if (!validarHora.equals("ok")) // ...retorna un 400 (Bad Request).
+            {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validarHora).build();
+            } // Llama al método 'actualizar' del DAO.
+            boolean actualizado = reservaDAO.actualizar(reserva);
+            // Si el DAO devuelve 'true'...
+            if (actualizado) {
+                // ...la actualización fue exitosa, retorna un 201 (Created).
+                String mensaje = "Fecha de la Reserva actualizada EXITOSAMENTE.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
+            } else {
+                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"No se pudo actualizar fecha de la Reserva.\"}")
+                        .build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
+        }
+    }
+
+    @PUT
+// La ruta incluye el ID de la reserva a actualizar.
+    @Path("todo/{id}")
+    public Response actualizarTodo(@PathParam("id") String id, Reserva reserva) {
+        try {
+            // Asigna el ID del path al objeto reserva para su uso en el DAO.
+            reserva.setId(id);
+            // Valida el ID recibido.
+            String validaId = Middlewares.validarEntero(reserva.getId(), "Id");
+            // Si la validación falla...
+            if (!validaId.equals("ok")) // ...retorna un 400 (Bad Request).
+            {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
+            }
 
             // Valida la cantidad tentativa.
             String validaCantidadTentativa = Middlewares.validarEntero(reserva.getCantidadTentativa(),
                     "Cantidad Tentativa");
             // Si la validación falla...
-            if (!validaCantidadTentativa.equals("ok"))
-                // ...retorna un 400 (Bad Request).
+            if (!validaCantidadTentativa.equals("ok")) // ...retorna un 400 (Bad Request).
+            {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCantidadTentativa)
                         .build();
+            }
 
             // Recalcula el precio de la reserva.
             reserva.setPrecio(Servicios.CalcularReserva(reserva.getCantidadTentativa()));
@@ -154,75 +248,84 @@ public class ReservaControlador {
             // Valida el precio recalculado.
             String validaPrecio = Middlewares.validarDouble(reserva.getPrecio(), "precio");
             // Si la validación falla...
-            if (!validaPrecio.equals("ok"))
-                // ...retorna un 400 (Bad Request).
+            if (!validaPrecio.equals("ok")) // ...retorna un 400 (Bad Request).
+            {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaPrecio).build();
+            }
 
             // Valida el formato de la fecha.
             String validarFecha = Middlewares.validarFecha(reserva.getFechaTentativa(), "fecha_tentativa");
             // Si la validación falla...
-            if (!validarFecha.equals("ok"))
-                // ...retorna un 400 (Bad Request).
+            if (!validarFecha.equals("ok")) // ...retorna un 400 (Bad Request).
+            {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarFecha).build();
+            }
 
             // Valida el formato de la hora.
             String validarHora = Middlewares.validarHora(reserva.getHoraTentativa(), "hora_tentativa");
             // Si la validación falla...
-            if (!validarHora.equals("ok"))
-                // ...retorna un 400 (Bad Request).
+            if (!validarHora.equals("ok")) // ...retorna un 400 (Bad Request).
+            {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarHora).build();
-
-            // Llama al método 'actualizar' del DAO.
-            boolean actualizado = reservaDAO.actualizar(reserva);
+            } // Llama al método 'actualizar' del DAO.
+            boolean actualizado = reservaDAO.actualizarTodo(reserva);
             // Si el DAO devuelve 'true'...
             if (actualizado) {
                 // ...la actualización fue exitosa, retorna un 201 (Created).
+                // ...la actualización fue exitosa, retorna un 201 (Created).
+                String mensaje = "Reserva actualizada EXITOSAMENTE.";
                 return Response.status(Response.Status.CREATED)
-                        .entity("Reserva: actualizada con EXITO.").build();
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
-                // Si devuelve 'false', la reserva no se encontró o no se pudo actualizar.
-                // Retorna un 500 (Internal Server Error) con un mensaje de error.
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("Error: reserva NO ENCONTRADA o NO ACTUALIZADA.")
+                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"No se pudo actualizar la Reserva.\"}")
                         .build();
             }
         } catch (Exception e) {
-            // Imprime la traza de la pila para depuración.
             e.printStackTrace();
-            // Retorna un 500 (Internal Server Error) al cliente.
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
     // Método que maneja las solicitudes DELETE para eliminar una reserva.
     @DELETE
-    // La ruta incluye el ID de la reserva a eliminar.
+// La ruta incluye el ID de la reserva a eliminar.
     @Path("/{id}")
     public Response eliminar(@PathParam("id") String id) {
         try {
             // Valida el ID recibido.
             String validarId = Middlewares.validarEntero(id, "id");
             // Si la validación falla...
-            if (!validarId.equals("ok"))
-                // ...retorna un 400 (Bad Request).
+            if (!validarId.equals("ok")) // ...retorna un 400 (Bad Request).
+            {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarId).build();
-
-            // Llama al método 'eliminar' del DAO.
+            } // Llama al método 'eliminar' del DAO.
             boolean eliminado = reservaDAO.eliminar(id);
             // Si el DAO devuelve 'true'...
             if (eliminado) {
                 // ...la reserva fue eliminada con éxito, retorna un 200 (OK).
-                return Response.ok().entity("Reserva: eliminada EXITOSAMENTE.").build();
+                // ...la actualización fue exitosa, retorna un 201 (Created).
+                String mensaje = "Reserva eliminada EXITOSAMENTE.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
-                // Si devuelve 'false', la reserva no fue encontrada.
-                // Retorna un 400 (Bad Request) con un mensaje de error.
-                return Response.status(Response.Status.BAD_REQUEST).entity("Error: Reserva NO ENCONTRADA.").build();
+                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"No se pudo eliminar la Reserva.\"}")
+                        .build();
             }
         } catch (Exception e) {
-            // Imprime la traza de la pila para depuración.
             e.printStackTrace();
-            // Retorna un 500 (Internal Server Error) al cliente.
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 }

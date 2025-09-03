@@ -8,10 +8,10 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 /**
- * Esta clase es el Data Access Object (DAO) para la entidad Pedido.
- * Se encarga de toda la lógica de interacción con la base de datos para
- * las operaciones CRUD (Crear, Leer, Actualizar, Borrar) y otras consultas
- * relacionadas con los pedidos.
+ * Esta clase es el Data Access Object (DAO) para la entidad Pedido. Se encarga
+ * de toda la lógica de interacción con la base de datos para las operaciones
+ * CRUD (Crear, Leer, Actualizar, Borrar) y otras consultas relacionadas con los
+ * pedidos.
  */
 public class PedidoDAO {
 
@@ -22,7 +22,9 @@ public class PedidoDAO {
 
     /**
      * Recupera y lista todos los pedidos de la base de datos.
-     * @return Una lista de objetos Pedido. Si no hay pedidos, devuelve una lista vacía.
+     *
+     * @return Una lista de objetos Pedido. Si no hay pedidos, devuelve una
+     * lista vacía.
      */
     public ArrayList<Pedido> listarTodos() {
         // Se inicializa una lista para almacenar los pedidos
@@ -86,6 +88,7 @@ public class PedidoDAO {
 
     /**
      * Obtiene un pedido específico por su ID.
+     *
      * @param id El ID del pedido a buscar.
      * @return El objeto Pedido si se encuentra, o null si no existe.
      */
@@ -142,6 +145,7 @@ public class PedidoDAO {
 
     /**
      * Verifica si existe un pedido con un ID determinado.
+     *
      * @param id El ID del pedido a verificar.
      * @return true si el pedido existe, false en caso contrario.
      */
@@ -188,8 +192,60 @@ public class PedidoDAO {
      * Crea un nuevo pedido en la base de datos.
      *
      * @param pedido El objeto Pedido con los datos a insertar.
-     * @return Un array de Strings con el resultado del proceso: [mensaje, idGenerado].
+     * @return Un array de Strings con el resultado del proceso: [mensaje,
+     * idGenerado].
      */
+    public Pedido obtenerPorReserva(String id) {
+        Pedido pedido = null;
+
+        try {
+            conn = DBConnection.getConnection();
+            // Consulta SQL con un 'placeholder' (?) para evitar inyección SQL
+            String sql = "SELECT * FROM pedidos WHERE id_reserva = ?";
+            prepStmt = conn.prepareStatement(sql);
+            // Se establece el valor del placeholder con el ID del pedido, convirtiéndolo a entero
+            prepStmt.setInt(1, Integer.parseInt(id));
+            rs = prepStmt.executeQuery();
+
+            // Se verifica si el resultado contiene alguna fila
+            if (rs.next()) {
+                pedido = new Pedido();
+                // Se asignan los valores a las propiedades del objeto Pedido
+                pedido.setId(rs.getString("id"));
+                pedido.setNumeroMesa(rs.getString("numero_mesa"));
+                pedido.setFecha(rs.getString("fecha"));
+                pedido.setHora(rs.getString("hora"));
+                pedido.setValorTotal(rs.getString("valor_total"));
+                pedido.setIdCaja(rs.getString("id_caja"));
+                pedido.setNumeroClientes(rs.getString("numero_clientes"));
+                pedido.setIdReserva(rs.getString("id_reserva"));
+                pedido.setCorreoCliente(rs.getString("correo_cliente"));
+                pedido.setMetodoPago(rs.getString("metodo_pago"));
+            }
+
+        } catch (Exception e) {
+            System.err.println("ERROR AL OBTENER PEDIDO: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                // Cierre de recursos
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+
+        return pedido;
+    }
+
     public String[] crear(Pedido pedido) {
         String[] resultado = new String[2];
         // Mensaje y ID por defecto en caso de error
@@ -255,8 +311,9 @@ public class PedidoDAO {
     }
 
     /**
-     * Crea un nuevo pedido que corresponde a una reserva.
-     * Es una versión simplificada de 'crear' que solo inserta los datos de reserva.
+     * Crea un nuevo pedido que corresponde a una reserva. Es una versión
+     * simplificada de 'crear' que solo inserta los datos de reserva.
+     *
      * @param pedido El objeto Pedido con los datos de la reserva.
      * @return true si se crea correctamente, false en caso contrario.
      */
@@ -266,12 +323,13 @@ public class PedidoDAO {
         try {
             conn = DBConnection.getConnection();
             // Consulta para crear una reserva, que no incluye todos los campos
-            String sql = "INSERT INTO pedidos (numero_mesa,id_reserva,correo_cliente) VALUES (?,?,?)";
+            String sql = "INSERT INTO pedidos (numero_mesa,numero_clientes,id_reserva,correo_cliente) VALUES (?,?,?,?)";
 
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setInt(1, Integer.parseInt(pedido.getNumeroMesa()));
-            prepStmt.setInt(2, Integer.parseInt(pedido.getIdReserva()));
-            prepStmt.setString(3, pedido.getCorreoCliente());
+            prepStmt.setInt(2, Integer.parseInt(pedido.getNumeroClientes()));
+            prepStmt.setInt(3, Integer.parseInt(pedido.getIdReserva()));
+            prepStmt.setString(4, pedido.getCorreoCliente());
 
             // Se ejecuta la actualización
             int filas = prepStmt.executeUpdate();
@@ -299,6 +357,7 @@ public class PedidoDAO {
 
     /**
      * Actualiza los datos de un pedido existente.
+     *
      * @param pedido El objeto Pedido con los nuevos datos.
      * @return true si se actualiza correctamente, false en caso contrario.
      */
@@ -343,7 +402,9 @@ public class PedidoDAO {
     }
 
     /**
-     * Actualiza un pedido que era una reserva, completando los campos restantes.
+     * Actualiza un pedido que era una reserva, completando los campos
+     * restantes.
+     *
      * @param pedido El objeto Pedido con los nuevos datos.
      * @return true si se actualiza correctamente, false en caso contrario.
      */
@@ -353,13 +414,11 @@ public class PedidoDAO {
         try {
             conn = DBConnection.getConnection();
             // Consulta UPDATE para actualizar una reserva, asignando la fecha, hora y otros campos
-            String sql = "UPDATE pedidos SET fecha = CURRENT_DATE(), hora = CURRENT_TIME(), id_caja = ?, numero_clientes = ?,correo_cliente = ?,metodo_pago = ? WHERE id = ?";
+            String sql = "UPDATE pedidos SET fecha = CURRENT_DATE(), hora = CURRENT_TIME(), id_caja = ?,metodo_pago = ? WHERE id = ?";
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setInt(1, Integer.parseInt(pedido.getIdCaja()));
-            prepStmt.setInt(2, Integer.parseInt(pedido.getNumeroClientes()));
-            prepStmt.setString(3, pedido.getCorreoCliente());
-            prepStmt.setString(4, pedido.getMetodoPago());
-            prepStmt.setInt(5, Integer.parseInt(pedido.getId()));
+            prepStmt.setString(2, pedido.getMetodoPago());
+            prepStmt.setInt(3, Integer.parseInt(pedido.getId()));
             int filas = prepStmt.executeUpdate();
             actualizado = filas > 0;
 
@@ -384,7 +443,9 @@ public class PedidoDAO {
     }
 
     /**
-     * Edita los detalles de una reserva existente (número de mesa, clientes, correo).
+     * Edita los detalles de una reserva existente (número de mesa, clientes,
+     * correo).
+     *
      * @param pedido El objeto Pedido con los datos a modificar.
      * @return true si se actualiza correctamente, false en caso contrario.
      */
@@ -425,8 +486,10 @@ public class PedidoDAO {
 
     /**
      * Actualiza el estado del pedido a "facturado" (facturado = 1).
+     *
      * @param id El ID del pedido a facturar.
-     * @return true si el estado se actualiza correctamente, false en caso contrario.
+     * @return true si el estado se actualiza correctamente, false en caso
+     * contrario.
      */
     public boolean patchFacturar(String id) {
         boolean actualizado = false;
@@ -462,8 +525,10 @@ public class PedidoDAO {
 
     /**
      * Actualiza el estado del pedido a "no borrado" (eliminado = 0).
+     *
      * @param id El ID del pedido a marcar como no borrado.
-     * @return true si el estado se actualiza correctamente, false en caso contrario.
+     * @return true si el estado se actualiza correctamente, false en caso
+     * contrario.
      */
     public boolean patchBorradoNo(String id) {
         boolean actualizado = false;
@@ -499,8 +564,10 @@ public class PedidoDAO {
 
     /**
      * Actualiza el estado del pedido a "borrado" (eliminado = 1).
+     *
      * @param id El ID del pedido a marcar como borrado.
-     * @return true si el estado se actualiza correctamente, false en caso contrario.
+     * @return true si el estado se actualiza correctamente, false en caso
+     * contrario.
      */
     public boolean patchBorradoSi(String id) {
         boolean actualizado = false;
@@ -601,8 +668,8 @@ public class PedidoDAO {
     }
 
     /**
-     * Elimina un pedido y todos los detalles de pedido asociados.
-     * Esta es una eliminación física de los registros.
+     * Elimina un pedido y todos los detalles de pedido asociados. Esta es una
+     * eliminación física de los registros.
      *
      * @param id El ID del pedido a eliminar.
      * @return true si se elimina correctamente, false en caso contrario.
@@ -654,4 +721,39 @@ public class PedidoDAO {
 
         return eliminado;
     }
+
+    public Boolean verFacturadosCerrarCaja(String id) {
+        boolean existe = false;
+
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "SELECT 1 FROM pedidos WHERE valor_total = 0 AND id_caja = ?";
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setString(1, id);
+            rs = prepStmt.executeQuery();
+
+            if (rs.next()) {
+                existe = true;
+            }
+        } catch (Exception e) {
+            System.err.println("ERROR AL VERIFICAR PEDIDOS FACTURADOS DE CAJA: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+        return existe;
+    }
+
 }

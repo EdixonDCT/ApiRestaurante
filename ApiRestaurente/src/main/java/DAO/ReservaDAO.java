@@ -8,6 +8,7 @@ import java.sql.ResultSet; // Importa la clase para manejar los resultados de la
 import java.util.ArrayList; // Importa la clase ArrayList para crear listas de objetos.
 
 public class ReservaDAO { // La clase `ReservaDAO` (Data Access Object) se encarga de las operaciones CRUD para las reservas.
+
     private Connection conn = null; // Variable para la conexión a la base de datos.
     private PreparedStatement prepStmt = null; // Variable para la sentencia SQL preparada.
     private ResultSet rs = null; // Variable para almacenar los resultados de la consulta.
@@ -33,9 +34,15 @@ public class ReservaDAO { // La clase `ReservaDAO` (Data Access Object) se encar
             System.err.println("ERROR AL LISTAR RESERVAS: " + e.getMessage()); // Imprime el error.
         } finally { // Bloque `finally` que siempre se ejecuta, con o sin error.
             try { // Intenta cerrar los recursos de la base de datos.
-                if (rs != null) rs.close(); // Cierra el `ResultSet`.
-                if (prepStmt != null) prepStmt.close(); // Cierra el `PreparedStatement`.
-                if (conn != null) conn.close(); // Cierra la `Connection`.
+                if (rs != null) {
+                    rs.close(); // Cierra el `ResultSet`.
+                }
+                if (prepStmt != null) {
+                    prepStmt.close(); // Cierra el `PreparedStatement`.
+                }
+                if (conn != null) {
+                    conn.close(); // Cierra la `Connection`.
+                }
             } catch (Exception ex) { // Captura si hay un error al cerrar los recursos.
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage()); // Imprime el error.
             }
@@ -64,9 +71,15 @@ public class ReservaDAO { // La clase `ReservaDAO` (Data Access Object) se encar
             System.err.println("ERROR AL OBTENER RESERVA POR ID: " + e.getMessage());
         } finally {
             try {
-                if (rs != null) rs.close();
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -78,7 +91,7 @@ public class ReservaDAO { // La clase `ReservaDAO` (Data Access Object) se encar
         String[] resultado = new String[2]; // Array para guardar el mensaje y el ID.
         resultado[0] = "Reserva: no se pudo crear."; // Mensaje de fallo por defecto.
         resultado[1] = "-1"; // ID por defecto en caso de fallo.
-        
+
         Connection conn = null; // Declaración local de las variables de conexión.
         PreparedStatement prepStmt = null;
         ResultSet rs = null;
@@ -90,9 +103,9 @@ public class ReservaDAO { // La clase `ReservaDAO` (Data Access Object) se encar
             prepStmt.setDouble(2, Double.parseDouble(reserva.getPrecio()));
             prepStmt.setString(3, reserva.getFechaTentativa());
             prepStmt.setString(4, reserva.getHoraTentativa());
-            
+
             int filas = prepStmt.executeUpdate(); // Ejecuta la inserción y obtiene el número de filas afectadas.
-            
+
             if (filas > 0) { // Si se insertó al menos una fila.
                 rs = prepStmt.getGeneratedKeys(); // Obtiene las claves generadas.
                 if (rs.next()) {
@@ -124,7 +137,7 @@ public class ReservaDAO { // La clase `ReservaDAO` (Data Access Object) se encar
         return resultado; // Devuelve el resultado de la operación.
     }
 
-    public boolean actualizar(Reserva reserva) { // Método para actualizar una reserva existente.
+    public boolean actualizarTodo(Reserva reserva) { // Método para actualizar una reserva existente.
         boolean actualizado = false; // Variable para saber si la actualización fue exitosa.
         try {
             conn = DBConnection.getConnection();
@@ -141,8 +154,40 @@ public class ReservaDAO { // La clase `ReservaDAO` (Data Access Object) se encar
             System.err.println("ERROR AL ACTUALIZAR RESERVA: " + e.getMessage());
         } finally {
             try {
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+        return actualizado; // Devuelve true o false.
+    }
+
+    public boolean actualizar(Reserva reserva) { // Método para actualizar una reserva existente.
+        boolean actualizado = false; // Variable para saber si la actualización fue exitosa.
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "UPDATE reservas SET fecha_tentativa = ?, hora_tentativa = ? WHERE id = ?"; // Consulta de actualización.
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setString(1, reserva.getFechaTentativa());
+            prepStmt.setString(2, reserva.getHoraTentativa());
+            prepStmt.setInt(3, Integer.parseInt(reserva.getId())); // Usa el ID para encontrar la reserva a actualizar.
+            int filas = prepStmt.executeUpdate(); // Ejecuta la actualización.
+            actualizado = filas > 0; // Si se afectó al menos una fila, la actualización fue exitosa.
+        } catch (Exception e) {
+            System.err.println("ERROR AL ACTUALIZAR RESERVA: " + e.getMessage());
+        } finally {
+            try {
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -163,8 +208,12 @@ public class ReservaDAO { // La clase `ReservaDAO` (Data Access Object) se encar
             System.err.println("ERROR AL ELIMINAR RESERVA: " + e.getMessage());
         } finally {
             try {
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }

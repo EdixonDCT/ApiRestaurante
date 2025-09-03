@@ -439,7 +439,7 @@ public class CajaDAO {
 
         try {
             conn = DBConnection.getConnection(); // Establece la conexión.
-            String sql = "SELECT 1 FROM caja WHERE fecha_cierre IS null AND hora_cierre IS null AND monto_cierre IS null;"; // Consulta con un parámetro.
+            String sql = "SELECT 1 FROM caja WHERE fecha_cierre IS null AND hora_cierre IS null AND monto_cierre IS null"; // Consulta con un parámetro.
             prepStmt = conn.prepareStatement(sql); // Asigna el valor de la cédula al parámetro de la consulta.
             rs = prepStmt.executeQuery();
             if (rs.next()) { // Si hay al menos una fila

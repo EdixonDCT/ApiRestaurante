@@ -2,6 +2,7 @@ package CONTROLADOR; // Declara el paquete donde se encuentra esta clase control
 
 import MODELO.Caja; // Importa la clase 'Caja' que representa el modelo de datos de una caja.
 import DAO.CajaDAO; // Importa la clase 'CajaDAO' para interactuar con la base de datos.
+import DAO.PedidoDAO;
 import MODELO.Trabajador; // Importa la clase 'Trabajador', aunque no se usa directamente en este código.
 import UTILS.Middlewares; // Importa la clase 'Middlewares' para las validaciones.
 
@@ -15,6 +16,7 @@ import java.util.List; // Importa la clase 'List' para manejar colecciones de ob
 public class CajaControlador { // Definición de la clase principal del controlador de caja.
 
     private CajaDAO cajaDAO = new CajaDAO(); // Crea una instancia de 'CajaDAO' para gestionar la persistencia de datos.
+    private PedidoDAO pedidoDAO = new PedidoDAO();
 
     @GET // Anotación para manejar peticiones HTTP GET.
     public Response listar() { // Método para obtener una lista de todas las cajas.
@@ -56,7 +58,7 @@ public class CajaControlador { // Definición de la clase principal del controla
 
     @GET
     @Path("verDisponible") // La URL incluye un parámetro dinámico llamado "numero".
-    public Response verDisponible(){
+    public Response verDisponible() {
         try {
             Boolean disponibles = cajaDAO.verDisponibleCaja(); // Busca la mesa por su número en la base de datos.
             if (disponibles) {
@@ -243,6 +245,13 @@ public class CajaControlador { // Definición de la clase principal del controla
             {
                 return Response.status(400).entity(validaMontoCierre).build(); // ...retorna un error 400.
             }
+            boolean pedidosEn0DeLaCaja = pedidoDAO.verFacturadosCerrarCaja(caja.getId());
+            if (pedidosEn0DeLaCaja) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"Hay pedidos de la caja que estan sin platillos,Eliminar pedidos o facturar platillos antes de Cerrar Caja.\"}")
+                        .build();
+            }
+
             boolean parchear = cajaDAO.actualizarCierre(caja); // Llama al DAO para actualizar el cierre.
             if (parchear) // Si la actualización fue exitosa...
             {
