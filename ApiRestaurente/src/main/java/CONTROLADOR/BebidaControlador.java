@@ -40,13 +40,16 @@ public class BebidaControlador { // Declaración de la clase del controlador par
             if (bebida != null) { // Comprueba si se encontró la bebida.
                 return Response.ok(bebida).build(); // Devuelve una respuesta 200 (OK) con los datos de la bebida.
             } else { // Si no se encontró la bebida.
-                return Response.status(Response.Status.NOT_FOUND) // Devuelve una respuesta 404 (No Encontrado).
-                        .entity("Error: bebida NO ENCONTRADA.") // Añade un mensaje de error al cuerpo de la respuesta.
-                        .build(); // Construye y envía la respuesta.
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"No se pudo encontrar Bebida.\"}")
+                        .build();
             }
-        } catch (Exception e) { // Captura cualquier excepción.
-            e.printStackTrace(); // Imprime la traza del error.
-            return Response.serverError().entity("Error interno en el servidor.").build(); // Devuelve un error 500.
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -76,16 +79,24 @@ public class BebidaControlador { // Declaración de la clase del controlador par
             String[] resultado = bebidaDAO.crear(bebida); // Llama al DAO para insertar la nueva bebida en la base de datos.
 
             if (!resultado[1].equals("-1")) { // Comprueba si la creación fue exitosa (el DAO no devolvió -1).
-                String json = String.format("{\"mensaje\": \"%s\", \"id\": \"%s\"}", resultado[0], resultado[1]); // Crea una cadena JSON con el mensaje y el nuevo ID.
-                return Response.status(Response.Status.CREATED).entity(json).build(); // Devuelve una respuesta 201 (Creado) con el JSON.
-            } else { // Si la creación falló.
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR) // Devuelve un error 500.
-                        .entity("Error: no se pudo crear el bebida.").build(); // Con un mensaje de error.
+                String mensaje = "Bebida creada EXITOSAMENTE.";
+                String json = String.format("{\"Ok\": \"%s\", \"id\": \"%s\"}", mensaje, resultado[1]);
+                
+                return Response.status(Response.Status.CREATED)
+                        .entity(json)
+                        .build();
+            } else {
+                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"No se pudo crear Bebida.\"}")
+                        .build();
             }
-
-        } catch (Exception e) { // Captura cualquier excepción.
-            e.printStackTrace(); // Imprime la traza del error.
-            return Response.serverError().entity("Error interno en el servidor.").build(); // Devuelve un error 500.
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -122,15 +133,21 @@ public class BebidaControlador { // Declaración de la clase del controlador par
 
             boolean actualizado = bebidaDAO.actualizar(bebida); // Llama al DAO para actualizar la bebida en la base de datos.
             if (actualizado) { // Comprueba si la actualización fue exitosa.
-                return Response.ok().entity("Bebida: " + bebida.getNombre() + " actualizada con ÉXITO.").build(); // Devuelve una respuesta 200 (OK) con un mensaje de éxito.
-            } else { // Si la actualización falló.
-                return Response.status(Response.Status.NOT_FOUND) // Devuelve un error 404.
-                        .entity("Error: bebida NO ENCONTRADA o NO ACTUALIZADA.").build(); // Con un mensaje de error.
+                String mensaje = "Bebida actualizada Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
+            } else {
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo actualizar Bebida.\"}")
+                        .build();
             }
-
-        } catch (Exception e) { // Captura cualquier excepción.
-            e.printStackTrace(); // Imprime la traza del error.
-            return Response.serverError().entity("Error interno en el servidor.").build(); // Devuelve un error 500.
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -147,14 +164,21 @@ public class BebidaControlador { // Declaración de la clase del controlador par
 
             boolean actualizado = bebidaDAO.actualizarImagen(bebida); // Llama al DAO para actualizar solo la imagen.
             if (actualizado) { // Comprueba si la actualización fue exitosa.
-                return Response.ok().entity("Imagen de la bebida actualizada con ÉXITO.").build(); // Devuelve una respuesta 200 (OK) con un mensaje de éxito.
-            } else { // Si la actualización falló.
-                return Response.status(Response.Status.NOT_FOUND) // Devuelve un error 404.
-                        .entity("Error: bebida NO ENCONTRADA o NO ACTUALIZADA.").build(); // Con un mensaje de error.
+                String mensaje = "Bebida Imagen actualizada Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
+            } else {
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo cambiar la imagen de Bebida.\"}")
+                        .build();
             }
-        } catch (Exception e) { // Captura cualquier excepción.
-            e.printStackTrace(); // Imprime la traza del error.
-            return Response.serverError().entity("Error interno en el servidor.").build(); // Devuelve un error 500.
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -176,14 +200,21 @@ public class BebidaControlador { // Declaración de la clase del controlador par
 
             boolean actualizado = bebidaDAO.actualizarEstado(bebida); // Llama al DAO para actualizar el estado de disponibilidad.
             if (actualizado) { // Comprueba si la actualización fue exitosa.
-                return Response.ok().entity("Disponibilidad de bebida actualizada con ÉXITO.").build(); // Devuelve una respuesta 200 (OK) con un mensaje de éxito.
-            } else { // Si la actualización falló.
-                return Response.status(Response.Status.NOT_FOUND) // Devuelve un error 404.
-                        .entity("Error: bebida NO ENCONTRADA o NO ACTUALIZADA.").build(); // Con un mensaje de error.
+                String mensaje = "Bebida Estado actualizado Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
+            } else {
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo cambiar el estado de Bebida.\"}")
+                        .build();
             }
-        } catch (Exception e) { // Captura cualquier excepción.
-            e.printStackTrace(); // Imprime la traza del error.
-            return Response.serverError().entity("Error interno en el servidor.").build(); // Devuelve un error 500.
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 

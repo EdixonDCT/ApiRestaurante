@@ -51,13 +51,14 @@ public class LoginDAO {
         try {
             conn = DBConnection.getConnection();
 
-            String sql = "SELECT activo FROM trabajadores WHERE cedula = ?";
+            String sql = "SELECT activo,eliminado FROM trabajadores WHERE cedula = ?";
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setString(1, cedula);
             rs = prepStmt.executeQuery();
             if (rs.next()) {
                 String activoSQL = rs.getString("activo");
-                if (activoSQL.equals("1")) activo = true;
+                String eliminadoSQL = rs.getString("eliminado");
+                if (activoSQL.equals("1")&&eliminadoSQL.equals("0")) activo = true;
             }
         } catch (Exception e) {
             System.err.println("ERROR AL AUTENTICAR: " + e.getMessage());

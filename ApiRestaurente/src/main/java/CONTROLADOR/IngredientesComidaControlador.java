@@ -33,8 +33,10 @@ public class IngredientesComidaControlador {
             List<IngredientesComida> lista = IngComDAO.listarTodos(); // Llama al DAO para obtener todos los registros.
             return Response.ok(lista).build(); // Retorna una respuesta 200 (OK) con la lista de objetos.
         } catch (Exception e) {
-            e.printStackTrace(); // Imprime la traza del error para depuración.
-            return Response.serverError().build(); // Retorna un error 500 (Internal Server Error).
+            e.printStackTrace();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -79,7 +81,9 @@ public class IngredientesComidaControlador {
             return Response.ok(lista).build(); // Retorna una respuesta 200 (OK) con la lista.
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().build(); // Retorna un error 500.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -104,24 +108,23 @@ public class IngredientesComidaControlador {
             String mensaje = "";
             boolean creado = false;
 
-            if(ing && com){ // Si ambos IDs son válidos y existen...
-                mensaje = "Ingrediente #"+IngCom.getIdIngrediente()+" y Comida #"+IngCom.getIdComida()+" encontrados, creando...)";
+            if (ing && com) { // Si ambos IDs son válidos y existen...
+                mensaje = "Ingrediente #" + IngCom.getIdIngrediente() + " y Comida #" + IngCom.getIdComida() + " encontrados, creando...)";
                 creado = IngComDAO.crear(IngCom); // ...se crea el nuevo registro.
-            } else { // Si alguno no existe...
-                mensaje = "Error: no se pudo crear INGREDIENTE COMIDA";
-            }
-
-            if (creado) {
                 return Response.status(Response.Status.CREATED)
-                        .entity(mensaje).build(); // Retorna una respuesta 201 (Created) si la creación fue exitosa.
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity(mensaje)
-                        .build(); // Retorna un 500 si la creación falla.
+                        .entity("{\"Error\":\"No se pudo eliminar Ingrediente.\"}")
+                        .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -138,15 +141,21 @@ public class IngredientesComidaControlador {
 
             boolean eliminado = IngComDAO.eliminar(id); // Llama al DAO para eliminar el registro.
             if (eliminado) { // Si la eliminación fue exitosa...
-                return Response.ok().entity("Ingrediente Comida: Eliminado EXITOSAMENTE.").build(); // ...retorna una respuesta 200.
-            } else { // Si no se encontró el registro...
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: ingrediente comida NO ENCONTRADO").build(); // ...retorna una respuesta 404.
+                String mensaje = "Ingredientes de Comida eliminados Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
+            } else {
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo eliminar Ingrediente.\"}")
+                        .build();
             }
-
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 }

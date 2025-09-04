@@ -12,6 +12,7 @@ import java.util.ArrayList;
 // Clase para la persistencia de datos del objeto Ingrediente, implementando el patrón DAO.
 // Esta clase gestiona las operaciones CRUD (Crear, Leer, Actualizar, Borrar) para la tabla de ingredientes.
 public class IngredienteDAO {
+
     // Variables a nivel de clase para gestionar la conexión a la base de datos,
     // la sentencia SQL preparada y el conjunto de resultados.
     private Connection conn = null;
@@ -50,9 +51,15 @@ public class IngredienteDAO {
         } finally {
             // Bloque 'finally' para asegurar el cierre de todos los recursos.
             try {
-                if (rs != null) rs.close();
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -92,9 +99,15 @@ public class IngredienteDAO {
         } finally {
             // Cierre de recursos.
             try {
-                if (rs != null) rs.close();
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -130,9 +143,15 @@ public class IngredienteDAO {
         } finally {
             // Cierre de recursos.
             try {
-                if (rs != null) rs.close();
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -166,8 +185,12 @@ public class IngredienteDAO {
         } finally {
             // Cierre de recursos.
             try {
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -201,8 +224,12 @@ public class IngredienteDAO {
         } finally {
             // Cierre de recursos.
             try {
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -235,8 +262,12 @@ public class IngredienteDAO {
         } finally {
             // Cierre de recursos.
             try {
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
@@ -244,4 +275,79 @@ public class IngredienteDAO {
 
         return eliminado;
     }
+
+    public Boolean ingredienteEnUso(String idIngrediente) {
+        Boolean enUso = false;
+        try {
+            conn = DBConnection.getConnection();
+            // Consulta SQL sin "AS existe"
+            String sql = "SELECT 1 "
+                    + "FROM ingredientes i "
+                    + "WHERE i.id = ? "
+                    + "AND (EXISTS (SELECT 1 FROM ingredientes_comida ic WHERE ic.id_ingrediente = i.id) "
+                    + "OR EXISTS (SELECT 1 FROM ingredientes_coctel ico WHERE ico.id_ingrediente = i.id))";
+
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setInt(1, Integer.parseInt(idIngrediente)); // Parseo del String a int
+            rs = prepStmt.executeQuery();
+
+            if (rs.next()) { // Si devuelve fila, significa que el ingrediente está en uso
+                enUso = true;
+            }
+        } catch (Exception e) {
+            System.err.println("ERROR AL VALIDAR INGREDIENTE: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+        return enUso;
+    }
+
+    public Boolean ingredienteExiste(String nombreIngrediente) {
+        Boolean existe = false;
+        try {
+            conn = DBConnection.getConnection();
+            // Consulta SQL que valida si el nombre ya existe en la tabla
+            String sql = "SELECT 1 FROM ingredientes WHERE nombre = ?";
+
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setString(1, nombreIngrediente); // Pasamos el nombre directamente
+            rs = prepStmt.executeQuery();
+
+            if (rs.next()) { // Si devuelve al menos una fila, significa que ya existe
+                existe = true;
+            }
+        } catch (Exception e) {
+            System.err.println("ERROR AL VALIDAR NOMBRE DE INGREDIENTE: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+        return existe;
+    }
+
 }

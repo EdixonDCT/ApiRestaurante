@@ -15,6 +15,7 @@ public class Trabajador {
     private String idRol;//es int porque son numeros enteros
     private String nombreRol;//es para el Inner Join cuando se consulta el nombre con el id de Oficio
     private String activo;
+    private String eliminado;
 
     public String getCedula() {//obtener la Cedula
         return cedula;
@@ -86,5 +87,13 @@ public class Trabajador {
 
     public void setActivo(String activo) {
         this.activo = activo;
+    }
+
+    public String getEliminado() {
+        return eliminado;
+    }
+
+    public void setEliminado(String eliminado) {
+        this.eliminado = eliminado;
     }
 }

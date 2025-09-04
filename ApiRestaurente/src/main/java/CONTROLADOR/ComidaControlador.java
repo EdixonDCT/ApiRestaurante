@@ -51,14 +51,15 @@ public class ComidaControlador {
             if (comida != null) { // Si se encuentra la comida...
                 return Response.ok(comida).build(); // ...retorna una respuesta 200 (OK) con el objeto Comida.
             } else { // Si no se encuentra la comida...
-                return Response.status(Response.Status.NOT_FOUND) // ...retorna una respuesta 404 (Not Found).
-                        .entity("Error: no se pudo obtener COMIDA.") // Con un mensaje de error.
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"No se pudo encontrar Comida.\"}")
                         .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
             return Response.serverError()
-                    .entity("Error: Error interno en el servidor.")
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
                     .build();
         }
     }
@@ -84,16 +85,25 @@ public class ComidaControlador {
             String[] resultado = comidaDAO.crear(comida); // Llama al DAO para crear la comida.
 
             if (!resultado[1].equals("-1")) { // El DAO devuelve un array con mensaje y ID. Si el ID no es "-1", la creación fue exitosa.
-                String json = String.format("{\"mensaje\": \"%s\", \"id\": \"%s\"}", resultado[0], resultado[1]); // Crea una respuesta JSON.
-                return Response.status(Response.Status.CREATED).entity(json).build(); // Retorna una respuesta 201 (Created) con el JSON.
+                // Si se creó, retorna una respuesta 201 (Created) con un JSON que incluye "Ok"
+                String mensaje = "Comida creada EXITOSAMENTE.";
+                String json = String.format("{\"Ok\": \"%s\", \"id\": \"%s\"}", mensaje, resultado[1]);
+                
+                return Response.status(Response.Status.CREATED)
+                        .entity(json)
+                        .build();
             } else {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR) // Si la creación falla...
-                        .entity("Error: no se pudo crear el comida.").build(); // ...retorna una respuesta 500.
+                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"No se pudo crear Comida.\"}")
+                        .build();
             }
-
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno en el servidor.").build();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -126,15 +136,21 @@ public class ComidaControlador {
 
             boolean actualizado = comidaDAO.actualizar(comida); // Llama al DAO para actualizar la comida.
             if (actualizado) { // Si la actualización fue exitosa...
-                return Response.ok().entity("Comida: " + comida.getNombre() + " actualizada con EXITO.").build(); // ...retorna una respuesta 200.
-            } else { // Si la comida no se encuentra o no se actualiza...
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: comida NO ENCONTRADA o NO ACTUALIZADA.")
-                        .build(); // ...retorna una respuesta 404.
+                String mensaje = "Comida actualizada Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
+            } else {
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo actualizar Comida.\"}")
+                        .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -153,15 +169,21 @@ public class ComidaControlador {
             // Actualiza si todo está bien
             boolean actualizado = comidaDAO.actualizarImagen(comida); // Llama al DAO para actualizar solo la imagen.
             if (actualizado) {
-                return Response.ok().entity("Comida: actualizacion de imagen con EXITO.").build(); // Retorna una respuesta 200.
+                String mensaje = "Comida Imagen actualizada Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: comida NO ENCONTRADO o NO ACTUALIZADO.")
-                        .build(); // Retorna un 404 si no se encuentra.
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo cambiar la imagen de Comida.\"}")
+                        .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -184,15 +206,21 @@ public class ComidaControlador {
             // Actualiza si todo está bien
             boolean actualizado = comidaDAO.actualizarEstado(comida); // Llama al DAO para actualizar el estado de disponibilidad.
             if (actualizado) {
-                return Response.ok().entity("Comida: actualizacion de imagen con EXITO.").build(); // Retorna un 200.
+                String mensaje = "Comida Estado actualizado Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: comida NO ENCONTRADO o NO ACTUALIZADO.")
-                        .build(); // Retorna un 404 si no se encuentra.
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo cambiar el estado de Comida.\"}")
+                        .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 

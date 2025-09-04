@@ -68,27 +68,37 @@ public class IngredienteControlador {
             if (!validaNombre.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaNombre).build();
             }
-
+            boolean existe = ingredienteDAO.ingredienteExiste(ingrediente.getNombre());
+            if (existe) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"Ingrediente ya existe.\"}")
+                        .build();
+            }
             boolean creado = ingredienteDAO.crear(ingrediente); // Llama al DAO para crear el ingrediente.
             if (creado) { // Si la creación es exitosa...
-                return Response.status(Response.Status.CREATED) // ...retorna una respuesta 201 (Created).
-                        .entity("Ingrediente: " + ingrediente.getNombre() + " creado con ÉXITO.")
+                String mensaje = "Ingrediente creado Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
                         .build();
-            } else { // Si la creación falla...
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR) // ...retorna una respuesta 500.
-                        .entity("Error: no se pudo crear el ingrediente.")
+            } else {
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo eliminar Ingrediente.\"}")
                         .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
     // Método PUT para actualizar un ingrediente existente
     @PUT
     @Path("/{id}") // Ruta con un parámetro de ID.
-    public Response actualizarIngrediente(@PathParam("id") String id, Ingrediente ingrediente) { // Recibe el ID de la URL y el objeto del cuerpo.
+    public Response actualizarIngrediente(@PathParam("id") String id, Ingrediente ingrediente
+    ) { // Recibe el ID de la URL y el objeto del cuerpo.
         try {
             ingrediente.setId(id); // Asigna el ID de la URL al objeto 'ingrediente'.
 
@@ -120,24 +130,36 @@ public class IngredienteControlador {
     // Método DELETE para eliminar un ingrediente por su ID
     @DELETE
     @Path("/{id}") // Ruta con un parámetro de ID.
-    public Response eliminarIngrediente(@PathParam("id") String id) { // Recibe el ID de la URL.
+    public Response eliminarIngrediente(@PathParam("id") String id
+    ) { // Recibe el ID de la URL.
         try {
             String validaId = Middlewares.validarEntero(id, "id"); // Valida el ID.
             if (!validaId.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
             }
-
+            boolean tieneRelacion = ingredienteDAO.ingredienteEnUso(id);
+            if (tieneRelacion) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo eliminar Ingrediente porque esta relacionado a una comida o coctel.\"}")
+                        .build();
+            }
             boolean eliminado = ingredienteDAO.eliminar(id); // Llama al DAO para eliminar el ingrediente.
             if (eliminado) { // Si la eliminación fue exitosa...
-                return Response.ok().entity("Ingrediente eliminado con ÉXITO.").build(); // ...retorna una respuesta 200.
-            } else { // Si el ingrediente no se encuentra...
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: ingrediente NO ENCONTRADO.")
-                        .build(); // ...retorna una respuesta 404.
+                String mensaje = "Ingrediente eliminado Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
+            } else {
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo eliminar Ingrediente.\"}")
+                        .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 }

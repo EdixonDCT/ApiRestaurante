@@ -22,7 +22,7 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
             conn = DBConnection.getConnection(); // Obtiene una conexión a la base de datos.
 
             // Consulta SQL para seleccionar todos los registros, uniendo la tabla de trabajadores y oficios.
-            String sql = "SELECT t.cedula,t.nombre,t.apellido,t.nacimiento,t.foto,t.contrasena,t.id_rol,r.nombre AS rol,t.activo FROM trabajadores AS t JOIN roles AS r ON t.id_rol = r.id";
+            String sql = "SELECT t.cedula,t.nombre,t.apellido,t.nacimiento,t.foto,t.contrasena,t.id_rol,r.nombre AS rol,t.activo,t.eliminado FROM trabajadores AS t JOIN roles AS r ON t.id_rol = r.id";
             prepStmt = conn.prepareStatement(sql); // Prepara la sentencia SQL.
             rs = prepStmt.executeQuery(); // Ejecuta la consulta y almacena los resultados.
 
@@ -38,6 +38,7 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
                 trabajador.setIdRol(rs.getString("id_rol")); // Asigna el ID del oficio de la tabla 'oficios'.
                 trabajador.setNombreRol(rs.getString("rol")); // Asigna el nombre del oficio de la tabla 'oficios'.
                 trabajador.setActivo(rs.getString("activo")); // Asigna el valor de la columna 'activo'.
+                trabajador.setEliminado(rs.getString("eliminado"));
                 lista.add(trabajador); // Agrega el objeto a la lista.
             }
 
@@ -73,7 +74,7 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
 
         try {
             conn = DBConnection.getConnection(); // Establece la conexión.
-            String sql = "SELECT t.cedula,t.nombre,t.apellido,t.nacimiento,t.foto,t.contrasena,o.codigo,o.tipo,t.activo,t.adminTemporalInicio,t.adminTemporalFin FROM trabajadores AS t JOIN oficios AS o ON t.id_oficio = o.codigo WHERE t.cedula = ?"; // Consulta con un parámetro.
+            String sql = "SELECT t.cedula, t.nombre, t.apellido, t.nacimiento, t.foto, t.contrasena, r.id, r.nombre AS nombre_rol, t.activo,t.eliminado FROM trabajadores AS t JOIN roles AS r ON t.id_rol = r.id WHERE t.cedula = ?"; // Consulta con un parámetro.
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setInt(1, Integer.parseInt(cedula)); // Asigna el valor de la cédula al parámetro de la consulta.
             rs = prepStmt.executeQuery();
@@ -86,9 +87,10 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
                 trabajador.setNacimiento(rs.getString("nacimiento"));
                 trabajador.setFoto(rs.getString("foto"));
                 trabajador.setContrasena(rs.getString("contrasena"));
-                trabajador.setIdRol(rs.getString("codigo"));
-                trabajador.setNombreRol(rs.getString("tipo"));
+                trabajador.setIdRol(rs.getString("id"));
+                trabajador.setNombreRol(rs.getString("nombre_rol"));
                 trabajador.setActivo(rs.getString("activo"));
+                trabajador.setEliminado(rs.getString("eliminado"));
             }
 
         } catch (Exception e) {
@@ -188,7 +190,7 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
 
         try {
             conn = DBConnection.getConnection();
-            String sql = "UPDATE trabajadores SET nombre = ?, apellido = ?, nacimiento = ?, contrasena = ?, id_oficio = ? WHERE cedula = ?"; // Consulta de actualización.
+            String sql = "UPDATE trabajadores SET nombre = ?, apellido = ?, nacimiento = ?, contrasena = ?, id_rol = ? WHERE cedula = ?"; // Consulta de actualización.
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setString(1, trabajador.getNombre()); // Asigna los nuevos valores a los parámetros.
             prepStmt.setString(2, trabajador.getApellido());
@@ -289,7 +291,7 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
 
         try {
             conn = DBConnection.getConnection();
-            String sql = "UPDATE trabajadores SET id_oficio = ?,activo = ? WHERE cedula = ?"; // Consulta para actualizar oficio y estado.
+            String sql = "UPDATE trabajadores SET id_rol = ?,activo = ? WHERE cedula = ?"; // Consulta para actualizar oficio y estado.
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setInt(1, Integer.parseInt(trabajador.getIdRol())); // Asigna el nuevo ID de oficio.
             prepStmt.setInt(2, Integer.parseInt(trabajador.getActivo())); // Asigna el nuevo estado (activo/inactivo).
@@ -322,9 +324,9 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
 
         try {
             conn = DBConnection.getConnection();
-            String sql = "UPDATE trabajadores SET activo = ? WHERE cedula = ?"; // Consulta para actualizar solo el estado.
+            String sql = "UPDATE trabajadores SET eliminado = ? WHERE cedula = ?"; // Consulta para actualizar solo el estado.
             prepStmt = conn.prepareStatement(sql);
-            prepStmt.setInt(1, Integer.parseInt(trabajador.getActivo())); // Asigna el nuevo estado.
+            prepStmt.setInt(1, Integer.parseInt(trabajador.getEliminado())); // Asigna el nuevo estado.
             prepStmt.setInt(2, Integer.parseInt(trabajador.getCedula())); // Usa la cédula para el `WHERE`.
 
             int filas = prepStmt.executeUpdate();

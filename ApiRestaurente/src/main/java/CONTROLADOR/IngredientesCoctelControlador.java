@@ -33,8 +33,10 @@ public class IngredientesCoctelControlador {
             List<IngredientesCoctel> lista = IngCocDAO.listarTodos(); // Llama al DAO para obtener todos los registros.
             return Response.ok(lista).build(); // Retorna una respuesta 200 (OK) con la lista de objetos.
         } catch (Exception e) {
-            e.printStackTrace(); // Imprime la traza del error para depuración.
-            return Response.serverError().build(); // Retorna una respuesta 500 (Internal Server Error).
+            e.printStackTrace();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -80,7 +82,9 @@ public class IngredientesCoctelControlador {
             return Response.ok(lista).build(); // Retorna una respuesta 200 (OK) con la lista.
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().build(); // Retorna un error 500.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -109,24 +113,23 @@ public class IngredientesCoctelControlador {
                 // Si ambos existen, procede a crear la asociación.
                 mensaje = "Ingrediente #" + ingCoc.getIdIngrediente() + " y Coctel #" + ingCoc.getIdCoctel() + " encontrados, creando...)";
                 creado = IngCocDAO.crear(ingCoc);
-            } else {
-                // Si alguno no existe, se genera un mensaje de error.
-                mensaje = "Error: no se pudo crear INGREDIENTE Coctel.";
-            }
-            
-            if (creado) {
                 return Response.status(Response.Status.CREATED)
-                        .entity(mensaje).build(); // Retorna una respuesta 201 (Created) si la creación fue exitosa.
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity(mensaje)
-                        .build(); // Retorna un 500 si la creación falló.
+                        .entity("{\"Error\":\"No se pudo eliminar Ingrediente.\"}")
+                        .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
+
 
     // Método DELETE para eliminar una asociación por su ID.
     @DELETE
@@ -141,14 +144,21 @@ public class IngredientesCoctelControlador {
 
             boolean eliminado = IngCocDAO.eliminar(id); // Llama al DAO para eliminar el registro.
             if (eliminado) { // Si la eliminación fue exitosa...
-                return Response.ok().entity("Ingrediente Coctel: Eliminado EXITOSAMENTE.").build(); // ...retorna una respuesta 200.
-            } else { // Si no se encontró el registro...
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: ingrediente coctel NO ENCONTRADO").build(); // ...retorna una respuesta 404.
+                String mensaje = "Ingredientes de Coctel eliminados Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
+            } else {
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo eliminar Ingrediente.\"}")
+                        .build();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 }

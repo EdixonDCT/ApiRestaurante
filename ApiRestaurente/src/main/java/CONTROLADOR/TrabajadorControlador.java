@@ -35,10 +35,11 @@ public class TrabajadorControlador {
             // Retorna una respuesta 200 (OK) con la lista de trabajadores en formato JSON.
             return Response.ok(lista).build();
         } catch (Exception e) {
-            // Imprime la traza de la excepción para fines de depuración.
             e.printStackTrace();
-            // Retorna un error 500 (Internal Server Error) genérico.
-            return Response.serverError().build();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -61,18 +62,17 @@ public class TrabajadorControlador {
             if (trabajador != null) {
                 // Si el trabajador se encuentra, retorna un 200 (OK) con el objeto Trabajador.
                 return Response.ok(trabajador).build();
-            } else {
-                // Si el trabajador no se encuentra, retorna un 404 (Not Found).
+        } else {
+                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: no se pudo obtener TRABAJADOR.")
+                        .entity("{\"Error\":\"No se pudo actualizar estado Trabajador.\"}")
                         .build();
             }
         } catch (Exception e) {
-            // Imprime la traza de la excepción.
             e.printStackTrace();
-            // Retorna un error 500 (Internal Server Error).
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
             return Response.serverError()
-                    .entity("Error: Error interno en el servidor.")
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
                     .build();
         }
     }
@@ -120,19 +120,22 @@ public class TrabajadorControlador {
             // Llama al método 'actualizar' del DAO.
             boolean actualizado = trabajadorDAO.actualizar(trabajador);
             if (actualizado) {
-                // Si la actualización es exitosa, retorna un 200 (OK) con un mensaje de éxito.
-                return Response.ok().entity("Trabajador: " + trabajador.getNombre() + " " + trabajador.getApellido() + " actualizado con EXITO.").build();
+                String mensaje = "Trabajador actualizado EXITOSAMENTE.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
-                // Si el trabajador no se encuentra, retorna un 404 (Not Found).
+                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: trabajador NO ENCONTRADO o NO ACTUALIZADO.")
+                        .entity("{\"Error\":\"No se pudo actualizar Trabajador.\"}")
                         .build();
             }
         } catch (Exception e) {
-            // Imprime la traza de la excepción.
             e.printStackTrace();
-            // Retorna un error 500 (Internal Server Error).
-            return Response.serverError().entity("Error: error interno en el servidor.").build();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -154,18 +157,22 @@ public class TrabajadorControlador {
             boolean actualizado = trabajadorDAO.actualizarFoto(trabajador);
             if (actualizado) {
                 // Si la actualización es exitosa, retorna un 200 (OK).
-                return Response.ok().entity("Trabajador: actualizacion de foto con EXITO.").build();
+                String mensaje = "Trabajador foto actualizada EXITOSAMENTE.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
-                // Si no se encuentra el trabajador, retorna un 404 (Not Found).
+                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: trabajador NO ENCONTRADO o NO ACTUALIZADO.")
+                        .entity("{\"Error\":\"No se pudo actualizar foto Trabajador.\"}")
                         .build();
             }
         } catch (Exception e) {
-            // Imprime la traza de la excepción.
             e.printStackTrace();
-            // Retorna un error 500 (Internal Server Error).
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -183,7 +190,7 @@ public class TrabajadorControlador {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
             }
             // Valida que el estado sea un booleano válido.
-            String validaEstado = Middlewares.validarBooleano(trabajador.getActivo(), "estado");
+            String validaEstado = Middlewares.validarBooleano(trabajador.getEliminado(), "eliminado");
             if (!validaEstado.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaEstado).build();
             }
@@ -192,18 +199,22 @@ public class TrabajadorControlador {
             boolean actualizado = trabajadorDAO.cambiarEstado(trabajador);
             if (actualizado) {
                 // Si la actualización es exitosa, retorna un 200 (OK).
-                return Response.ok().entity("Trabajador: actualizacion de estado con EXITO.").build();
+                String mensaje = "Trabajador estado Actualizado EXITOSAMENTE.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
-                // Si no se encuentra el trabajador, retorna un 404 (Not Found).
+                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: trabajador NO ENCONTRADO o NO ACTUALIZADO.")
+                        .entity("{\"Error\":\"No se pudo actualizar estado Trabajador.\"}")
                         .build();
             }
         } catch (Exception e) {
-            // Imprime la traza de la excepción.
             e.printStackTrace();
-            // Retorna un error 500 (Internal Server Error).
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -220,9 +231,9 @@ public class TrabajadorControlador {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
             }
             // Valida el 'idOficio'.
-            String validaIdOficio = Middlewares.validarEntero(trabajador.getIdRol(), "id rol");
-            if (!validaIdOficio.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaIdOficio).build();
+            String validaIdRol = Middlewares.validarEntero(trabajador.getIdRol(), "id rol");
+            if (!validaIdRol.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaIdRol).build();
             }
             // Valida el estado.
             String validaEstado = Middlewares.validarBooleano(trabajador.getActivo(), "estado");
@@ -233,18 +244,22 @@ public class TrabajadorControlador {
             boolean actualizado = trabajadorDAO.activarTrabajador(trabajador);
             if (actualizado) {
                 // Si la actualización es exitosa, retorna un 200 (OK).
-                return Response.ok().entity("Trabajador: actualizacion de estado con EXITO.").build();
+                String mensaje = "Trabajador activado EXITOSAMENTE.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
-                // Si el trabajador no se encuentra, retorna un 404 (Not Found).
+                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: trabajador NO ENCONTRADO o NO ACTUALIZADO.")
+                        .entity("{\"Error\":\"No se pudo activar Trabajador.\"}")
                         .build();
             }
         } catch (Exception e) {
-            // Imprime la traza de la excepción.
             e.printStackTrace();
-            // Retorna un error 500 (Internal Server Error).
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
     
@@ -262,17 +277,22 @@ public class TrabajadorControlador {
             boolean eliminado = trabajadorDAO.eliminar(cedula);
             if (eliminado) {
                 // Si la eliminación es exitosa, retorna un 200 (OK).
-                return Response.ok().entity("Trabajador: eliminado EXITOSAMENTE.").build();
+                String mensaje = "Trabajador eliminado EXITOSAMENTE.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
             } else {
-                // Si el trabajador no se encuentra, retorna un 404 (Not Found).
+                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: trabajador NO ENCONTRADO.").build();
+                        .entity("{\"Error\":\"No se pudo eliminar Trabajador.\"}")
+                        .build();
             }
         } catch (Exception e) {
-            // Imprime la traza de la excepción.
             e.printStackTrace();
-            // Retorna un error 500 (Internal Server Error).
-            return Response.serverError().entity("Error: Error interno en el servidor.").build();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 }
