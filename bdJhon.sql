@@ -194,7 +194,6 @@ insert into permisos(nombre,descripcion) values
 ('Trabajadores.eliminar','eliminacion de ingredientes.'),
 ('Trabajadores.eliminadoSuave','eliminado suave para los trabajadores.'),
 ('Trabajadores.eliminadosListar','listar pedidos eliminados con eliminado trabajadores.');
-
 insert into rolesPermisos(id_rol, id_permiso) values
 (3,1),
 (3,2),
@@ -242,10 +241,12 @@ insert into rolesPermisos(id_rol, id_permiso) values
 (4,16),
 (4,17),
 (4,18),
+(4,29),
 (5,1),
 (5,9),
 (5,10),
-(5,11);
+(5,11),
+(5,29);
 
 insert into usuarios(cedula, nombre, apellido, nacimiento, foto, contrasena,activo) values 
 ('1001', 'Ana', 'Rojas', '1990-01-01', 'c4725ed6-a2a8-4112-9572-639515e759a0_foto1.png', '1234',1),
@@ -254,11 +255,11 @@ insert into usuarios(cedula, nombre, apellido, nacimiento, foto, contrasena,acti
 ('1004', 'Pedro', 'Perez', '2000-08-10', 'f74c6d39-39a0-4683-98ae-78c5c058f144_foto4.png', '1234',1),
 ('1005', 'Edixon', 'Castillo', '1992-11-15', 'b00a88c9-af7a-4d1a-8096-1d852a475dde_foto5.png', '1904',1);
 insert into usuarios(cedula,nombre,apellido) values
-('1001','Ana','Rojas'),
-('1002','Luis','Gomez'),
-('1003','Sara','Lopez'),
-('1004','Pedro','Perez'),
-('1005','Edixon','Castillo');
+('1001','Helder','Rojas'),
+('1002','Luisa','Gomez'),
+('1003','Saray','Lopez'),
+('1004','Pachecko','Perez'),
+('1005','Edwin','Castillo');
 insert into rolesUsuarios(id_rol,id_usuario) values
 (1,1),
 (1,2),
