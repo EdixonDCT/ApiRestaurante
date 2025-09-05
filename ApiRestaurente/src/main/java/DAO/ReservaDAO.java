@@ -137,35 +137,35 @@ public class ReservaDAO { // La clase `ReservaDAO` (Data Access Object) se encar
         return resultado; // Devuelve el resultado de la operación.
     }
 
-    public boolean actualizarTodo(Reserva reserva) { // Método para actualizar una reserva existente.
-        boolean actualizado = false; // Variable para saber si la actualización fue exitosa.
-        try {
-            conn = DBConnection.getConnection();
-            String sql = "UPDATE reservas SET cantidad_tentativa = ?,precio = ?, fecha_tentativa = ?, hora_tentativa = ? WHERE id = ?"; // Consulta de actualización.
-            prepStmt = conn.prepareStatement(sql);
-            prepStmt.setInt(1, Integer.parseInt(reserva.getCantidadTentativa())); // Asigna los nuevos valores.
-            prepStmt.setDouble(2, Double.parseDouble(reserva.getPrecio()));
-            prepStmt.setString(3, reserva.getFechaTentativa());
-            prepStmt.setString(4, reserva.getHoraTentativa());
-            prepStmt.setInt(5, Integer.parseInt(reserva.getId())); // Usa el ID para encontrar la reserva a actualizar.
-            int filas = prepStmt.executeUpdate(); // Ejecuta la actualización.
-            actualizado = filas > 0; // Si se afectó al menos una fila, la actualización fue exitosa.
-        } catch (Exception e) {
-            System.err.println("ERROR AL ACTUALIZAR RESERVA: " + e.getMessage());
-        } finally {
-            try {
-                if (prepStmt != null) {
-                    prepStmt.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (Exception ex) {
-                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
-            }
-        }
-        return actualizado; // Devuelve true o false.
-    }
+//    public boolean actualizarTodo(Reserva reserva) { // Método para actualizar una reserva existente.
+//        boolean actualizado = false; // Variable para saber si la actualización fue exitosa.
+//        try {
+//            conn = DBConnection.getConnection();
+//            String sql = "UPDATE reservas SET cantidad_tentativa = ?,precio = ?, fecha_tentativa = ?, hora_tentativa = ? WHERE id = ?"; // Consulta de actualización.
+//            prepStmt = conn.prepareStatement(sql);
+//            prepStmt.setInt(1, Integer.parseInt(reserva.getCantidadTentativa())); // Asigna los nuevos valores.
+//            prepStmt.setDouble(2, Double.parseDouble(reserva.getPrecio()));
+//            prepStmt.setString(3, reserva.getFechaTentativa());
+//            prepStmt.setString(4, reserva.getHoraTentativa());
+//            prepStmt.setInt(5, Integer.parseInt(reserva.getId())); // Usa el ID para encontrar la reserva a actualizar.
+//            int filas = prepStmt.executeUpdate(); // Ejecuta la actualización.
+//            actualizado = filas > 0; // Si se afectó al menos una fila, la actualización fue exitosa.
+//        } catch (Exception e) {
+//            System.err.println("ERROR AL ACTUALIZAR RESERVA: " + e.getMessage());
+//        } finally {
+//            try {
+//                if (prepStmt != null) {
+//                    prepStmt.close();
+//                }
+//                if (conn != null) {
+//                    conn.close();
+//                }
+//            } catch (Exception ex) {
+//                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+//            }
+//        }
+//        return actualizado; // Devuelve true o false.
+//    }
 
     public boolean actualizar(Reserva reserva) { // Método para actualizar una reserva existente.
         boolean actualizado = false; // Variable para saber si la actualización fue exitosa.

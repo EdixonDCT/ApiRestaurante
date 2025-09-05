@@ -1,3 +1,4 @@
+MODELO\Usuarios.class
 CONTROLADOR\IngredienteControlador.class
 DAO\CoctelDAO.class
 CONTROLADOR\MesaControlador.class
@@ -9,9 +10,7 @@ MODELO\Comida.class
 UTILS\Middlewares.class
 DAO\ComidaDAO.class
 DAO\TrabajadorDAO.class
-MODELO\Trabajador.class
 MODELO\Login.class
-MODELO\Cliente.class
 CONTROLADOR\RolesControlador.class
 CONTROLADOR\DetallePedidoControlador.class
 CONTROLADOR\RegisterControlador.class
@@ -53,5 +52,4 @@ CONTROLADOR\LoginControlador.class
 MODELO\Mesa.class
 CONTROLADOR\CajaControlador.class
 CONTROLADOR\TokenControlador.class
-UTILS\MiFiltro.class
 MODELO\DetallePedido.class

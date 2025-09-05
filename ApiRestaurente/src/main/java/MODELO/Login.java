@@ -8,7 +8,6 @@ public class Login {
     private String cedula;
     private String contrasena;
     private List<String> permisos; // Array de permisos
-    private String rol;
     private String fotoPerfil;
     private String nombreApellido;
     private String token;
@@ -37,14 +36,6 @@ public class Login {
 
     public void setPermisos(List<String> permisos) {
         this.permisos = permisos;
-    }
-
-    public String getRol() {
-        return rol;
-    }
-
-    public void setRol(String rol) {
-        this.rol = rol;
     }
 
     public String getFotoPerfil() {

@@ -79,7 +79,7 @@ public class PedidoControlador {
                     .build();
         }
     }
-    
+
     @GET
     @Path("reserva/{id}")
     public Response obtenerPedidoPorReserva(@PathParam("id") String id) {
@@ -110,7 +110,7 @@ public class PedidoControlador {
                     .build();
         }
     }
-    
+
     // --- Métodos POST ---
     // Maneja la petición POST a "/pedidos"
     // Crea un nuevo pedido a partir de los datos recibidos en el cuerpo de la petición
@@ -130,18 +130,18 @@ public class PedidoControlador {
             if (!validaNumeroClientes.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroClientes).build();
             }
-            String validaCorreoCliente = Middlewares.validarCorreo(pedido.getCorreoCliente(), "correo cliente");
-            if (!validaCorreoCliente.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaCorreoCliente).build();
+            String validaCedulaCliente = Middlewares.validarEntero(pedido.getCedulaUsuario(), "cedula cliente");
+            if (!validaCedulaCliente.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCedulaCliente).build();
             }
-            String validaMetodoPago = Middlewares.validarString(pedido.getMetodoPago(), "numero mesa");
+            String validaMetodoPago = Middlewares.validarString(pedido.getMetodoPago(), "metodo de pago");
             if (!validaMetodoPago.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaMetodoPago).build();
             }
-            Boolean correoExiste = clienteDAO.obtenerPorCorreoBoolean(pedido.getCorreoCliente());
-            if (!correoExiste) {
+            Boolean cedulaExiste = clienteDAO.obtenerPorCedulaBoolean(pedido.getCedulaUsuario());
+            if (!cedulaExiste) {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("{\"Error\":\"El correo del Cliente no EXISTE.\"}")
+                        .entity("{\"Error\":\"La cedula del Cliente no EXISTE.\"}")
                         .build();
             }
 
@@ -162,7 +162,7 @@ public class PedidoControlador {
                 // Si se creó, retorna una respuesta 201 (Created) con un JSON que incluye "Ok"
                 String mensaje = "Pedido creado EXITOSAMENTE.";
                 String json = String.format("{\"Ok\": \"%s\", \"id\": \"%s\"}", mensaje, resultado[1]);
-                
+
                 return Response.status(Response.Status.CREATED)
                         .entity(json)
                         .build();
@@ -180,7 +180,6 @@ public class PedidoControlador {
                     .build();
         }
     }
-
 
     // Maneja la petición POST a "/pedidos/reserva"
     // Crea un pedido a partir de una reserva, validando los campos específicos para esta acción
@@ -201,9 +200,9 @@ public class PedidoControlador {
             if (!validaIdReserva.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaIdReserva).build();
             }
-            String validaCorreoCliente = Middlewares.validarCorreo(pedido.getCorreoCliente(), "correo cliente");
-            if (!validaCorreoCliente.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaCorreoCliente).build();
+            String validaCedulaCliente = Middlewares.validarEntero(pedido.getCedulaUsuario(), "cedula cliente");
+            if (!validaCedulaCliente.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCedulaCliente).build();
             }
 
             // Llama al DAO para crear el pedido de reserva
@@ -237,8 +236,13 @@ public class PedidoControlador {
         try {
             // Asigna el ID del path al objeto Pedido
             pedido.setId(id);
-
+            
+            String validaId = Middlewares.validarEntero(pedido.getId(), "id");
+            if (!validaId.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
+            }
             // Realiza las validaciones de todos los campos que se pueden actualizar
+            // Valida cada uno de los campos del objeto Pedido
             String validaNumeroMesa = Middlewares.validarEntero(pedido.getNumeroMesa(), "numero mesa");
             if (!validaNumeroMesa.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroMesa).build();
@@ -251,17 +255,29 @@ public class PedidoControlador {
             if (!validaNumeroClientes.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroClientes).build();
             }
-            String validaCorreoCliente = Middlewares.validarCorreo(pedido.getCorreoCliente(), "correo cliente");
-            if (!validaCorreoCliente.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaCorreoCliente).build();
+            String validaCedulaCliente = Middlewares.validarEntero(pedido.getCedulaUsuario(), "cedula cliente");
+            if (!validaCedulaCliente.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCedulaCliente).build();
             }
-            String validaMetodoPago = Middlewares.validarString(pedido.getMetodoPago(), "numero mesa");
+            String validaMetodoPago = Middlewares.validarString(pedido.getMetodoPago(), "metodo de pago");
             if (!validaMetodoPago.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaMetodoPago).build();
             }
-            String validaId = Middlewares.validarEntero(pedido.getId(), "id");
-            if (!validaId.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
+            Boolean cedulaExiste = clienteDAO.obtenerPorCedulaBoolean(pedido.getCedulaUsuario());
+            if (!cedulaExiste) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"La cedula del Cliente no EXISTE.\"}")
+                        .build();
+            }
+
+            Integer cantidadMesa = mesaDAO.mesaCantidad(pedido.getNumeroMesa());
+            Integer cantidadCliente = Integer.parseInt(pedido.getNumeroClientes());
+
+            Boolean esMayorOIgual = cantidadMesa >= cantidadCliente;
+            if (!esMayorOIgual) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"Seleccione Mesa que sea igual o mayor a la Cantidad de Clientes.\"}")
+                        .build();
             }
 
             // Intenta actualizar el pedido
@@ -288,89 +304,87 @@ public class PedidoControlador {
 
     // Maneja la petición PUT a "/pedidos/reserva/{id}"
     // Actualiza un pedido de reserva existente
-    @PUT
-    @Path("/reserva/{id}")
-    public Response actualizarPedidoReserva(@PathParam("id") String id, Pedido pedido) {
-        try {
-            pedido.setId(id); // Asigna el ID del path
-
-            // Realiza las validaciones para los campos de reserva
-            String validaIdCaja = Middlewares.validarEntero(pedido.getIdCaja(), "id caja");
-            if (!validaIdCaja.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaIdCaja).build();
-            }
-            String validaMetodoPago = Middlewares.validarString(pedido.getMetodoPago(), "metodo de pago");
-            if (!validaMetodoPago.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaMetodoPago).build();
-            }
-            String validaId = Middlewares.validarEntero(pedido.getId(), "id");
-            if (!validaId.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
-            }
-
-            // Llama al DAO para actualizar la reserva
-            boolean actualizado = pedidoDAO.actualizarReserva(pedido);
-            if (actualizado) {
-                // Si se actualiza, retorna 200 (OK)
-                String mensaje = "Reserva activada Exitosamente.";
-                return Response.status(Response.Status.CREATED)
-                        .entity("{\"Ok\":\"" + mensaje + "\"}")
-                        .build();
-            } else {
-                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("{\"Error\":\"No se pudo activar Reserva.\"}")
-                        .build();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.serverError()
-                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
-                    .build();
-        }
-    }
-
+//    @PUT
+//    @Path("/reserva/{id}")
+//    public Response actualizarPedidoReserva(@PathParam("id") String id, Pedido pedido) {
+//        try {
+//            pedido.setId(id); // Asigna el ID del path
+//
+//            // Realiza las validaciones para los campos de reserva
+//            String validaIdCaja = Middlewares.validarEntero(pedido.getIdCaja(), "id caja");
+//            if (!validaIdCaja.equals("ok")) {
+//                return Response.status(Response.Status.BAD_REQUEST).entity(validaIdCaja).build();
+//            }
+//            String validaMetodoPago = Middlewares.validarString(pedido.getMetodoPago(), "metodo de pago");
+//            if (!validaMetodoPago.equals("ok")) {
+//                return Response.status(Response.Status.BAD_REQUEST).entity(validaMetodoPago).build();
+//            }
+//            String validaId = Middlewares.validarEntero(pedido.getId(), "id");
+//            if (!validaId.equals("ok")) {
+//                return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
+//            }
+//
+//            // Llama al DAO para actualizar la reserva
+//            boolean actualizado = pedidoDAO.actualizarReserva(pedido);
+//            if (actualizado) {
+//                // Si se actualiza, retorna 200 (OK)
+//                String mensaje = "Reserva activada Exitosamente.";
+//                return Response.status(Response.Status.CREATED)
+//                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+//                        .build();
+//            } else {
+//                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+//                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//                        .entity("{\"Error\":\"No se pudo activar Reserva.\"}")
+//                        .build();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return Response.serverError()
+//                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+//                    .build();
+//        }
+//    }
     // Maneja la petición PUT a "/pedidos/reservaEditar/{id}"
     // Actualiza campos específicos de un pedido de reserva
-    @PUT
-    @Path("/reservaEditar/{id}")
-    public Response EditarPedidoReserva(@PathParam("id") String id, Pedido pedido) {
-        try {
-            pedido.setId(id);
-
-            // Validaciones para los campos a editar
-            String validaNumeroClientes = Middlewares.validarEntero(pedido.getNumeroClientes(), "numero de clientes");
-            if (!validaNumeroClientes.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroClientes).build();
-            }
-            String validaNumeroMesa = Middlewares.validarEntero(pedido.getNumeroMesa(), "numero mesa");
-            if (!validaNumeroMesa.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroMesa).build();
-            }
-            String validaCorreoCliente = Middlewares.validarCorreo(pedido.getCorreoCliente(), "correo cliente");
-            if (!validaCorreoCliente.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaCorreoCliente).build();
-            }
-            String validaId = Middlewares.validarEntero(pedido.getId(), "id");
-            if (!validaId.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
-            }
-
-            // Llama al DAO para editar la reserva
-            boolean actualizado = pedidoDAO.EditarReserva(pedido);
-            if (actualizado) {
-                return Response.ok().entity("Pedido: reserva actualizada EXITOSAMENTE.").build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Error: pedido reserva no encontrado o no actualizada.").build();
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.serverError().entity("Error interno en el servidor.").build();
-        }
-    }
-
+//    @PUT
+//    @Path("/reservaEditar/{id}")
+//    public Response EditarPedidoReserva(@PathParam("id") String id, Pedido pedido) {
+//        try {
+//            pedido.setId(id);
+//
+//            // Validaciones para los campos a editar
+//            String validaNumeroClientes = Middlewares.validarEntero(pedido.getNumeroClientes(), "numero de clientes");
+//            if (!validaNumeroClientes.equals("ok")) {
+//                return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroClientes).build();
+//            }
+//            String validaNumeroMesa = Middlewares.validarEntero(pedido.getNumeroMesa(), "numero mesa");
+//            if (!validaNumeroMesa.equals("ok")) {
+//                return Response.status(Response.Status.BAD_REQUEST).entity(validaNumeroMesa).build();
+//            }
+//            String validaCedulaCliente = Middlewares.validarEntero(pedido.getCedulaUsuario(), "cedula cliente");
+//            if (!validaCedulaCliente.equals("ok")) {
+//                return Response.status(Response.Status.BAD_REQUEST).entity(validaCedulaCliente).build();
+//            }
+//            String validaId = Middlewares.validarEntero(pedido.getId(), "id");
+//            if (!validaId.equals("ok")) {
+//                return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
+//            }
+//
+//            // Llama al DAO para editar la reserva
+//            boolean actualizado = pedidoDAO.EditarReserva(pedido);
+//            if (actualizado) {
+//                return Response.ok().entity("Pedido: reserva actualizada EXITOSAMENTE.").build();
+//            } else {
+//                return Response.status(Response.Status.NOT_FOUND)
+//                        .entity("Error: pedido reserva no encontrado o no actualizada.").build();
+//            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return Response.serverError().entity("Error interno en el servidor.").build();
+//        }
+//    }
     // Maneja la petición PATCH a "/pedidos/{id}"
     // Actualiza el total de un pedido
     @PATCH

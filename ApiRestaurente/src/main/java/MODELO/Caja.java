@@ -1,6 +1,7 @@
 package MODELO;
 
 public class Caja {
+
     private String id;
     private String fechaApertura;
     private String horaApertura;
@@ -8,8 +9,9 @@ public class Caja {
     private String fechaCierre;
     private String horaCierre;
     private String montoCierre;
+    private String idTrabajador;
     private String cedulaTrabajador;
-    private String nombreCajero;
+    private String nombreApellidoTrabajador;
 
     public String getId() {
         return id;
@@ -67,6 +69,14 @@ public class Caja {
         this.montoCierre = montoCierre;
     }
 
+    public String getIdTrabajador() {
+        return idTrabajador;
+    }
+
+    public void setIdTrabajador(String idTrabajador) {
+        this.idTrabajador = idTrabajador;
+    }
+
     public String getCedulaTrabajador() {
         return cedulaTrabajador;
     }
@@ -75,11 +85,11 @@ public class Caja {
         this.cedulaTrabajador = cedulaTrabajador;
     }
 
-    public String getNombreCajero() {
-        return nombreCajero;
+    public String getNombreApellidoTrabajador() {
+        return nombreApellidoTrabajador;
     }
 
-    public void setNombreCajero(String nombreCajero) {
-        this.nombreCajero = nombreCajero;
+    public void setNombreApellidoTrabajador(String nombreApellidoTrabajador) {
+        this.nombreApellidoTrabajador = nombreApellidoTrabajador;
     }
 }

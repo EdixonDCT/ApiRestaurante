@@ -16,7 +16,8 @@ public class CajaDAO {
     private Connection conn = null;
     private PreparedStatement prepStmt = null;
     private ResultSet rs = null;
-
+    
+    private TrabajadorDAO trabajadorDAO = new TrabajadorDAO();
     // Método para obtener todos los registros de la tabla 'caja'
     public ArrayList<Caja> listarTodos() {
         // Crea un ArrayList para almacenar los objetos Caja
@@ -26,7 +27,7 @@ public class CajaDAO {
             // Obtiene la conexión a la base de datos
             conn = DBConnection.getConnection();
             // Define la consulta SQL con un JOIN para obtener el nombre del cajero
-            String sql = "SELECT c.*, t.nombre AS nombre_cajero FROM caja c INNER JOIN trabajadores t ON c.cedula_trabajador = t.cedula";
+            String sql = "SELECT c.id AS id_caja,c.fecha_apertura,c.hora_apertura,c.monto_apertura,c.fecha_cierre,c.hora_cierre,c.monto_cierre,u.id,u.cedula,u.nombre,u.apellido FROM caja c INNER JOIN usuarios u ON c.id_usuario=u.id";
             // Prepara la sentencia SQL
             prepStmt = conn.prepareStatement(sql);
             // Ejecuta la consulta y obtiene el resultado
@@ -37,15 +38,16 @@ public class CajaDAO {
                 // Crea un nuevo objeto Caja
                 Caja caja = new Caja();
                 // Asigna los valores de las columnas del resultado al objeto Caja
-                caja.setId(rs.getString("id"));
+                caja.setId(rs.getString("id_caja"));
                 caja.setFechaApertura(rs.getString("fecha_apertura"));
                 caja.setHoraApertura(rs.getString("hora_apertura"));
                 caja.setMontoApertura(rs.getString("monto_apertura"));
                 caja.setFechaCierre(rs.getString("fecha_cierre"));
                 caja.setHoraCierre(rs.getString("hora_cierre"));
                 caja.setMontoCierre(rs.getString("monto_cierre"));
-                caja.setCedulaTrabajador(rs.getString("cedula_trabajador"));
-                caja.setNombreCajero(rs.getString("nombre_cajero"));
+                caja.setIdTrabajador(rs.getString("id"));
+                caja.setCedulaTrabajador(rs.getString("cedula"));
+                caja.setNombreApellidoTrabajador(rs.getString("nombre")+" "+rs.getString("apellido"));
                 // Agrega el objeto Caja a la lista
                 lista.add(caja);
             }
@@ -84,7 +86,7 @@ public class CajaDAO {
             // Obtiene la conexión
             conn = DBConnection.getConnection();
             // Define la consulta SQL con un JOIN para obtener el nombre del cajero, filtrando por ID
-            String sql = "SELECT c.*, t.nombre AS nombre_cajero FROM caja c INNER JOIN trabajadores t ON c.cedula_trabajador = t.cedula WHERE c.id = ?";
+            String sql = "SELECT c.id AS id_caja,c.fecha_apertura,c.hora_apertura,c.monto_apertura,c.fecha_cierre,c.hora_cierre,c.monto_cierre,u.id,u.cedula,u.nombre,u.apellido FROM caja c INNER JOIN usuarios u ON c.id_usuario=u.id WHERE c.id = ?";
             // Prepara la sentencia
             prepStmt = conn.prepareStatement(sql);
             // Asigna el valor del ID al primer parámetro de la consulta
@@ -97,15 +99,16 @@ public class CajaDAO {
                 // Crea un nuevo objeto Caja
                 caja = new Caja();
                 // Asigna los valores del resultado al objeto
-                caja.setId(rs.getString("id"));
+                caja.setId(rs.getString("id_caja"));
                 caja.setFechaApertura(rs.getString("fecha_apertura"));
                 caja.setHoraApertura(rs.getString("hora_apertura"));
                 caja.setMontoApertura(rs.getString("monto_apertura"));
                 caja.setFechaCierre(rs.getString("fecha_cierre"));
                 caja.setHoraCierre(rs.getString("hora_cierre"));
                 caja.setMontoCierre(rs.getString("monto_cierre"));
-                caja.setCedulaTrabajador(rs.getString("cedula_trabajador"));
-                caja.setNombreCajero(rs.getString("nombre_cajero"));
+                caja.setIdTrabajador(rs.getString("id"));
+                caja.setCedulaTrabajador(rs.getString("cedula"));
+                caja.setNombreApellidoTrabajador(rs.getString("nombre")+" "+rs.getString("apellido"));
             }
 
         } catch (Exception e) {
@@ -139,15 +142,16 @@ public class CajaDAO {
         boolean creado = false;
 
         try {
+            String idTrabajador = trabajadorDAO.obtenerIdUsuario(caja.getCedulaTrabajador());
             // Obtiene la conexión
             conn = DBConnection.getConnection();
             // Define la consulta SQL para insertar una nueva caja
-            String sql = "INSERT INTO caja (monto_apertura, cedula_trabajador) VALUES (?, ?)";
+            String sql = "INSERT INTO caja (monto_apertura, id_usuario) VALUES (?, ?)";
             // Prepara la sentencia
             prepStmt = conn.prepareStatement(sql);
             // Asigna los valores a los parámetros
             prepStmt.setDouble(1, Double.parseDouble(caja.getMontoApertura()));
-            prepStmt.setInt(2, Integer.parseInt(caja.getCedulaTrabajador()));
+            prepStmt.setInt(2, Integer.parseInt(idTrabajador));
 
             // Ejecuta la inserción y obtiene el número de filas afectadas
             int filas = prepStmt.executeUpdate();
@@ -182,16 +186,17 @@ public class CajaDAO {
         boolean actualizado = false;
 
         try {
+            String idTrabajador = trabajadorDAO.obtenerIdUsuario(caja.getCedulaTrabajador());
             // Obtiene la conexión
             conn = DBConnection.getConnection();
             // Define la consulta SQL para actualizar la caja
-            String sql = "UPDATE caja SET monto_apertura = ?, monto_cierre = ?, cedula_trabajador = ? WHERE id = ?";
+            String sql = "UPDATE caja SET monto_apertura = ?, monto_cierre = ?, id_usuario = ? WHERE id = ?";
             // Prepara la sentencia
             prepStmt = conn.prepareStatement(sql);
             // Asigna los valores a los parámetros
             prepStmt.setDouble(1, Double.parseDouble(caja.getMontoApertura()));
             prepStmt.setDouble(2, Double.parseDouble(caja.getMontoCierre()));
-            prepStmt.setInt(3, Integer.parseInt(caja.getCedulaTrabajador()));
+            prepStmt.setInt(3, Integer.parseInt(idTrabajador));
             prepStmt.setInt(4, Integer.parseInt(caja.getId()));
 
             // Ejecuta la actualización y obtiene el número de filas afectadas
@@ -222,53 +227,53 @@ public class CajaDAO {
     }
 
     // Método para actualizar todos los campos de una caja
-    public boolean actualizarTotal(Caja caja) {
-        // Inicializa la variable de éxito a false
-        boolean actualizado = false;
-
-        try {
-            // Obtiene la conexión
-            conn = DBConnection.getConnection();
-            // Define la consulta SQL para actualizar todos los campos de la caja
-            String sql = "UPDATE caja SET fecha_apertura = ?, hora_apertura = ?, monto_apertura = ?, fecha_cierre = ?, hora_cierre = ?, monto_cierre = ?, cedula_trabajador = ? WHERE id = ?";
-            // Prepara la sentencia
-            prepStmt = conn.prepareStatement(sql);
-            // Asigna los valores a los parámetros
-            prepStmt.setString(1, caja.getFechaApertura());
-            prepStmt.setString(2, caja.getHoraApertura());
-            prepStmt.setDouble(3, Double.parseDouble(caja.getMontoApertura()));
-            prepStmt.setString(4, caja.getFechaCierre());
-            prepStmt.setString(5, caja.getHoraCierre());
-            prepStmt.setDouble(6, Double.parseDouble(caja.getMontoCierre()));
-            prepStmt.setInt(7, Integer.parseInt(caja.getCedulaTrabajador()));
-            prepStmt.setInt(8, Integer.parseInt(caja.getId()));
-
-            // Ejecuta la actualización
-            int filas = prepStmt.executeUpdate();
-            // Si se afectó al menos una fila, la actualización fue exitosa
-            actualizado = filas > 0;
-
-        } catch (Exception e) {
-            // Manejo de errores
-            System.err.println("ERROR AL ACTUALIZAR CAJA: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            // Cierra los recursos
-            try {
-                if (prepStmt != null) {
-                    prepStmt.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (Exception ex) {
-                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
-            }
-        }
-
-        // Retorna si la actualización fue exitosa
-        return actualizado;
-    }
+//    public boolean actualizarTotal(Caja caja) {
+//        // Inicializa la variable de éxito a false
+//        boolean actualizado = false;
+//
+//        try {
+//            // Obtiene la conexión
+//            conn = DBConnection.getConnection();
+//            // Define la consulta SQL para actualizar todos los campos de la caja
+//            String sql = "UPDATE caja SET fecha_apertura = ?, hora_apertura = ?, monto_apertura = ?, fecha_cierre = ?, hora_cierre = ?, monto_cierre = ?, cedula_trabajador = ? WHERE id = ?";
+//            // Prepara la sentencia
+//            prepStmt = conn.prepareStatement(sql);
+//            // Asigna los valores a los parámetros
+//            prepStmt.setString(1, caja.getFechaApertura());
+//            prepStmt.setString(2, caja.getHoraApertura());
+//            prepStmt.setDouble(3, Double.parseDouble(caja.getMontoApertura()));
+//            prepStmt.setString(4, caja.getFechaCierre());
+//            prepStmt.setString(5, caja.getHoraCierre());
+//            prepStmt.setDouble(6, Double.parseDouble(caja.getMontoCierre()));
+//            prepStmt.setInt(7, Integer.parseInt(caja.getCedulaTrabajador()));
+//            prepStmt.setInt(8, Integer.parseInt(caja.getId()));
+//
+//            // Ejecuta la actualización
+//            int filas = prepStmt.executeUpdate();
+//            // Si se afectó al menos una fila, la actualización fue exitosa
+//            actualizado = filas > 0;
+//
+//        } catch (Exception e) {
+//            // Manejo de errores
+//            System.err.println("ERROR AL ACTUALIZAR CAJA: " + e.getMessage());
+//            e.printStackTrace();
+//        } finally {
+//            // Cierra los recursos
+//            try {
+//                if (prepStmt != null) {
+//                    prepStmt.close();
+//                }
+//                if (conn != null) {
+//                    conn.close();
+//                }
+//            } catch (Exception ex) {
+//                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+//            }
+//        }
+//
+//        // Retorna si la actualización fue exitosa
+//        return actualizado;
+//    }
 
     // Método para actualizar solo el monto de apertura de una caja
     public boolean actualizarApertura(Caja caja) {
@@ -276,15 +281,17 @@ public class CajaDAO {
         boolean actualizado = false;
 
         try {
+            String idTrabajador = trabajadorDAO.obtenerIdUsuario(caja.getCedulaTrabajador());
             // Obtiene la conexión
             conn = DBConnection.getConnection();
             // Define la consulta SQL para actualizar el monto de apertura
-            String sql = "UPDATE caja SET monto_apertura = ? WHERE id = ?";
+            String sql = "UPDATE caja SET monto_apertura = ?,id_usuario = ? WHERE id = ?";
             // Prepara la sentencia
             prepStmt = conn.prepareStatement(sql);
             // Asigna los valores a los parámetros
             prepStmt.setDouble(1, Double.parseDouble(caja.getMontoApertura()));
-            prepStmt.setInt(2, Integer.parseInt(caja.getId()));
+            prepStmt.setInt(2, Integer.parseInt(idTrabajador));
+            prepStmt.setInt(3, Integer.parseInt(caja.getId()));
 
             // Ejecuta la actualización
             int filas = prepStmt.executeUpdate();
@@ -319,16 +326,18 @@ public class CajaDAO {
         boolean actualizado = false;
 
         try {
+            String idTrabajador = trabajadorDAO.obtenerIdUsuario(caja.getCedulaTrabajador());
             // Obtiene la conexión
             conn = DBConnection.getConnection();
             // Define la consulta SQL para actualizar la fecha, hora y monto de cierre
             // Usa funciones SQL para obtener la fecha y hora actual del servidor
-            String sql = "UPDATE caja SET fecha_cierre = CURRENT_DATE(), hora_cierre = CURRENT_TIME(), monto_cierre = ? WHERE id = ?";
+            String sql = "UPDATE caja SET fecha_cierre = CURRENT_DATE(), hora_cierre = CURRENT_TIME(), monto_cierre = ?,id_usuario = ? WHERE id = ?";
             // Prepara la sentencia
             prepStmt = conn.prepareStatement(sql);
             // Asigna los valores a los parámetros
             prepStmt.setDouble(1, Double.parseDouble(caja.getMontoCierre()));
-            prepStmt.setInt(2, Integer.parseInt(caja.getId()));
+            prepStmt.setInt(2, Integer.parseInt(idTrabajador));
+            prepStmt.setInt(3, Integer.parseInt(caja.getId()));
 
             // Ejecuta la actualización
             int filas = prepStmt.executeUpdate();

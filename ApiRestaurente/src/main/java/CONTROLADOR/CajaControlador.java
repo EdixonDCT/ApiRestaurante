@@ -3,7 +3,7 @@ package CONTROLADOR; // Declara el paquete donde se encuentra esta clase control
 import MODELO.Caja; // Importa la clase 'Caja' que representa el modelo de datos de una caja.
 import DAO.CajaDAO; // Importa la clase 'CajaDAO' para interactuar con la base de datos.
 import DAO.PedidoDAO;
-import MODELO.Trabajador; // Importa la clase 'Trabajador', aunque no se usa directamente en este código.
+import MODELO.Usuarios; // Importa la clase 'Usuarios', aunque no se usa directamente en este código.
 import UTILS.Middlewares; // Importa la clase 'Middlewares' para las validaciones.
 
 import javax.ws.rs.*; // Importa todas las anotaciones de JAX-RS para servicios web RESTful.
@@ -25,7 +25,9 @@ public class CajaControlador { // Definición de la clase principal del controla
             return Response.ok(lista).build(); // Retorna una respuesta 200 (OK) con la lista de cajas.
         } catch (Exception e) { // Captura cualquier excepción que pueda ocurrir.
             e.printStackTrace(); // Imprime la traza del error para depuración.
-            return Response.serverError().build(); // Retorna un error 500 (Internal Server Error).
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
         }
     }
 
@@ -44,7 +46,7 @@ public class CajaControlador { // Definición de la clase principal del controla
             } else {
                 // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("{\"Error\":\"No se pudo obtener Mesa.\"}")
+                        .entity("{\"Error\":\"No se pudo obtener Caja.\"}")
                         .build();
             }
         } catch (Exception e) {
@@ -162,73 +164,72 @@ public class CajaControlador { // Definición de la clase principal del controla
         }
     }
 
-    @PUT // Anotación para peticiones HTTP PUT.
-    @Path("total/{id}") // Mapea a la ruta '/caja/total/{id}'.
-    public Response actualizarTotal(@PathParam("id") String id, Caja caja) { // Método para actualizar el total.
-        try { // Inicia el bloque try-catch.
-            caja.setId(id); // Asigna el ID de la URL al objeto 'caja'.
-
-            String validaID = Middlewares.validarEntero(id, "id"); // Valida el ID.
-            if (!validaID.equals("ok")) // Si la validación falla...
-            {
-                return Response.status(400).entity(validaID).build(); // ...retorna un error 400.
-            }
-            String validaFechaApertura = Middlewares.validarFecha(caja.getFechaApertura(), "fecha_apertura"); // Valida la fecha de apertura.
-            if (!validaFechaApertura.equals("ok")) // Si la validación falla...
-            {
-                return Response.status(400).entity(validaFechaApertura).build(); // ...retorna un error 400.
-            }
-            String validaHoraApertura = Middlewares.validarHora(caja.getHoraApertura(), "hora_apertura"); // Valida la hora de apertura.
-            if (!validaHoraApertura.equals("ok")) // Si la validación falla...
-            {
-                return Response.status(400).entity(validaHoraApertura).build(); // ...retorna un error 400.
-            }
-            String validaMontoApertura = Middlewares.validarDouble(caja.getMontoApertura(), "monto_apertura"); // Valida el monto de apertura.
-            if (!validaMontoApertura.equals("ok")) // Si la validación falla...
-            {
-                return Response.status(400).entity(validaMontoApertura).build(); // ...retorna un error 400.
-            }
-            String validaFechaCierre = Middlewares.validarFecha(caja.getFechaCierre(), "fecha_cierre"); // Valida la fecha de cierre.
-            if (!validaFechaCierre.equals("ok")) // Si la validación falla...
-            {
-                return Response.status(400).entity(validaFechaCierre).build(); // ...retorna un error 400.
-            }
-            String validaHoraCierre = Middlewares.validarHora(caja.getHoraCierre(), "hora_cierre"); // Valida la hora de cierre.
-            if (!validaHoraCierre.equals("ok")) // Si la validación falla...
-            {
-                return Response.status(400).entity(validaHoraCierre).build(); // ...retorna un error 400.
-            }
-            String validaMontoCierre = Middlewares.validarDouble(caja.getMontoCierre(), "monto_cierre"); // Valida el monto de cierre.
-            if (!validaMontoCierre.equals("ok")) // Si la validación falla...
-            {
-                return Response.status(400).entity(validaMontoCierre).build(); // ...retorna un error 400.
-            }
-            String validaCedulaTrabajador = Middlewares.validarEntero(caja.getCedulaTrabajador(), "cedula_trabajador"); // Valida la cédula del trabajador.
-            if (!validaCedulaTrabajador.equals("ok")) // Si la validación falla...
-            {
-                return Response.status(400).entity(validaCedulaTrabajador).build(); // ...retorna un error 400.
-            }
-            boolean actualizado = cajaDAO.actualizarTotal(caja); // Llama al DAO para actualizar el total de la caja.
-            if (actualizado) // Si la actualización fue exitosa...
-            {
-                String mensaje = "Caja Actualizada Exitosamente.";
-                return Response.status(Response.Status.CREATED)
-                        .entity("{\"Ok\":\"" + mensaje + "\"}")
-                        .build();
-            } else {
-                // Si la creación falla, retorna una respuesta 500 (Internal Server Error).
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("{\"Error\":\"No se pudo actualizar Caja.\"}")
-                        .build();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.serverError()
-                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
-                    .build();
-        }
-    }
-
+//    @PUT // Anotación para peticiones HTTP PUT.
+//    @Path("total/{id}") // Mapea a la ruta '/caja/total/{id}'.
+//    public Response actualizarTotal(@PathParam("id") String id, Caja caja) { // Método para actualizar el total.
+//        try { // Inicia el bloque try-catch.
+//            caja.setId(id); // Asigna el ID de la URL al objeto 'caja'.
+//
+//            String validaID = Middlewares.validarEntero(id, "id"); // Valida el ID.
+//            if (!validaID.equals("ok")) // Si la validación falla...
+//            {
+//                return Response.status(400).entity(validaID).build(); // ...retorna un error 400.
+//            }
+//            String validaFechaApertura = Middlewares.validarFecha(caja.getFechaApertura(), "fecha_apertura"); // Valida la fecha de apertura.
+//            if (!validaFechaApertura.equals("ok")) // Si la validación falla...
+//            {
+//                return Response.status(400).entity(validaFechaApertura).build(); // ...retorna un error 400.
+//            }
+//            String validaHoraApertura = Middlewares.validarHora(caja.getHoraApertura(), "hora_apertura"); // Valida la hora de apertura.
+//            if (!validaHoraApertura.equals("ok")) // Si la validación falla...
+//            {
+//                return Response.status(400).entity(validaHoraApertura).build(); // ...retorna un error 400.
+//            }
+//            String validaMontoApertura = Middlewares.validarDouble(caja.getMontoApertura(), "monto_apertura"); // Valida el monto de apertura.
+//            if (!validaMontoApertura.equals("ok")) // Si la validación falla...
+//            {
+//                return Response.status(400).entity(validaMontoApertura).build(); // ...retorna un error 400.
+//            }
+//            String validaFechaCierre = Middlewares.validarFecha(caja.getFechaCierre(), "fecha_cierre"); // Valida la fecha de cierre.
+//            if (!validaFechaCierre.equals("ok")) // Si la validación falla...
+//            {
+//                return Response.status(400).entity(validaFechaCierre).build(); // ...retorna un error 400.
+//            }
+//            String validaHoraCierre = Middlewares.validarHora(caja.getHoraCierre(), "hora_cierre"); // Valida la hora de cierre.
+//            if (!validaHoraCierre.equals("ok")) // Si la validación falla...
+//            {
+//                return Response.status(400).entity(validaHoraCierre).build(); // ...retorna un error 400.
+//            }
+//            String validaMontoCierre = Middlewares.validarDouble(caja.getMontoCierre(), "monto_cierre"); // Valida el monto de cierre.
+//            if (!validaMontoCierre.equals("ok")) // Si la validación falla...
+//            {
+//                return Response.status(400).entity(validaMontoCierre).build(); // ...retorna un error 400.
+//            }
+//            String validaCedulaTrabajador = Middlewares.validarEntero(caja.getCedulaTrabajador(), "cedula_trabajador"); // Valida la cédula del trabajador.
+//            if (!validaCedulaTrabajador.equals("ok")) // Si la validación falla...
+//            {
+//                return Response.status(400).entity(validaCedulaTrabajador).build(); // ...retorna un error 400.
+//            }
+//            boolean actualizado = cajaDAO.actualizarTotal(caja); // Llama al DAO para actualizar el total de la caja.
+//            if (actualizado) // Si la actualización fue exitosa...
+//            {
+//                String mensaje = "Caja Actualizada Exitosamente.";
+//                return Response.status(Response.Status.CREATED)
+//                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+//                        .build();
+//            } else {
+//                // Si la creación falla, retorna una respuesta 500 (Internal Server Error).
+//                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//                        .entity("{\"Error\":\"No se pudo actualizar Caja.\"}")
+//                        .build();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return Response.serverError()
+//                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+//                    .build();
+//        }
+//    }
     @PATCH // Anotación para peticiones HTTP PATCH para actualizaciones parciales.
     @Path("/{id}") // Mapea a la ruta '/caja/{id}'.
     public Response parchearCierre(@PathParam("id") String id, Caja caja) { // Método para actualizar solo el cierre de la caja.
@@ -245,6 +246,12 @@ public class CajaControlador { // Definición de la clase principal del controla
             {
                 return Response.status(400).entity(validaMontoCierre).build(); // ...retorna un error 400.
             }
+            String validaCedulaTrabajador = Middlewares.validarEntero(caja.getCedulaTrabajador(), "cedula trabajador"); // Valida la cédula del trabajador.
+            if (!validaCedulaTrabajador.equals("ok")) // Si la validación falla...
+            {
+                return Response.status(400).entity(validaCedulaTrabajador).build(); // ...retorna un error 400.
+            }
+
             boolean pedidosEn0DeLaCaja = pedidoDAO.verFacturadosCerrarCaja(caja.getId());
             if (pedidosEn0DeLaCaja) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -290,6 +297,12 @@ public class CajaControlador { // Definición de la clase principal del controla
             {
                 return Response.status(400).entity(validaMontoApertura).build(); // ...retorna un error 400.
             }
+            String validaCedulaTrabajador = Middlewares.validarEntero(caja.getCedulaTrabajador(), "cedula trabajador"); // Valida la cédula del trabajador.
+            if (!validaCedulaTrabajador.equals("ok")) // Si la validación falla...
+            {
+                return Response.status(400).entity(validaCedulaTrabajador).build(); // ...retorna un error 400.
+            }
+
             boolean parchear = cajaDAO.actualizarApertura(caja); // Llama al DAO para actualizar la apertura.
             if (parchear) // Si la actualización fue exitosa...
             {

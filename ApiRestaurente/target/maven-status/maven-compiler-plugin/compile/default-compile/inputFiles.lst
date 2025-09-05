@@ -1,56 +1,54 @@
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\IngredienteDAO.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\MesaControlador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\BebidaControlador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\UTILS\JwtFilter.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\IngredientesCoctelControlador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\TrabajadorControlador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\BebidaDAO.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\BD\DBConnection.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\IngredientesComidaDAO.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\CajaDAO.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\ImagenControlador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\ReservaDAO.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\UTILS\MiFiltro.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Comida.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Pedido.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\IngredientesCoctelDAO.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\RegisterControlador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Mesa.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\ComidaDAO.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Login.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\RolesControlador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\MesaDAO.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\ComidaControlador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\IngredientesComida.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\ReservaControlador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\DetallePedidoDAO.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\TokenControlador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\UTILS\Middlewares.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Trabajador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Caja.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\TrabajadorDAO.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\IngredientesComidaControlador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Roles.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\UTILS\Servicios.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\CoctelDAO.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\ClienteDAO.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\RolesDAO.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\DetallePedidoControlador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\LoginDAO.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\ClienteControlador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\CajaControlador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\UTILS\JwtUtil.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\PedidoDAO.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\UTILS\CORSFilter.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\CoctelControlador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\LoginControlador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\PedidoControlador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\IngredientesCoctel.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Ingrediente.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Cliente.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\BD\DBConnectionTest.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\IngredienteControlador.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Coctel.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Reserva.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Bebida.java
-C:\Users\Edixon\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\DetallePedido.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\BebidaControlador.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\RolesControlador.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\ImagenControlador.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\IngredientesComida.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\IngredientesComidaControlador.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Coctel.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\BD\DBConnection.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\IngredientesCoctelDAO.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\IngredienteControlador.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Comida.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Pedido.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\MesaControlador.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\RolesDAO.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Ingrediente.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\PedidoControlador.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\UTILS\JwtFilter.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\ReservaControlador.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Roles.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\UTILS\Servicios.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\CoctelDAO.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\PedidoDAO.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\UTILS\Middlewares.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\CajaControlador.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\ReservaDAO.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\TokenControlador.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\CoctelControlador.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Bebida.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\ClienteControlador.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\RegisterControlador.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Reserva.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Login.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\ComidaDAO.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Usuarios.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\IngredienteDAO.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\IngredientesComidaDAO.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\TrabajadorControlador.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\DetallePedidoControlador.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\BD\DBConnectionTest.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\ComidaControlador.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\CajaDAO.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\LoginControlador.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\DetallePedidoDAO.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\UTILS\CORSFilter.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\TrabajadorDAO.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\MesaDAO.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\CONTROLADOR\IngredientesCoctelControlador.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\ClienteDAO.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\BebidaDAO.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Caja.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\UTILS\JwtUtil.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\DAO\LoginDAO.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\Mesa.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\IngredientesCoctel.java
+C:\Users\Windows 10\Desktop\Jhon\api\ApiRestaurente\src\main\java\MODELO\DetallePedido.java

@@ -1,11 +1,11 @@
 // Paquete que agrupa a todos los controladores del proyecto
 package CONTROLADOR;
 
-// Importa la clase modelo Trabajador.
-import MODELO.Trabajador;
-// Importa la clase DAO que gestiona la base de datos para Trabajador.
+// Importa la clase modelo Usuarios.
+import MODELO.Usuarios;
+// Importa la clase DAO que gestiona la base de datos para Usuarios.
 import DAO.TrabajadorDAO;
-// Importa el middleware de validación para Trabajador.
+// Importa el middleware de validación para Usuarios.
 import UTILS.Middlewares;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class TrabajadorControlador {
     public Response listarTrabajadores() {
         try {
             // Llama al método listarTodos() del DAO para obtener la lista de trabajadores.
-            List<Trabajador> lista = trabajadorDAO.listarTodos();
+            List<Usuarios> lista = trabajadorDAO.listarTodos();
             // Retorna una respuesta 200 (OK) con la lista de trabajadores en formato JSON.
             return Response.ok(lista).build();
         } catch (Exception e) {
@@ -42,7 +42,24 @@ public class TrabajadorControlador {
                     .build();
         }
     }
-
+    
+    @GET
+    @Path("/inactivos")
+    public Response listarTrabajadoresInactivos() {
+        try {
+            // Llama al método listarTodos() del DAO para obtener la lista de trabajadores.
+            List<Usuarios> lista = trabajadorDAO.listarTodosInactivos();
+            // Retorna una respuesta 200 (OK) con la lista de trabajadores en formato JSON.
+            return Response.ok(lista).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
+        }
+    }
+    
     // Método GET para obtener un trabajador por su cédula.
     @GET
     // Define una sub-ruta con un parámetro de path dinámico llamado 'cedula'.
@@ -58,14 +75,14 @@ public class TrabajadorControlador {
             }
 
             // Llama al DAO para buscar el trabajador por cédula.
-            Trabajador trabajador = trabajadorDAO.obtenerPorCedula(cedula);
+            Usuarios trabajador = trabajadorDAO.obtenerPorCedula(cedula);
             if (trabajador != null) {
-                // Si el trabajador se encuentra, retorna un 200 (OK) con el objeto Trabajador.
+                // Si el trabajador se encuentra, retorna un 200 (OK) con el objeto Usuarios.
                 return Response.ok(trabajador).build();
         } else {
                 // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("{\"Error\":\"No se pudo actualizar estado Trabajador.\"}")
+                        .entity("{\"Error\":\"No se pudo encontrar Trabajador.\"}")
                         .build();
             }
         } catch (Exception e) {
@@ -82,7 +99,7 @@ public class TrabajadorControlador {
     @PUT
     // La ruta incluye la cédula del trabajador a actualizar.
     @Path("/{cedula}")
-    public Response actualizarTrabajador(@PathParam("cedula") String cedula, Trabajador trabajador) {
+    public Response actualizarTrabajador(@PathParam("cedula") String cedula, Usuarios trabajador) {
         try {
             // Asigna la cédula de la URL al objeto trabajador.
             trabajador.setCedula(cedula);
@@ -111,12 +128,6 @@ public class TrabajadorControlador {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarNacimiento).build();
             }
 
-            // Valida el campo 'idOficio'.
-            String validaCodigoOficio = Middlewares.validarEntero(trabajador.getIdRol(), "id rol");
-            if (!validaCodigoOficio.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaCodigoOficio).build();
-            }
-
             // Llama al método 'actualizar' del DAO.
             boolean actualizado = trabajadorDAO.actualizar(trabajador);
             if (actualizado) {
@@ -143,7 +154,7 @@ public class TrabajadorControlador {
     @PATCH
     // La ruta incluye la cédula del trabajador.
     @Path("/{cedula}")
-    public Response actualizarFotoTrabajador(@PathParam("cedula") String cedula, Trabajador trabajador) {
+    public Response actualizarFotoTrabajador(@PathParam("cedula") String cedula, Usuarios trabajador) {
         try {
             // Asigna la cédula de la URL al objeto trabajador.
             trabajador.setCedula(cedula);
@@ -180,7 +191,7 @@ public class TrabajadorControlador {
     @PATCH
     // La ruta incluye la cédula y la sub-ruta 'estado'.
     @Path("estado/{cedula}")
-    public Response actualizarEstadoTrabajador(@PathParam("cedula") String cedula, Trabajador trabajador) {
+    public Response actualizarEstadoTrabajador(@PathParam("cedula") String cedula, Usuarios trabajador) {
         try {
             // Asigna la cédula de la URL al objeto trabajador.
             trabajador.setCedula(cedula);
@@ -221,7 +232,7 @@ public class TrabajadorControlador {
     // Método PATCH para activar un trabajador y asignarle un oficio.
     @PATCH
     @Path("activar/{cedula}")
-    public Response activarTrabajador(@PathParam("cedula") String cedula, Trabajador trabajador) {
+    public Response activarTrabajador(@PathParam("cedula") String cedula, Usuarios trabajador) {
         try {
             // Asigna la cédula de la URL al objeto trabajador.
             trabajador.setCedula(cedula);
@@ -230,16 +241,12 @@ public class TrabajadorControlador {
             if (!validaCedula.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
             }
-            // Valida el 'idOficio'.
-            String validaIdRol = Middlewares.validarEntero(trabajador.getIdRol(), "id rol");
-            if (!validaIdRol.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaIdRol).build();
-            }
             // Valida el estado.
-            String validaEstado = Middlewares.validarBooleano(trabajador.getActivo(), "estado");
+            String validaEstado = Middlewares.validarEntero(trabajador.getActivo(), "estado");
             if (!validaEstado.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaEstado).build();
             }
+            
             // Llama al método 'activarTrabajador' del DAO.
             boolean actualizado = trabajadorDAO.activarTrabajador(trabajador);
             if (actualizado) {
@@ -264,35 +271,35 @@ public class TrabajadorControlador {
     }
     
     // Método DELETE para eliminar un trabajador por su cédula.
-    @DELETE
-    @Path("/{cedula}")
-    public Response eliminarTrabajador(@PathParam("cedula") String cedula) {
-        try {
-            // Valida la cédula.
-            String validaCedula = Middlewares.validarEntero(cedula, "cedula");
-            if (!validaCedula.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
-            }
-            // Llama al método 'eliminar' del DAO.
-            boolean eliminado = trabajadorDAO.eliminar(cedula);
-            if (eliminado) {
-                // Si la eliminación es exitosa, retorna un 200 (OK).
-                String mensaje = "Trabajador eliminado EXITOSAMENTE.";
-                return Response.status(Response.Status.CREATED)
-                        .entity("{\"Ok\":\"" + mensaje + "\"}")
-                        .build();
-            } else {
-                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("{\"Error\":\"No se pudo eliminar Trabajador.\"}")
-                        .build();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
-            return Response.serverError()
-                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
-                    .build();
-        }
-    }
+//    @DELETE
+//    @Path("/{cedula}")
+//    public Response eliminarTrabajador(@PathParam("cedula") String cedula) {
+//        try {
+//            // Valida la cédula.
+//            String validaCedula = Middlewares.validarEntero(cedula, "cedula");
+//            if (!validaCedula.equals("ok")) {
+//                return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
+//            }
+//            // Llama al método 'eliminar' del DAO.
+//            boolean eliminado = trabajadorDAO.eliminar(cedula);
+//            if (eliminado) {
+//                // Si la eliminación es exitosa, retorna un 200 (OK).
+//                String mensaje = "Trabajador eliminado EXITOSAMENTE.";
+//                return Response.status(Response.Status.CREATED)
+//                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+//                        .build();
+//            } else {
+//                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
+//                return Response.status(Response.Status.NOT_FOUND)
+//                        .entity("{\"Error\":\"No se pudo eliminar Trabajador.\"}")
+//                        .build();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+//            return Response.serverError()
+//                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+//                    .build();
+//        }
+//    }
 }

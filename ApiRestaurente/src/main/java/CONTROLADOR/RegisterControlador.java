@@ -1,11 +1,11 @@
 // Paquete que agrupa a todos los controladores del proyecto
 package CONTROLADOR;
 
-// Importa la clase modelo Trabajador.
-import MODELO.Trabajador;
-// Importa la clase DAO que gestiona la base de datos para Trabajador.
+// Importa la clase modelo Usuarios.
+import MODELO.Usuarios;
+// Importa la clase DAO que gestiona la base de datos para Usuarios.
 import DAO.TrabajadorDAO;
-// Importa el middleware de validación para Trabajador.
+// Importa el middleware de validación para Usuarios.
 import UTILS.Middlewares;
 
 import java.util.List;
@@ -25,52 +25,46 @@ public class RegisterControlador {
     private TrabajadorDAO trabajadorDAO = new TrabajadorDAO();
    // Método POST para crear un nuevo trabajador.
     @POST
-    // El objeto Trabajador se deserializa automáticamente del cuerpo de la petición.
-    public Response crearTrabajador(Trabajador trabajador) {
+    // El objeto Usuarios se deserializa automáticamente del cuerpo de la petición.
+    public Response crearTrabajador(Usuarios usuarios) {
         try {
             // Valida el campo 'cedula' del objeto trabajador.
-            String validaCedula = Middlewares.validarEntero(trabajador.getCedula(), "cedula");
+            String validaCedula = Middlewares.validarEntero(usuarios.getCedula(), "cedula");
             if (!validaCedula.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
             }
             
-            boolean repetido = trabajadorDAO.obtenerPorCedulaBoolean(trabajador.getCedula());
-            if (repetido) return Response.status(Response.Status.BAD_REQUEST).entity("{\"Error\":\"Trabajador con cc."+trabajador.getCedula()+" ya Existe\"}").build();
+            boolean repetido = trabajadorDAO.obtenerPorCedulaBoolean(usuarios.getCedula());
+            if (repetido) return Response.status(Response.Status.BAD_REQUEST).entity("{\"Error\":\"Trabajador con cc."+usuarios.getCedula()+" ya Existe\"}").build();
             
             // Valida el campo 'nombre'.
-            String validarNombre = Middlewares.validarString(trabajador.getNombre(), "nombre");
+            String validarNombre = Middlewares.validarString(usuarios.getNombre(), "nombre");
             if (!validarNombre.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarNombre).build();
             }
 
             // Valida el campo 'apellido'.
-            String validarApellido = Middlewares.validarString(trabajador.getApellido(), "apellido");
+            String validarApellido = Middlewares.validarString(usuarios.getApellido(), "apellido");
             if (!validarApellido.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarApellido).build();
             }
 
             // Valida el campo 'nacimiento' (formato de fecha).
-            String validarNacimiento = Middlewares.validarFecha(trabajador.getNacimiento(), "nacimiento");
+            String validarNacimiento = Middlewares.validarFecha(usuarios.getNacimiento(), "nacimiento");
             if (!validarNacimiento.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarNacimiento).build();
             }
 
             // Valida que el campo 'contraseña' no esté vacío.
-            String validarContrasena = Middlewares.ContraseñaVacia(trabajador.getContrasena(), "contraseña");
+            String validarContrasena = Middlewares.ContraseñaVacia(usuarios.getContrasena(), "contraseña");
             if (!validarContrasena.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarContrasena).build();
             }
 
-            // Valida el campo 'idOficio'.
-            String validaCodigoOficio = Middlewares.validarEntero(trabajador.getIdRol(), "id rol");
-            if (!validaCodigoOficio.equals("ok")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(validaCodigoOficio).build();
-            }
-
             // Si todas las validaciones son exitosas, llama al método 'crear' del DAO.
-            boolean creado = trabajadorDAO.crear(trabajador);
+            boolean creado = trabajadorDAO.crear(usuarios);
             if (creado) {
-                String mensaje = trabajador.getNombre() + " " + trabajador.getApellido() + " creado con EXITO.";
+                String mensaje = usuarios.getNombre() + " " + usuarios.getApellido() + " creado con EXITO.";
                 return Response.status(Response.Status.CREATED)
                         .entity("{\"Ok\":\""+mensaje+"\"}")
                         .build();
@@ -91,7 +85,7 @@ public class RegisterControlador {
     }
     @PATCH
     @Path("/{cedula}")
-    public Response actualizarFotoTrabajador(@PathParam("cedula") String cedula, Trabajador trabajador) {
+    public Response actualizarFotoTrabajador(@PathParam("cedula") String cedula, Usuarios trabajador) {
         try {
             // Asigna la cédula de la URL al objeto trabajador.
             trabajador.setCedula(cedula);

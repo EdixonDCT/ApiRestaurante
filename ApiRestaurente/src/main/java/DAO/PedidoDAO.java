@@ -2,6 +2,7 @@ package DAO;
 
 import BD.DBConnection;
 import MODELO.Pedido;
+import DAO.ClienteDAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,6 +27,8 @@ public class PedidoDAO {
      * @return Una lista de objetos Pedido. Si no hay pedidos, devuelve una
      * lista vacía.
      */
+    private ClienteDAO clienteDAO = new ClienteDAO();
+    
     public ArrayList<Pedido> listarTodos() {
         // Se inicializa una lista para almacenar los pedidos
         ArrayList<Pedido> lista = new ArrayList<>();
@@ -34,7 +37,7 @@ public class PedidoDAO {
             // Se obtiene la conexión a la base de datos
             conn = DBConnection.getConnection();
             // Se define la consulta SQL para seleccionar todos los registros
-            String sql = "SELECT * FROM pedidos";
+            String sql = "SELECT p.*, u.id AS usuario_id, u.cedula, u.nombre, u.apellido FROM pedidos p INNER JOIN usuarios u ON p.id_usuario = u.id";
             // Se prepara la sentencia SQL para su ejecución
             prepStmt = conn.prepareStatement(sql);
             // Se ejecuta la consulta y se obtiene el conjunto de resultados
@@ -53,11 +56,12 @@ public class PedidoDAO {
                 pedido.setIdCaja(rs.getString("id_caja"));
                 pedido.setNumeroClientes(rs.getString("numero_clientes"));
                 pedido.setIdReserva(rs.getString("id_reserva"));
-                pedido.setCorreoCliente(rs.getString("correo_cliente"));
+                pedido.setIdUsuario(rs.getString("id_usuario"));
+                pedido.setCedulaUsuario(rs.getString("cedula"));
+                pedido.setNombreApellidoCliente(rs.getString("nombre")+" "+rs.getString("apellido"));
                 pedido.setMetodoPago(rs.getString("metodo_pago"));
                 pedido.setFacturado(rs.getString("facturado"));
                 pedido.setEliminado(rs.getString("eliminado"));
-
                 // Se añade el objeto Pedido a la lista
                 lista.add(pedido);
             }
@@ -98,7 +102,7 @@ public class PedidoDAO {
         try {
             conn = DBConnection.getConnection();
             // Consulta SQL con un 'placeholder' (?) para evitar inyección SQL
-            String sql = "SELECT * FROM pedidos WHERE id = ?";
+            String sql = "SELECT p.*, u.id AS usuario_id, u.cedula, u.nombre, u.apellido FROM pedidos p INNER JOIN usuarios u ON p.id_usuario = u.id WHERE p.id = ?";
             prepStmt = conn.prepareStatement(sql);
             // Se establece el valor del placeholder con el ID del pedido, convirtiéndolo a entero
             prepStmt.setInt(1, Integer.parseInt(id));
@@ -116,8 +120,12 @@ public class PedidoDAO {
                 pedido.setIdCaja(rs.getString("id_caja"));
                 pedido.setNumeroClientes(rs.getString("numero_clientes"));
                 pedido.setIdReserva(rs.getString("id_reserva"));
-                pedido.setCorreoCliente(rs.getString("correo_cliente"));
+                pedido.setIdUsuario(rs.getString("id_usuario"));
+                pedido.setCedulaUsuario(rs.getString("cedula"));
+                pedido.setNombreApellidoCliente(rs.getString("nombre")+" "+rs.getString("apellido"));
                 pedido.setMetodoPago(rs.getString("metodo_pago"));
+                pedido.setFacturado(rs.getString("facturado"));
+                pedido.setEliminado(rs.getString("eliminado"));
             }
 
         } catch (Exception e) {
@@ -201,7 +209,7 @@ public class PedidoDAO {
         try {
             conn = DBConnection.getConnection();
             // Consulta SQL con un 'placeholder' (?) para evitar inyección SQL
-            String sql = "SELECT * FROM pedidos WHERE id_reserva = ?";
+            String sql = "SELECT p.*, u.id AS usuario_id, u.cedula, u.nombre, u.apellido FROM pedidos p INNER JOIN usuarios u ON p.id_usuario = u.id WHERE p.id_reserva = ?";
             prepStmt = conn.prepareStatement(sql);
             // Se establece el valor del placeholder con el ID del pedido, convirtiéndolo a entero
             prepStmt.setInt(1, Integer.parseInt(id));
@@ -219,8 +227,12 @@ public class PedidoDAO {
                 pedido.setIdCaja(rs.getString("id_caja"));
                 pedido.setNumeroClientes(rs.getString("numero_clientes"));
                 pedido.setIdReserva(rs.getString("id_reserva"));
-                pedido.setCorreoCliente(rs.getString("correo_cliente"));
+                pedido.setIdUsuario(rs.getString("id_usuario"));
+                pedido.setCedulaUsuario(rs.getString("cedula"));
+                pedido.setNombreApellidoCliente(rs.getString("nombre")+" "+rs.getString("apellido"));
                 pedido.setMetodoPago(rs.getString("metodo_pago"));
+                pedido.setFacturado(rs.getString("facturado"));
+                pedido.setEliminado(rs.getString("eliminado"));
             }
 
         } catch (Exception e) {
@@ -255,20 +267,20 @@ public class PedidoDAO {
         Connection conn = null;
         PreparedStatement prepStmt = null;
         ResultSet rs = null;
-
+        
+        
         try {
+            String idCliente = clienteDAO.obtenerIdUsuario(pedido.getCedulaUsuario());
             conn = DBConnection.getConnection();
             // Consulta INSERT. Las columnas 'fecha' y 'hora' se llenan automáticamente con la fecha/hora actual
-            String sql = "INSERT INTO pedidos (numero_mesa, id_caja, numero_clientes, correo_cliente, metodo_pago, fecha, hora) "
-                    + "VALUES (?, ?, ?, ?, ?, CURRENT_DATE(), CURRENT_TIME())";
-
+            String sql = "INSERT INTO pedidos (numero_mesa, id_caja, numero_clientes, id_usuario, metodo_pago, fecha, hora) VALUES (?, ?, ?, ?, ?, CURRENT_DATE(), CURRENT_TIME())";
             // Se prepara la sentencia y se indica que se deben devolver las claves generadas (el ID)
             prepStmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             // Se establecen los parámetros de la consulta
             prepStmt.setInt(1, Integer.parseInt(pedido.getNumeroMesa()));
             prepStmt.setInt(2, Integer.parseInt(pedido.getIdCaja()));
             prepStmt.setInt(3, Integer.parseInt(pedido.getNumeroClientes()));
-            prepStmt.setString(4, pedido.getCorreoCliente());
+            prepStmt.setInt(4, Integer.parseInt(idCliente));
             prepStmt.setString(5, pedido.getMetodoPago());
 
             // Se ejecuta la actualización (insert)
@@ -321,15 +333,16 @@ public class PedidoDAO {
         boolean creado = false;
 
         try {
+            String idCliente = clienteDAO.obtenerIdUsuario(pedido.getCedulaUsuario());
             conn = DBConnection.getConnection();
             // Consulta para crear una reserva, que no incluye todos los campos
-            String sql = "INSERT INTO pedidos (numero_mesa,numero_clientes,id_reserva,correo_cliente) VALUES (?,?,?,?)";
+            String sql = "INSERT INTO pedidos (numero_mesa,numero_clientes,id_reserva,id_usuario) VALUES (?,?,?,?)";
 
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setInt(1, Integer.parseInt(pedido.getNumeroMesa()));
             prepStmt.setInt(2, Integer.parseInt(pedido.getNumeroClientes()));
             prepStmt.setInt(3, Integer.parseInt(pedido.getIdReserva()));
-            prepStmt.setString(4, pedido.getCorreoCliente());
+            prepStmt.setInt(4, Integer.parseInt(idCliente));
 
             // Se ejecuta la actualización
             int filas = prepStmt.executeUpdate();
@@ -365,15 +378,16 @@ public class PedidoDAO {
         boolean actualizado = false;
 
         try {
+            String idCliente = clienteDAO.obtenerIdUsuario(pedido.getCedulaUsuario());
             conn = DBConnection.getConnection();
             // Consulta UPDATE para modificar los datos del pedido
-            String sql = "UPDATE pedidos SET numero_mesa = ?, id_caja = ?, numero_clientes = ?, correo_cliente = ?, metodo_pago = ? WHERE id = ?";
+            String sql = "UPDATE pedidos SET numero_mesa = ?, id_caja = ?, numero_clientes = ?, id_usuario = ?, metodo_pago = ? WHERE id = ?";
             prepStmt = conn.prepareStatement(sql);
             // Se establecen los nuevos valores en la sentencia preparada
             prepStmt.setInt(1, Integer.parseInt(pedido.getNumeroMesa()));
             prepStmt.setInt(2, Integer.parseInt(pedido.getIdCaja()));
             prepStmt.setInt(3, Integer.parseInt(pedido.getNumeroClientes()));
-            prepStmt.setString(4, pedido.getCorreoCliente());
+            prepStmt.setInt(4, Integer.parseInt(idCliente));
             prepStmt.setString(5, pedido.getMetodoPago());
             // Se especifica el ID del pedido a actualizar
             prepStmt.setInt(6, Integer.parseInt(pedido.getId()));
@@ -449,40 +463,40 @@ public class PedidoDAO {
      * @param pedido El objeto Pedido con los datos a modificar.
      * @return true si se actualiza correctamente, false en caso contrario.
      */
-    public boolean EditarReserva(Pedido pedido) {
-        boolean actualizado = false;
-
-        try {
-            conn = DBConnection.getConnection();
-            // Consulta UPDATE para modificar una reserva específica
-            String sql = "UPDATE pedidos SET numero_mesa = ?, numero_clientes = ?, correo_cliente = ? WHERE id = ?";
-            prepStmt = conn.prepareStatement(sql);
-            prepStmt.setInt(1, Integer.parseInt(pedido.getNumeroMesa()));
-            prepStmt.setInt(2, Integer.parseInt(pedido.getNumeroClientes()));
-            prepStmt.setString(3, pedido.getCorreoCliente());
-            prepStmt.setInt(4, Integer.parseInt(pedido.getId()));
-            int filas = prepStmt.executeUpdate();
-            actualizado = filas > 0;
-
-        } catch (Exception e) {
-            System.err.println("ERROR AL ACTUALIZAR PEDIDO: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            try {
-                // Cierre de recursos
-                if (prepStmt != null) {
-                    prepStmt.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (Exception ex) {
-                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
-            }
-        }
-
-        return actualizado;
-    }
+//    public boolean EditarReserva(Pedido pedido) {
+//        boolean actualizado = false;
+//
+//        try {
+//            conn = DBConnection.getConnection();
+//            // Consulta UPDATE para modificar una reserva específica
+//            String sql = "UPDATE pedidos SET numero_mesa = ?, numero_clientes = ?, correo_cliente = ? WHERE id = ?";
+//            prepStmt = conn.prepareStatement(sql);
+//            prepStmt.setInt(1, Integer.parseInt(pedido.getNumeroMesa()));
+//            prepStmt.setInt(2, Integer.parseInt(pedido.getNumeroClientes()));
+//             prepStmt.setInt(3, Integer.parseInt(pedido.getIdUsuario()));
+//            prepStmt.setInt(4, Integer.parseInt(pedido.getId()));
+//            int filas = prepStmt.executeUpdate();
+//            actualizado = filas > 0;
+//
+//        } catch (Exception e) {
+//            System.err.println("ERROR AL ACTUALIZAR PEDIDO: " + e.getMessage());
+//            e.printStackTrace();
+//        } finally {
+//            try {
+//                // Cierre de recursos
+//                if (prepStmt != null) {
+//                    prepStmt.close();
+//                }
+//                if (conn != null) {
+//                    conn.close();
+//                }
+//            } catch (Exception ex) {
+//                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+//            }
+//        }
+//
+//        return actualizado;
+//    }
 
     /**
      * Actualiza el estado del pedido a "facturado" (facturado = 1).

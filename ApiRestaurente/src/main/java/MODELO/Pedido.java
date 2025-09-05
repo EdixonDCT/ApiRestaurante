@@ -9,7 +9,9 @@ public class Pedido {
     private String idCaja;
     private String numeroClientes;
     private String idReserva;
-    private String correoCliente;
+    private String idUsuario;
+    private String cedulaUsuario;
+    private String nombreApellidoCliente;
     private String metodoPago;
     private String facturado;
     private String eliminado;
@@ -77,14 +79,27 @@ public class Pedido {
     public void setIdReserva(String idReserva) {
         this.idReserva = idReserva;
     }
-    public String getCorreoCliente() {
-        return correoCliente;
+    public String getIdUsuario() {
+        return idUsuario;
     }
 
-    public void setCorreoCliente(String correoCliente) {
-        this.correoCliente = correoCliente;
+    public void setIdUsuario(String idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+    public String getCedulaUsuario() {
+        return cedulaUsuario;
     }
 
+    public void setCedulaUsuario(String cedulaUsuario) {
+        this.cedulaUsuario = cedulaUsuario;
+    }
+    public String getNombreApellidoCliente() {
+        return nombreApellidoCliente;
+    }
+
+    public void setNombreApellidoCliente(String nombreApellidoCliente) {
+        this.nombreApellidoCliente = nombreApellidoCliente;
+    }
     public String getMetodoPago() {
         return metodoPago;
     }

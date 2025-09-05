@@ -4,7 +4,7 @@ package CONTROLADOR;
 // Importa las clases necesarias
 import MODELO.Comida; // La clase que representa el objeto Comida.
 import DAO.ComidaDAO; // La clase DAO para interactuar con la base de datos de comidas.
-import MODELO.Trabajador; // La clase Trabajador (aunque no se usa directamente en este código, se mantiene el import).
+import MODELO.Usuarios; // La clase Usuarios (aunque no se usa directamente en este código, se mantiene el import).
 import UTILS.Middlewares; // La clase que contiene métodos para validar datos.
 
 import java.util.List; // La interfaz para manejar listas de objetos.

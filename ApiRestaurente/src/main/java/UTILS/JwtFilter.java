@@ -19,7 +19,6 @@ public class JwtFilter implements ContainerRequestFilter {
         if (path.equals("login")
                 || path.equals("token")
                 || path.startsWith("register")
-                || path.equals("roles")
                 || path.equals("imagen")) {
             return;
         }
