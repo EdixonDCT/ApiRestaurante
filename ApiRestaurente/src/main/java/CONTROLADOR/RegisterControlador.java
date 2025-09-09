@@ -8,6 +8,8 @@ import DAO.TrabajadorDAO;
 // Importa el middleware de validación para Usuarios.
 import UTILS.Middlewares;
 
+import UTILS.PasswordUtil;
+
 import java.util.List;
 
 // Librerías de JAX-RS necesarias para trabajar con servicios REST.
@@ -60,7 +62,10 @@ public class RegisterControlador {
             if (!validarContrasena.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validarContrasena).build();
             }
-
+            String contrasenaCodificada = PasswordUtil.codificarPassword(usuarios.getContrasena());
+            
+            usuarios.setContrasena(contrasenaCodificada);
+            
             // Si todas las validaciones son exitosas, llama al método 'crear' del DAO.
             boolean creado = trabajadorDAO.crear(usuarios);
             if (creado) {
@@ -71,7 +76,7 @@ public class RegisterControlador {
             } else {
                 // Si la creación falla, retorna un 500 (Internal Server Error).
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("{\"Error\":\"No se pudo crear trabajador.\"}")
+                        .entity("{\"Error\":\"No se pudo crear trabajador"+contrasenaCodificada+".\"}")
                         .build();
             }
         } catch (Exception e) {

@@ -2,11 +2,13 @@
 package CONTROLADOR;
 
 // Importa la clase modelo Usuarios.
+import DAO.LoginDAO;
 import MODELO.Usuarios;
 // Importa la clase DAO que gestiona la base de datos para Usuarios.
 import DAO.TrabajadorDAO;
 // Importa el middleware de validación para Usuarios.
 import UTILS.Middlewares;
+import UTILS.PasswordUtil;
 
 import java.util.List;
 
@@ -25,6 +27,7 @@ public class TrabajadorControlador {
 
     // Instancia del DAO para poder acceder a la base de datos.
     private TrabajadorDAO trabajadorDAO = new TrabajadorDAO();
+    private LoginDAO loginDAO = new LoginDAO();
 
     // Método GET para obtener todos los trabajadores.
     @GET
@@ -42,7 +45,7 @@ public class TrabajadorControlador {
                     .build();
         }
     }
-    
+
     @GET
     @Path("/inactivos")
     public Response listarTrabajadoresInactivos() {
@@ -59,7 +62,7 @@ public class TrabajadorControlador {
                     .build();
         }
     }
-    
+
     // Método GET para obtener un trabajador por su cédula.
     @GET
     // Define una sub-ruta con un parámetro de path dinámico llamado 'cedula'.
@@ -79,7 +82,7 @@ public class TrabajadorControlador {
             if (trabajador != null) {
                 // Si el trabajador se encuentra, retorna un 200 (OK) con el objeto Usuarios.
                 return Response.ok(trabajador).build();
-        } else {
+            } else {
                 // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"Error\":\"No se pudo encontrar Trabajador.\"}")
@@ -93,7 +96,6 @@ public class TrabajadorControlador {
                     .build();
         }
     }
-
 
     // Método PUT para actualizar un trabajador existente.
     @PUT
@@ -139,6 +141,62 @@ public class TrabajadorControlador {
                 // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"Error\":\"No se pudo actualizar Trabajador.\"}")
+                        .build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Retorna una respuesta 500 (Internal Server Error) si ocurre un error inesperado.
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
+        }
+    }
+
+    @PUT
+    // La ruta incluye la cédula del trabajador a actualizar.
+    @Path("contrasena/{cedula}")
+    public Response actualizarContrasenaTrabajador(@PathParam("cedula") String cedula, Usuarios usuarios) {
+        try {
+            String validarContrasena1 = Middlewares.ContraseñaVacia(usuarios.getCedula(), "contraseña");
+            if (!validarContrasena1.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validarContrasena1).build();
+            }
+
+            // Asigna la cédula de la URL al objeto trabajador.
+            String ContrasenaVieja = usuarios.getCedula();
+            usuarios.setCedula(cedula);
+
+            // Valida el campo 'cedula'.
+            String validaCedula = Middlewares.validarEntero(usuarios.getCedula(), "cedula");
+            if (!validaCedula.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaCedula).build();
+            }
+
+            String validarContrasena2 = Middlewares.ContraseñaVacia(usuarios.getContrasena(), "contraseña");
+            if (!validarContrasena2.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validarContrasena2).build();
+            }
+
+            String contrasenaCodificada = loginDAO.obtenerContrasena(usuarios.getCedula());
+
+            boolean validarContrasenaConvertir = PasswordUtil.validarPassword(ContrasenaVieja, contrasenaCodificada);
+            if (!validarContrasenaConvertir) {
+                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"Error\":\"contraseña anterior no COINCIDE.\"}").build();
+            }
+
+            String contrasenaLoginCodificada = PasswordUtil.codificarPassword(usuarios.getContrasena());
+            usuarios.setContrasena(contrasenaLoginCodificada);
+            // Llama al método 'actualizar' del DAO.
+            boolean actualizado = trabajadorDAO.actualizarContrasena(usuarios);
+            if (actualizado) {
+                String mensaje = "Trabajador contraseña actualizada EXITOSAMENTE.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
+            } else {
+                // Si la mesa no se encuentra, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"Error\":\"No se pudo actualizar contraseña Trabajador.\"}")
                         .build();
             }
         } catch (Exception e) {
@@ -246,7 +304,7 @@ public class TrabajadorControlador {
             if (!validaEstado.equals("ok")) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(validaEstado).build();
             }
-            
+
             // Llama al método 'activarTrabajador' del DAO.
             boolean actualizado = trabajadorDAO.activarTrabajador(trabajador);
             if (actualizado) {
@@ -269,7 +327,7 @@ public class TrabajadorControlador {
                     .build();
         }
     }
-    
+
     // Método DELETE para eliminar un trabajador por su cédula.
 //    @DELETE
 //    @Path("/{cedula}")

@@ -27,7 +27,7 @@ create table usuarios(
     apellido varchar(50) not null,
     nacimiento date,
     foto varchar(255),
-    contrasena varchar(20),
+    contrasena varchar(100),
 	activo boolean default(0),
     eliminado boolean default(0),
     primary key (id)
@@ -193,7 +193,8 @@ insert into permisos(nombre,descripcion) values
 ('Trabajadores.editar','modificacion de ingredientes.'),
 ('Trabajadores.eliminar','eliminacion de ingredientes.'),
 ('Trabajadores.eliminadoSuave','eliminado suave para los trabajadores.'),
-('Trabajadores.eliminadosListar','listar pedidos eliminados con eliminado trabajadores.');
+('Trabajadores.eliminadosListar','listar pedidos eliminados con eliminado trabajadores.'),
+('Trabajadores.activar','Activar usuarios que se registraron.');
 insert into rolesPermisos(id_rol, id_permiso) values
 (3,1),
 (3,2),
@@ -229,6 +230,7 @@ insert into rolesPermisos(id_rol, id_permiso) values
 (3,32),
 (3,33),
 (3,34),
+(3,35),
 (4,1),
 (4,3),
 (4,5),
@@ -249,11 +251,11 @@ insert into rolesPermisos(id_rol, id_permiso) values
 (5,29);
 
 insert into usuarios(cedula, nombre, apellido, nacimiento, foto, contrasena,activo) values 
-('1001', 'Ana', 'Rojas', '1990-01-01', 'c4725ed6-a2a8-4112-9572-639515e759a0_foto1.png', '1234',1),
-('1002', 'Luis', 'Gomez', '1988-05-12', '3a2ab7b3-0e76-4b0b-8036-815ad0fc87b8_foto2.png', '1234',1),
-('1003', 'Sara', 'Lopez', '1995-03-22', '4183b335-f95b-4724-ab04-bf488f3e3448_foto3.png', '1234',1),
-('1004', 'Pedro', 'Perez', '2000-08-10', 'f74c6d39-39a0-4683-98ae-78c5c058f144_foto4.png', '1234',1),
-('1005', 'Edixon', 'Castillo', '1992-11-15', 'b00a88c9-af7a-4d1a-8096-1d852a475dde_foto5.png', '1904',1);
+('1001', 'Ana', 'Rojas', '1990-01-01', 'c4725ed6-a2a8-4112-9572-639515e759a0_foto1.png', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=',1),
+('1002', 'Luis', 'Gomez', '1988-05-12', '3a2ab7b3-0e76-4b0b-8036-815ad0fc87b8_foto2.png', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=',1),
+('1003', 'Sara', 'Lopez', '1995-03-22', '4183b335-f95b-4724-ab04-bf488f3e3448_foto3.png', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=',1),
+('1004', 'Pedro', 'Perez', '2000-08-10', 'f74c6d39-39a0-4683-98ae-78c5c058f144_foto4.png', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=',1),
+('1005', 'Edixon', 'Castillo', '1992-11-15', 'b00a88c9-af7a-4d1a-8096-1d852a475dde_foto5.png', 'kLvJUzoCIT/99NFILrm5el/uxVTjNkHUDyR3fL5ag0E=',1);
 insert into usuarios(cedula,nombre,apellido) values
 ('1001','Helder','Rojas'),
 ('1002','Luisa','Gomez'),

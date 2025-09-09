@@ -288,13 +288,12 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
         try {
             String id = obtenerIdUsuario(usuario.getCedula());
             conn = DBConnection.getConnection();
-            String sql = "UPDATE usuarios SET nombre = ?,apellido = ?,nacimiento = ?,contrasena = ? WHERE id = ?"; // Consulta de actualización.
+            String sql = "UPDATE usuarios SET nombre = ?,apellido = ?,nacimiento = ? WHERE id = ?"; // Consulta de actualización.
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setString(1, usuario.getNombre()); // Asigna los nuevos valores a los parámetros.
             prepStmt.setString(2, usuario.getApellido());
             prepStmt.setString(3, usuario.getNacimiento());
-            prepStmt.setString(4, usuario.getContrasena());
-            prepStmt.setInt(5, Integer.parseInt(id)); // Usa el ID para identificar el registro.
+            prepStmt.setInt(4, Integer.parseInt(id)); // Usa el ID para identificar el registro.
 
             int filas = prepStmt.executeUpdate(); // Ejecuta la actualización.
             actualizado = filas > 0; // Verifica si se afectó al menos una fila.
@@ -318,6 +317,38 @@ public class TrabajadorDAO { // La clase `TrabajadorDAO` (Data Access Object) se
         return actualizado; // Devuelve `true` o `false`.
     }
 
+    public boolean actualizarContrasena(Usuarios usuario) { // Método para actualizar la información de un trabajador.
+        boolean actualizado = false; // Variable para saber si la actualización fue exitosa.
+
+        try {
+            String id = obtenerIdUsuario(usuario.getCedula());
+            conn = DBConnection.getConnection();
+            String sql = "UPDATE usuarios SET contrasena = ? WHERE id = ?"; // Consulta de actualización.
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setString(1, usuario.getContrasena());
+            prepStmt.setInt(2, Integer.parseInt(id)); // Usa el ID para identificar el registro.
+
+            int filas = prepStmt.executeUpdate(); // Ejecuta la actualización.
+            actualizado = filas > 0; // Verifica si se afectó al menos una fila.
+
+        } catch (Exception e) {
+            System.err.println("ERROR AL ACTUALIZAR TRABAJADOR: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+
+        return actualizado; // Devuelve `true` o `false`.
+    }
     // MÉTODO: Eliminar un trabajador por su cédula
 //    public boolean eliminar(String cedula) { // Método para eliminar un trabajador.
 //        boolean eliminado = false; // Variable para saber si la eliminación fue exitosa.

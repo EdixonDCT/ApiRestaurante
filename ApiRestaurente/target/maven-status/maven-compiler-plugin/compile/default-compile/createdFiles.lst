@@ -16,6 +16,7 @@ CONTROLADOR\DetallePedidoControlador.class
 CONTROLADOR\RegisterControlador.class
 UTILS\Servicios.class
 BD\DBConnectionTest.class
+UTILS\PasswordUtil.class
 MODELO\Coctel.class
 MODELO\Pedido.class
 UTILS\JwtUtil.class

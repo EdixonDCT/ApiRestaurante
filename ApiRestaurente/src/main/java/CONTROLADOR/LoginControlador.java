@@ -3,6 +3,7 @@ package CONTROLADOR;
 import UTILS.JwtUtil;
 import MODELO.Login;
 import DAO.LoginDAO;
+import UTILS.PasswordUtil;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,10 +19,16 @@ public class LoginControlador {
 
     @POST
     public Response logearse(Login login) {
-        boolean validar = loginDAO.autenticar(login.getCedula(), login.getContrasena());
+        String contrasenaCodificada = loginDAO.obtenerContrasena(login.getCedula());
+        boolean validarContrasenaConvertir = PasswordUtil.validarPassword(login.getContrasena(), contrasenaCodificada);
+        if (!validarContrasenaConvertir) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity("{\"Error\":\"Credenciales inválidas\"}").build();
+        }
+        String contrasenaLoginCodificada = PasswordUtil.codificarPassword(login.getContrasena());
+        boolean validar = loginDAO.autenticar(login.getCedula(),contrasenaLoginCodificada);
         if (!validar) {
             return Response.status(Response.Status.UNAUTHORIZED).entity("{\"Error\":\"Credenciales inválidas\"}").build();
-        } 
+        }
         boolean activo = loginDAO.ValidarActivo(login.getCedula());
         if (!activo) {
             return Response.status(Response.Status.UNAUTHORIZED).entity("{\"Error\":\"Usuario no activo\"}").build();

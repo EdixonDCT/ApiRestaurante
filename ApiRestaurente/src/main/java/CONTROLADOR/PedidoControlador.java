@@ -304,47 +304,47 @@ public class PedidoControlador {
 
     // Maneja la petición PUT a "/pedidos/reserva/{id}"
     // Actualiza un pedido de reserva existente
-//    @PUT
-//    @Path("/reserva/{id}")
-//    public Response actualizarPedidoReserva(@PathParam("id") String id, Pedido pedido) {
-//        try {
-//            pedido.setId(id); // Asigna el ID del path
-//
-//            // Realiza las validaciones para los campos de reserva
-//            String validaIdCaja = Middlewares.validarEntero(pedido.getIdCaja(), "id caja");
-//            if (!validaIdCaja.equals("ok")) {
-//                return Response.status(Response.Status.BAD_REQUEST).entity(validaIdCaja).build();
-//            }
-//            String validaMetodoPago = Middlewares.validarString(pedido.getMetodoPago(), "metodo de pago");
-//            if (!validaMetodoPago.equals("ok")) {
-//                return Response.status(Response.Status.BAD_REQUEST).entity(validaMetodoPago).build();
-//            }
-//            String validaId = Middlewares.validarEntero(pedido.getId(), "id");
-//            if (!validaId.equals("ok")) {
-//                return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
-//            }
-//
-//            // Llama al DAO para actualizar la reserva
-//            boolean actualizado = pedidoDAO.actualizarReserva(pedido);
-//            if (actualizado) {
-//                // Si se actualiza, retorna 200 (OK)
-//                String mensaje = "Reserva activada Exitosamente.";
-//                return Response.status(Response.Status.CREATED)
-//                        .entity("{\"Ok\":\"" + mensaje + "\"}")
-//                        .build();
-//            } else {
-//                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
-//                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//                        .entity("{\"Error\":\"No se pudo activar Reserva.\"}")
-//                        .build();
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return Response.serverError()
-//                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
-//                    .build();
-//        }
-//    }
+    @PUT
+    @Path("/reserva/{id}")
+    public Response actualizarPedidoReserva(@PathParam("id") String id, Pedido pedido) {
+        try {
+            pedido.setId(id); // Asigna el ID del path
+
+            // Realiza las validaciones para los campos de reserva
+            String validaIdCaja = Middlewares.validarEntero(pedido.getIdCaja(), "id caja");
+            if (!validaIdCaja.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaIdCaja).build();
+            }
+            String validaMetodoPago = Middlewares.validarString(pedido.getMetodoPago(), "metodo de pago");
+            if (!validaMetodoPago.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaMetodoPago).build();
+            }
+            String validaId = Middlewares.validarEntero(pedido.getId(), "id");
+            if (!validaId.equals("ok")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(validaId).build();
+            }
+
+            // Llama al DAO para actualizar la reserva
+            boolean actualizado = pedidoDAO.actualizarReserva(pedido);
+            if (actualizado) {
+                // Si se actualiza, retorna 200 (OK)
+                String mensaje = "Reserva activada Exitosamente.";
+                return Response.status(Response.Status.CREATED)
+                        .entity("{\"Ok\":\"" + mensaje + "\"}")
+                        .build();
+            } else {
+                // Si no se encuentra o no se actualiza, retorna una respuesta 404 (Not Found).
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"Error\":\"No se pudo activar Reserva.\"}")
+                        .build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError()
+                    .entity("{\"Error\":\"Error interno en el servidor.\"}")
+                    .build();
+        }
+    }
     // Maneja la petición PUT a "/pedidos/reservaEditar/{id}"
     // Actualiza campos específicos de un pedido de reserva
 //    @PUT

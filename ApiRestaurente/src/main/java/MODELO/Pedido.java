@@ -10,7 +10,7 @@ public class Pedido {
     private String numeroClientes;
     private String idReserva;
     private String idUsuario;
-        private String cedulaUsuario;
+    private String cedulaUsuario;
     private String nombreApellidoCliente;
     private String metodoPago;
     private String facturado;

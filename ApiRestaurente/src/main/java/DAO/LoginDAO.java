@@ -30,23 +30,32 @@ public class LoginDAO {
             if (rs.next()) {
                 String cedulaSQL = rs.getString("cedula");
                 String contrasenaSQL = rs.getString("contrasena");
-                if (cedula.equals(cedulaSQL) && contrasena.equals(contrasenaSQL)) creado = true;
+                if (cedula.equals(cedulaSQL) && contrasena.equals(contrasenaSQL)) {
+                    creado = true;
+                }
             }
         } catch (Exception e) {
             System.err.println("ERROR AL AUTENTICAR: " + e.getMessage());
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null) rs.close();
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
         }
         return creado;
     }
-        public boolean ValidarActivo(String cedula) {
+
+    public boolean ValidarActivo(String cedula) {
         boolean activo = false;
         try {
             conn = DBConnection.getConnection();
@@ -58,22 +67,31 @@ public class LoginDAO {
             if (rs.next()) {
                 String activoSQL = rs.getString("activo");
                 String eliminadoSQL = rs.getString("eliminado");
-                if (activoSQL.equals("1")&&eliminadoSQL.equals("0")) activo = true;
+                if (activoSQL.equals("1") && eliminadoSQL.equals("0")) {
+                    activo = true;
+                }
             }
         } catch (Exception e) {
             System.err.println("ERROR AL AUTENTICAR: " + e.getMessage());
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null) rs.close();
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
         }
         return activo;
     }
+
     public Login obtenerDatos(Login Login) {
         try {
             conn = DBConnection.getConnection();
@@ -82,7 +100,7 @@ public class LoginDAO {
             prepStmt.setString(1, Login.getCedula());
             rs = prepStmt.executeQuery();
             if (rs.next()) {
-                Login.setNombreApellido(rs.getString("nombre")+' '+rs.getString("apellido"));
+                Login.setNombreApellido(rs.getString("nombre") + ' ' + rs.getString("apellido"));
                 Login.setFotoPerfil(rs.getString("foto"));
             }
         } catch (Exception e) {
@@ -90,15 +108,54 @@ public class LoginDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null) rs.close();
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
         }
         return Login;
     }
+
+    public String obtenerContrasena(String cedula) {
+        String contrasena = "";
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "SELECT u.contrasena FROM usuarios u INNER JOIN rolesUsuarios ru ON u.id = ru.id_usuario WHERE ru.id_rol = 1 AND u.cedula = ?";
+            prepStmt = conn.prepareStatement(sql);
+            prepStmt.setString(1,cedula);
+            rs = prepStmt.executeQuery();
+            if (rs.next()) {
+                contrasena = (rs.getString("contrasena"));
+            }
+        } catch (Exception e) {
+            System.err.println("ERROR AL AUTENTICAR: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
+            }
+        }
+        return contrasena;
+    }
+
     /**
      * Devuelve los permisos asociados a la cédula desde la tabla permisos.
      */
@@ -109,7 +166,7 @@ public class LoginDAO {
 
             String sql = "SELECT p.nombre AS permiso FROM usuarios u INNER JOIN rolesUsuarios ru ON u.id = ru.id_usuario INNER JOIN roles r ON ru.id_rol = r.id INNER JOIN rolesPermisos rp ON r.id = rp.id_rol INNER JOIN permisos p ON rp.id_permiso = p.id WHERE u.cedula = ? AND r.id NOT IN (1, 2)";
             prepStmt = conn.prepareStatement(sql);
-            prepStmt.setString(1,cedula );
+            prepStmt.setString(1, cedula);
             rs = prepStmt.executeQuery();
             while (rs.next()) {
                 permisos.add(rs.getString("permiso"));
@@ -120,9 +177,15 @@ public class LoginDAO {
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null) rs.close();
-                if (prepStmt != null) prepStmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prepStmt != null) {
+                    prepStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (Exception ex) {
                 System.err.println("ERROR AL CERRAR CONEXIÓN: " + ex.getMessage());
             }
