@@ -37,7 +37,7 @@ public class RegisterControlador {
             }
             
             boolean repetido = trabajadorDAO.obtenerPorCedulaBoolean(usuarios.getCedula());
-            if (repetido) return Response.status(Response.Status.BAD_REQUEST).entity("{\"Error\":\"Trabajador con cc."+usuarios.getCedula()+" ya Existe\"}").build();
+            if (repetido) return Response.status(Response.Status.BAD_REQUEST).entity("{\"Error\":\"Usuario con cc."+usuarios.getCedula()+" ya Existe en la Base de Datos.\"}").build();
             
             // Valida el campo 'nombre'.
             String validarNombre = Middlewares.validarString(usuarios.getNombre(), "nombre");

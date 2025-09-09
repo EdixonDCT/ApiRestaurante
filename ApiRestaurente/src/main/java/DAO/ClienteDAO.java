@@ -115,26 +115,15 @@ public class ClienteDAO {
 
         try {
             conn = DBConnection.getConnection();
-            String sqlUsuario = "INSERT INTO usuarios(cedula, nombre, apellido) VALUES (?,?,?)";
-            prepStmt = conn.prepareStatement(sqlUsuario, PreparedStatement.RETURN_GENERATED_KEYS);
+            String sqlUsuario = "INSERT INTO usuarios(cedula, nombre, apellido,rol) VALUES (?,?,?,2)";
+            prepStmt = conn.prepareStatement(sqlUsuario);
             prepStmt.setString(1, usuario.getCedula());
             prepStmt.setString(2, usuario.getNombre());
             prepStmt.setString(3, usuario.getApellido());
 
             int filas = prepStmt.executeUpdate();
 
-            if (filas > 0) {
-                rs = prepStmt.getGeneratedKeys();
-                if (rs.next()) {
-                    int idUsuario = rs.getInt(1);
-                    String sqlRol = "INSERT INTO rolesUsuarios(id_rol, id_usuario) VALUES (2,?)";
-                    try (PreparedStatement prepStmtRol = conn.prepareStatement(sqlRol)) {
-                        prepStmtRol.setInt(1, idUsuario);
-                        prepStmtRol.executeUpdate();
-                    }
-                }
-                creado = true;
-            }
+            return (filas > 0);
         } catch (Exception e) {
             System.err.println("ERROR AL CREAR USUARIO: " + e.getMessage());
             e.printStackTrace();
@@ -236,7 +225,7 @@ public class ClienteDAO {
 
         try {
             conn = DBConnection.getConnection(); // Establece la conexión.
-            String sql = "SELECT 1 FROM usuarios u INNER JOIN rolesUsuarios ru ON u.id = ru.id_usuario WHERE ru.id_rol = 2 AND u.cedula = ?"; // Consulta con un parámetro.
+            String sql = "SELECT 1 FROM usuarios WHERE cedula = ?"; // Consulta con un parámetro.
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setString(1, cedula); // Asigna el valor de la cédula al parámetro de la consulta.
             rs = prepStmt.executeQuery();
@@ -269,7 +258,7 @@ public class ClienteDAO {
 
         try {
             conn = DBConnection.getConnection();
-            String sql = "SELECT u.id FROM usuarios u INNER JOIN rolesUsuarios ru ON u.id = ru.id_usuario WHERE ru.id_rol = 2 AND u.cedula = ?"; // Consulta de eliminación.
+            String sql = "SELECT id FROM usuarios WHERE cedula = ?"; // Consulta de eliminación.
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setString(1, cedula); // Asigna la cédula al parámetro.
             rs = prepStmt.executeQuery();
@@ -277,7 +266,7 @@ public class ClienteDAO {
                 id = (rs.getString("id"));
             }
         } catch (Exception e) {
-            System.err.println("ERROR AL ELIMINAR TRABAJADOR: " + e.getMessage());
+            System.err.println("ERROR AL SOLICITAR ID DEL TRABAJADOR: " + e.getMessage());
             e.printStackTrace();
         } finally {
             try {

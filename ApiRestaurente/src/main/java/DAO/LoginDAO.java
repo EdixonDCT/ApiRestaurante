@@ -60,7 +60,7 @@ public class LoginDAO {
         try {
             conn = DBConnection.getConnection();
 
-            String sql = "SELECT u.activo, u.eliminado FROM usuarios u INNER JOIN rolesUsuarios ru ON u.id = ru.id_usuario WHERE ru.id_rol = 1 AND u.cedula = ?";
+            String sql = "SELECT activo,eliminado FROM usuarios WHERE cedula = ?";
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setString(1, cedula);
             rs = prepStmt.executeQuery();
@@ -95,7 +95,7 @@ public class LoginDAO {
     public Login obtenerDatos(Login Login) {
         try {
             conn = DBConnection.getConnection();
-            String sql = "SELECT u.nombre,u.apellido,u.foto FROM usuarios u INNER JOIN rolesUsuarios ru ON u.id = ru.id_usuario WHERE ru.id_rol = 1 AND u.cedula = ?";
+            String sql = "SELECT nombre,apellido,foto FROM usuarios WHERE cedula = ?";
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setString(1, Login.getCedula());
             rs = prepStmt.executeQuery();
@@ -128,7 +128,7 @@ public class LoginDAO {
         String contrasena = "";
         try {
             conn = DBConnection.getConnection();
-            String sql = "SELECT u.contrasena FROM usuarios u INNER JOIN rolesUsuarios ru ON u.id = ru.id_usuario WHERE ru.id_rol = 1 AND u.cedula = ?";
+            String sql = "SELECT contrasena FROM usuarios WHERE cedula = ?";
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setString(1,cedula);
             rs = prepStmt.executeQuery();
@@ -164,7 +164,7 @@ public class LoginDAO {
         try {
             conn = DBConnection.getConnection();
 
-            String sql = "SELECT p.nombre AS permiso FROM usuarios u INNER JOIN rolesUsuarios ru ON u.id = ru.id_usuario INNER JOIN roles r ON ru.id_rol = r.id INNER JOIN rolesPermisos rp ON r.id = rp.id_rol INNER JOIN permisos p ON rp.id_permiso = p.id WHERE u.cedula = ? AND r.id NOT IN (1, 2)";
+            String sql = "SELECT p.nombre AS permiso FROM usuarios u INNER JOIN roles r ON r.id = u.rol INNER JOIN rolesPermisos rp ON r.id = rp.id_rol INNER JOIN permisos p ON rp.id_permiso = p.id WHERE u.cedula = ?";
             prepStmt = conn.prepareStatement(sql);
             prepStmt.setString(1, cedula);
             rs = prepStmt.executeQuery();

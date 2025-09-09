@@ -102,7 +102,7 @@ public class ClienteControlador { // Definición de la clase del controlador.
             }
             
             boolean repetido = clienteDAO.obtenerPorCedulaBoolean(usuarios.getCedula());
-            if (repetido) return Response.status(Response.Status.BAD_REQUEST).entity("{\"Error\":\"Cliente con cc."+usuarios.getCedula()+" ya Existe\"}").build();
+            if (repetido) return Response.status(Response.Status.BAD_REQUEST).entity("{\"Error\":\"Usuario con cc."+usuarios.getCedula()+" ya Existe en la Base de Datos.\"}").build();
             
             // Valida el campo 'nombre'.
             String validarNombre = Middlewares.validarString(usuarios.getNombre(), "nombre");
